@@ -6,6 +6,7 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   const [bids, setBids] = useState([])
   const [loading, setLoading] = useState(true)
   const [bidValue, setBidValue] = useState('')
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     loadAuction()
@@ -45,6 +46,8 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
   if (!auction) return <div style={{ padding: '40px', textAlign: 'center' }}>Leilão não encontrado</div>
 
+  const hasImages = auction.images && auction.images.length > 0
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
@@ -53,8 +56,25 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
       </div>
       <div style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
         <div>
-          <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '120px', marginBottom: '20px' }}>📦</div>
-          <div style={{ background: 'white', borderRadius: '20px', padding: '30px' }}>
+          {hasImages ? (
+            <div>
+              <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', marginBottom: '15px', overflow: 'hidden' }}>
+                <img src={auction.images[currentImageIndex]} alt={auction.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              {auction.images.length > 1 && (
+                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto' }}>
+                  {auction.images.map((img, i) => (
+                    <div key={i} onClick={() => setCurrentImageIndex(i)} style={{ minWidth: '80px', height: '80px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', border: i === currentImageIndex ? '3px solid #667eea' : '3px solid transparent' }}>
+                      <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '120px', marginBottom: '20px' }}>📦</div>
+          )}
+          <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginTop: '20px' }}>
             <h1 style={{ margin: '0 0 20px 0', fontSize: '32px' }}>{auction.title}</h1>
             <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '20px' }}>{auction.description || 'Sem descrição'}</p>
             <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '20px' }}>
