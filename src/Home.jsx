@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
-function Home({ user, onLogout, onCreate }) {
+
+function Home({ user, onLogout, onCreate, onOpenAuction }) {
   const [auctions, setAuctions] = useState([])
   const [loading, setLoading] = useState(true)
-  useEffect(() => { loadAuctions() }, [])
+
+  useEffect(() => {
+    loadAuctions()
+  }, [])
+
   const loadAuctions = async () => {
-    const { data } = await supabase.from('auctions').select('*').eq('status', 'active')
+    const { data } = await supabase.from('auctions').select('*').eq('status', 'active').order('created_at', { ascending: false })
     if (data) setAuctions(data)
     setLoading(false)
   }
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
@@ -23,9 +29,10 @@ function Home({ user, onLogout, onCreate }) {
       <div style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 20px' }}>
         <button onClick={onCreate} style={{ width: '100%', padding: '20px', background: '#667eea', color: 'white', border: 'none', borderRadius: '15px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '30px' }}>+ CRIAR NOVO LEILÃO</button>
         <h2>🔥 Leilões Ativos</h2>
-        {loading ? <div>Carregando...</div> : auctions.length === 0 ? <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '15px' }}><h3>Nenhum leilão ativo</h3></div> : <div>{auctions.map(a => <div key={a.id}><h3>{a.title}</h3></div>)}</div>}
+        {loading ? <div>Carregando...</div> : auctions.length === 0 ? <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '15px' }}><h3>Nenhum leilão ativo</h3></div> : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>{auctions.map(a => <div key={a.id} onClick={() => onOpenAuction(a.id)} style={{ background: 'white', borderRadius: '15px', padding: '20px', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)' }}><div style={{ width: '100%', height: '180px', background: '#f0f0f0', borderRadius: '10px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>📦</div><h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>{a.title}</h3><p style={{ margin: '0 0 15px 0', fontSize: '14px', color: '#999' }}>📍 {a.city}</p><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '15px', borderTop: '1px solid #f0f0f0' }}><div><div style={{ fontSize: '12px', color: '#999' }}>Lance atual</div><div style={{ fontSize: '20px', fontWeight: 'bold', color: '#667eea' }}>R$ {a.current_price.toFixed(2)}</div></div></div></div>)}</div>}
       </div>
     </div>
   )
 }
+
 export default Home
