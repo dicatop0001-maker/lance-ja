@@ -11,6 +11,10 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   useEffect(() => {
     loadAuction()
     loadBids()
+    const unsubscribe = subscribeToNewBids()
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
   }, [])
 
   const loadAuction = async () => {
@@ -22,6 +26,35 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   const loadBids = async () => {
     const { data } = await supabase.from('bids').select('*, users(name, email)').eq('auction_id', auctionId).order('created_at', { ascending: false })
     if (data) setBids(data)
+  }
+
+  const subscribeToNewBids = () => {
+    const channel = supabase.channel('bids-' + auctionId)
+    
+    channel
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'bids',
+        filter: 'auction_id=eq.' + auctionId
+      }, () => {
+        loadAuction()
+        loadBids()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }
+
+  const createNotification = async (sellerId, message) => {
+    await supabase.from('notifications').insert([{
+      user_id: sellerId,
+      auction_id: auctionId,
+      message: message,
+      read: false
+    }])
   }
 
   const handleBid = async (e) => {
@@ -36,6 +69,7 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
       alert('Erro: ' + error.message)
     } else {
       await supabase.from('auctions').update({ current_price: amount }).eq('id', auctionId)
+      await createNotification(auction.seller_id, '🔨 Novo lance de R$ ' + amount.toFixed(2) + ' no leilão: ' + auction.title)
       alert('🎉 Lance enviado!')
       setBidValue('')
       loadAuction()

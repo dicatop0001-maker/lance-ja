@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import Notifications from './Notifications'
 
 function Home({ user, onLogout, onCreate, onOpenAuction }) {
   const [auctions, setAuctions] = useState([])
@@ -20,7 +21,8 @@ function Home({ user, onLogout, onCreate, onOpenAuction }) {
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ margin: 0 }}>LANCE 🔨 JÁ</h1>
-          <div style={{ display: 'flex', gap: '15px' }}>
+          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <Notifications user={user} />
             <span>Olá!</span>
             <button onClick={onLogout} style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid white', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}>Sair</button>
           </div>
