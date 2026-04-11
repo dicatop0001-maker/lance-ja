@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import Chat from './Chat'
 
 function DetalhesLeilao({ auctionId, user, onBack }) {
   const [auction, setAuction] = useState(null)
@@ -7,25 +8,92 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   const [loading, setLoading] = useState(true)
   const [bidValue, setBidValue] = useState('')
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [canChat, setCanChat] = useState(false)
+  const [otherUser, setOtherUser] = useState(null)
+  const [showChat, setShowChat] = useState(false)
 
   useEffect(() => {
-    loadAuction()
-    loadBids()
+    loadData()
     const unsubscribe = subscribeToNewBids()
     return () => {
       if (unsubscribe) unsubscribe()
     }
   }, [])
 
+  const loadData = async () => {
+    await loadAuction()
+    await loadBids()
+  }
+
+  useEffect(() => {
+    if (auction && bids.length > 0) {
+      const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
+      if (isEnded) {
+        setShowChat(true)
+        loadOtherUser()
+        checkChatAccess()
+      }
+    }
+  }, [auction, bids])
+
   const loadAuction = async () => {
     const { data } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
-    if (data) setAuction(data)
+    if (data) {
+      setAuction(data)
+    }
     setLoading(false)
   }
 
   const loadBids = async () => {
     const { data } = await supabase.from('bids').select('*, users(name, email)').eq('auction_id', auctionId).order('created_at', { ascending: false })
     if (data) setBids(data)
+  }
+
+  const loadOtherUser = () => {
+    if (!auction) return
+    
+    if (auction.seller_id === user.id) {
+      // Eu sou vendedor, buscar vencedor
+      if (bids.length > 0) {
+        setOtherUser({
+          id: bids[0].user_id,
+          email: bids[0].users?.email || 'Vencedor'
+        })
+      }
+    } else {
+      // Eu sou comprador, buscar vendedor (usar o seller_id)
+      setOtherUser({
+        id: auction.seller_id,
+        email: 'Vendedor'
+      })
+    }
+  }
+
+  const checkChatAccess = async () => {
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .gte('ends_at', new Date().toISOString())
+      .single()
+
+    if (subscription) {
+      setCanChat(true)
+      return
+    }
+
+    const { data: unlock } = await supabase
+      .from('contact_unlocks')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('auction_id', auctionId)
+      .eq('payment_status', 'paid')
+      .single()
+
+    if (unlock) {
+      setCanChat(true)
+    }
   }
 
   const subscribeToNewBids = () => {
@@ -80,6 +148,7 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   if (!auction) return <div style={{ padding: '40px', textAlign: 'center' }}>Leilão não encontrado</div>
 
   const hasImages = auction.images && auction.images.length > 0
+  const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
@@ -121,19 +190,22 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
           <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginBottom: '20px' }}>
             <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>Lance atual</div>
             <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#667eea', marginBottom: '20px' }}>R$ {auction.current_price.toFixed(2)}</div>
-            <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>Encerra em</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '30px' }}>{new Date(auction.ends_at).toLocaleString('pt-BR')}</div>
-            {auction.seller_id !== user.id && (
+            <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '30px', color: isEnded ? '#f44336' : '#333' }}>
+              {new Date(auction.ends_at).toLocaleString('pt-BR')}
+              {isEnded && <span style={{ fontSize: '16px', color: '#f44336', marginLeft: '10px' }}>🏁 ENCERRADO</span>}
+            </div>
+            {!isEnded && auction.seller_id !== user.id && (
               <form onSubmit={handleBid}>
                 <input type="number" value={bidValue} onChange={(e) => setBidValue(e.target.value)} placeholder={'Mínimo: R$ ' + (auction.current_price + 0.01).toFixed(2)} step="0.01" required style={{ width: '100%', padding: '15px', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: '18px', boxSizing: 'border-box', marginBottom: '15px' }} />
                 <button type="submit" style={{ width: '100%', padding: '20px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>🔨 DAR LANCE</button>
               </form>
             )}
-            {auction.seller_id === user.id && (
+            {!isEnded && auction.seller_id === user.id && (
               <div style={{ background: '#fff3e0', padding: '20px', borderRadius: '10px', textAlign: 'center', color: '#f57c00' }}>Você é o vendedor deste leilão</div>
             )}
           </div>
-          <div style={{ background: 'white', borderRadius: '20px', padding: '30px' }}>
+          <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginBottom: '20px' }}>
             <h3 style={{ margin: '0 0 20px 0' }}>📊 Histórico de Lances ({bids.length})</h3>
             {bids.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda</div>
@@ -149,6 +221,9 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
               ))}</div>
             )}
           </div>
+          {showChat && isEnded && otherUser && (
+            <Chat auction={auction} user={user} otherUser={otherUser} canChat={canChat} />
+          )}
         </div>
       </div>
     </div>
