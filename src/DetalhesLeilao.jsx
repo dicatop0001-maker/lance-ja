@@ -51,7 +51,6 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   const createNotification = async (sellerId, message) => {
     await supabase.from('notifications').insert([{
       user_id: sellerId,
-      auction_id: auctionId,
       message: message,
       read: false
     }])
