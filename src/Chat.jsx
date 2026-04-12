@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 import PaymentModal from './PaymentModal'
 
@@ -64,7 +64,7 @@ function Chat({ auction, user, otherUser, canChat }) {
   }
 
   const handlePaymentSuccess = async () => {
-    alert('✅ Pagamento confirmado! Chat desbloqueado!')
+    alert('âœ… Pagamento confirmado! Chat desbloqueado!')
     setShowPayment(false)
     window.location.reload()
   }
@@ -73,11 +73,11 @@ function Chat({ auction, user, otherUser, canChat }) {
     return (
       <>
         <div style={{ background: 'white', borderRadius: '20px', padding: '40px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>🔒</div>
+          <div style={{ fontSize: '48px', marginBottom: '20px' }}>ðŸ”’</div>
           <h3 style={{ margin: '0 0 15px 0' }}>Chat Bloqueado</h3>
-          <p style={{ color: '#666', marginBottom: '30px' }}>Para conversar com o {auction.seller_id === user.id ? 'vencedor' : 'vendedor'}, você precisa desbloquear o contato.</p>
+          <p style={{ color: '#666', marginBottom: '30px' }}>Para conversar com o {auction.seller_id === user.id ? 'vencedor' : 'vendedor'}, vocÃª precisa desbloquear o contato.</p>
           <div style={{ background: '#f5f5f5', borderRadius: '15px', padding: '30px', marginBottom: '20px' }}>
-            <h4 style={{ margin: '0 0 20px 0' }}>💰 Opções de Pagamento:</h4>
+            <h4 style={{ margin: '0 0 20px 0' }}>ðŸ’° OpÃ§Ãµes de Pagamento:</h4>
             <div style={{ display: 'grid', gap: '15px' }}>
               <div 
                 onClick={() => handlePaymentClick({ type: 'single', amount: 1.00 })}
@@ -94,7 +94,7 @@ function Chat({ auction, user, otherUser, canChat }) {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 8,00/mês</div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 8,00/mÃªs</div>
                 <div style={{ fontSize: '14px', color: '#666' }}>Contatos ilimitados</div>
               </div>
               <div 
@@ -105,7 +105,7 @@ function Chat({ auction, user, otherUser, canChat }) {
               >
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>R$ 50,00/ano</div>
                 <div style={{ fontSize: '14px', color: '#666' }}>Economia de 48% - Contatos ilimitados</div>
-                <div style={{ fontSize: '12px', color: '#4CAF50', marginTop: '5px' }}>⭐ MELHOR OFERTA</div>
+                <div style={{ fontSize: '12px', color: '#4CAF50', marginTop: '5px' }}>â­ MELHOR OFERTA</div>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@ function Chat({ auction, user, otherUser, canChat }) {
 
   return (
     <div style={{ background: 'white', borderRadius: '20px', padding: '20px', height: '500px', display: 'flex', flexDirection: 'column' }}>
-      <h3 style={{ margin: '0 0 20px 0' }}>💬 Chat com {otherUser.email}</h3>
+      <h3 style={{ margin: '0 0 20px 0' }}>ðŸ’¬ Chat com {otherUser.email}</h3>
       <div style={{ flex: 1, overflowY: 'auto', marginBottom: '20px', background: '#f9f9f9', borderRadius: '10px', padding: '15px' }}>
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>Nenhuma mensagem ainda. Seja o primeiro a enviar!</div>

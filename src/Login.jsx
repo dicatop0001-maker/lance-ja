@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { supabase } from './supabaseClient'
 
 function Login() {
@@ -65,7 +65,7 @@ function Login() {
           marginBottom: '10px',
           fontSize: '32px'
         }}>
-          LANCE 🔨 JÁ
+          LANCE ðŸ”¨ JÃ
         </h1>
         <p style={{ 
           textAlign: 'center', 
@@ -73,7 +73,7 @@ function Login() {
           marginBottom: '30px',
           fontSize: '14px'
         }}>
-          Leilões locais na palma da sua mão
+          LeilÃµes locais na palma da sua mÃ£o
         </p>
 
         <form onSubmit={handleLogin}>

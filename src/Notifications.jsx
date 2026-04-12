@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 
 function Notifications({ user }) {
@@ -51,7 +51,7 @@ function Notifications({ user }) {
   const showToast = (message) => {
     const toast = document.createElement('div')
     toast.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #667eea; color: white; padding: 15px 20px; borderRadius: 10px; boxShadow: 0 4px 15px rgba(0,0,0,0.2); zIndex: 9999;'
-    toast.innerHTML = '🔔 ' + message
+    toast.innerHTML = 'ðŸ”” ' + message
     document.body.appendChild(toast)
     setTimeout(() => {
       toast.remove()
@@ -73,7 +73,7 @@ function Notifications({ user }) {
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setShow(!show)} style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid white', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', position: 'relative' }}>
-        🔔 Notificações
+        ðŸ”” NotificaÃ§Ãµes
         {unreadCount > 0 && (
           <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', borderRadius: '50%', width: '20px', height: '20px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{unreadCount}</span>
         )}
@@ -81,13 +81,13 @@ function Notifications({ user }) {
       {show && (
         <div style={{ position: 'absolute', top: '50px', right: 0, background: 'white', borderRadius: '15px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', width: '350px', maxHeight: '400px', overflowY: 'auto', zIndex: 1000 }}>
           <div style={{ padding: '15px', borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, color: '#333' }}>Notificações</h3>
+            <h3 style={{ margin: 0, color: '#333' }}>NotificaÃ§Ãµes</h3>
             {unreadCount > 0 && (
               <button onClick={markAllAsRead} style={{ background: 'none', border: 'none', color: '#667eea', cursor: 'pointer', fontSize: '14px' }}>Marcar todas como lidas</button>
             )}
           </div>
           {notifications.length === 0 ? (
-            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#999' }}>Nenhuma notificação</div>
+            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#999' }}>Nenhuma notificaÃ§Ã£o</div>
           ) : (
             notifications.map(n => (
               <div key={n.id} onClick={() => !n.read && markAsRead(n.id)} style={{ padding: '15px', borderBottom: '1px solid #f0f0f0', background: n.read ? 'white' : '#f0f5ff', cursor: 'pointer' }}>
