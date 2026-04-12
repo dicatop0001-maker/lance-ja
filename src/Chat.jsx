@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import PaymentModal from './PaymentModal'
 
 function Chat({ auction, user, otherUser, canChat }) {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [showPayment, setShowPayment] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState(null)
 
   useEffect(() => {
     if (canChat) {
@@ -55,32 +58,70 @@ function Chat({ auction, user, otherUser, canChat }) {
     setNewMessage('')
   }
 
+  const handlePaymentClick = (plan) => {
+    setSelectedPlan(plan)
+    setShowPayment(true)
+  }
+
+  const handlePaymentSuccess = async () => {
+    alert('✅ Pagamento confirmado! Chat desbloqueado!')
+    setShowPayment(false)
+    window.location.reload()
+  }
+
   if (!canChat) {
     return (
-      <div style={{ background: 'white', borderRadius: '20px', padding: '40px', textAlign: 'center' }}>
-        <div style={{ fontSize: '48px', marginBottom: '20px' }}>🔒</div>
-        <h3 style={{ margin: '0 0 15px 0' }}>Chat Bloqueado</h3>
-        <p style={{ color: '#666', marginBottom: '30px' }}>Para conversar com o {auction.seller_id === user.id ? 'vencedor' : 'vendedor'}, você precisa desbloquear o contato.</p>
-        <div style={{ background: '#f5f5f5', borderRadius: '15px', padding: '30px', marginBottom: '20px' }}>
-          <h4 style={{ margin: '0 0 20px 0' }}>💰 Opções de Pagamento:</h4>
-          <div style={{ display: 'grid', gap: '15px' }}>
-            <div style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '2px solid #667eea' }}>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 1,00</div>
-              <div style={{ fontSize: '14px', color: '#666' }}>Desbloquear apenas este contato</div>
-            </div>
-            <div style={{ background: 'white', padding: '20px', borderRadius: '10px' }}>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 8,00/mês</div>
-              <div style={{ fontSize: '14px', color: '#666' }}>Contatos ilimitados</div>
-            </div>
-            <div style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '2px solid #4CAF50' }}>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>R$ 50,00/ano</div>
-              <div style={{ fontSize: '14px', color: '#666' }}>Economia de 48% - Contatos ilimitados</div>
-              <div style={{ fontSize: '12px', color: '#4CAF50', marginTop: '5px' }}>⭐ MELHOR OFERTA</div>
+      <>
+        <div style={{ background: 'white', borderRadius: '20px', padding: '40px', textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '20px' }}>🔒</div>
+          <h3 style={{ margin: '0 0 15px 0' }}>Chat Bloqueado</h3>
+          <p style={{ color: '#666', marginBottom: '30px' }}>Para conversar com o {auction.seller_id === user.id ? 'vencedor' : 'vendedor'}, você precisa desbloquear o contato.</p>
+          <div style={{ background: '#f5f5f5', borderRadius: '15px', padding: '30px', marginBottom: '20px' }}>
+            <h4 style={{ margin: '0 0 20px 0' }}>💰 Opções de Pagamento:</h4>
+            <div style={{ display: 'grid', gap: '15px' }}>
+              <div 
+                onClick={() => handlePaymentClick({ type: 'single', amount: 1.00 })}
+                style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '2px solid #667eea', cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 1,00</div>
+                <div style={{ fontSize: '14px', color: '#666' }}>Desbloquear apenas este contato</div>
+              </div>
+              <div 
+                onClick={() => handlePaymentClick({ type: 'monthly', amount: 8.00 })}
+                style={{ background: 'white', padding: '20px', borderRadius: '10px', cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#667eea' }}>R$ 8,00/mês</div>
+                <div style={{ fontSize: '14px', color: '#666' }}>Contatos ilimitados</div>
+              </div>
+              <div 
+                onClick={() => handlePaymentClick({ type: 'annual', amount: 50.00 })}
+                style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '2px solid #4CAF50', cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50' }}>R$ 50,00/ano</div>
+                <div style={{ fontSize: '14px', color: '#666' }}>Economia de 48% - Contatos ilimitados</div>
+                <div style={{ fontSize: '12px', color: '#4CAF50', marginTop: '5px' }}>⭐ MELHOR OFERTA</div>
+              </div>
             </div>
           </div>
         </div>
-        <button style={{ padding: '15px 30px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>💳 DESBLOQUEAR AGORA</button>
-      </div>
+
+        {showPayment && selectedPlan && (
+          <PaymentModal 
+            user={user}
+            auction={auction}
+            amount={selectedPlan.amount}
+            plan={selectedPlan.type}
+            onClose={() => setShowPayment(false)}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
+      </>
     )
   }
 
