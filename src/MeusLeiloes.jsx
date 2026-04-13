@@ -96,7 +96,6 @@ function MeusLeiloes() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '40px' }}>
-          {/* QR Code Card */}
           <div style={{ background: 'white', borderRadius: '20px', padding: '30px', textAlign: 'center' }}>
             <h2 style={{ marginTop: 0 }}>📱 Divulgue seus Leilões</h2>
             <p style={{ color: '#666', marginBottom: '20px' }}>Compartilhe este QR Code para as pessoas verem todos os seus leilões</p>
@@ -112,7 +111,6 @@ function MeusLeiloes() {
             )}
           </div>
 
-          {/* Stats & Share Card */}
           <div style={{ background: 'white', borderRadius: '20px', padding: '30px' }}>
             <h2 style={{ marginTop: 0 }}>📊 Estatísticas</h2>
             
@@ -138,7 +136,6 @@ function MeusLeiloes() {
           </div>
         </div>
 
-        {/* Lista de leilões */}
         <div style={{ background: 'white', borderRadius: '20px', padding: '30px' }}>
           <h2 style={{ marginTop: 0 }}>📦 Seus Leilões ({myAuctions.length})</h2>
           
@@ -150,7 +147,7 @@ function MeusLeiloes() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
               {myAuctions.map(auction => (
-                <div key={auction.id} onClick={() => navigate(/leilao/)} style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                <div key={auction.id} onClick={() => navigate(\/leilao/\\)} style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                   <img src={auction.photos?.[0] || 'https://via.placeholder.com/250x150'} alt={auction.title} style={{ width: '100%', height: '150px', objectFit: 'cover' }} />
                   <div style={{ padding: '15px' }}>
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>{auction.title}</h3>
