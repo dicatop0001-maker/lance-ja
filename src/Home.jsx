@@ -120,7 +120,7 @@ function Home() {
         <h1 style={{ color: 'white', margin: 0, fontSize: '32px', fontWeight: 'bold' }}>LEILÃO DO BAIRRO</h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <Notifications user={user} />
-          <button onClick={() => navigate("/meus-leiloes")} style={{ padding: "12px 24px", background: "rgba(255,255,255,0.2)", color: "white", border: "2px solid white", borderRadius: "10px", cursor: "pointer", fontWeight: "bold" }}>📦 Meus Leilões</button><button onClick={handleLogout} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Sair</button>
+          <button onClick={() => navigate("/meus-leiloes")} style={{ padding: "12px 24px", background: "rgba(255,255,255,0.2)", color: "white", border: "2px solid white", borderRadius: "10px", cursor: "pointer", fontWeight: "bold" }}>📦 Meus Leilões</button><button onClick={() => navigate('/meus-leiloes')} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>📦 Meus Leilões</button><button onClick={handleLogout} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Sair</button>
         </div>
       </div>
 
