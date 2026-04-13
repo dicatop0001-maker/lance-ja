@@ -27,36 +27,11 @@ function Login() {
     }
   }
 
-  const handleFacebookLogin = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          redirectTo: window.location.origin + '/home'
-        }
-      })
-      if (error) throw error
-    } catch (error) {
-      alert('Erro ao conectar com Facebook: ' + error.message)
-    }
-  }
-
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', maxWidth: '400px', width: '100%' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '36px', color: '#667eea' }}>LEILÃO DO BAIRRO</h1>
-        <p style={{ textAlign: 'center', color: '#999', marginBottom: '30px' }}>compre e venda perto de você</p>
-        
-        <button onClick={handleFacebookLogin} style={{ width: '100%', padding: '15px', background: '#1877F2', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '20px' }}>f</span> Entrar com Facebook
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }}></div>
-          <span style={{ padding: '0 10px', color: '#999', fontSize: '14px' }}>OU</span>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }}></div>
-        </div>
-
+        <h1 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '36px', color: '#667eea' }}>LANCE 🔨 JÁ</h1>
+        <p style={{ textAlign: 'center', color: '#999', marginBottom: '30px' }}>Leilões locais na palma da sua mão</p>
         <form onSubmit={handleSubmit}>
           <input type="email" placeholder="Seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%', padding: '15px', marginBottom: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} />
           <input type="password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', padding: '15px', marginBottom: '20px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} />
