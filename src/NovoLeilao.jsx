@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { supabase } from './supabaseClient'
 
 function NovoLeilao({ user, onBack, onSuccess }) {
