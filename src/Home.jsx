@@ -1,184 +1,172 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
 
-// Mapeamento de cidades para estados
-const cityStateMap = {
-  'ponta grossa': 'PR',
-  'curitiba': 'PR',
-  'londrina': 'PR',
-  'maringÃ¡': 'PR',
-  'rio de janeiro': 'RJ',
-  'niterÃ³i': 'RJ',
-  'sÃ£o paulo': 'SP',
-  'campinas': 'SP',
-  'santos': 'SP',
-  'belo horizonte': 'MG',
-  'brasÃ­lia': 'DF',
-  'goiÃ¢nia': 'GO',
-  'salvador': 'BA',
-  'recife': 'PE',
-  'fortaleza': 'CE',
-  'manaus': 'AM',
-  'porto alegre': 'RS',
-  'florianÃ³polis': 'SC',
-  'vitÃ³ria': 'ES',
-  'campo grande': 'MS',
-  'cuiabÃ¡': 'MT'
-}
-
-function Home({ user, onLogout, onCreate, onOpenAuction }) {
+function Home() {
+  const [user, setUser] = useState(null)
   const [auctions, setAuctions] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [filteredAuctions, setFilteredAuctions] = useState([])
   const [filter, setFilter] = useState('active')
   const [userCity, setUserCity] = useState('Ponta Grossa')
   const [userState, setUserState] = useState('PR')
   const [searchCity, setSearchCity] = useState('')
-  const [searchState, setSearchState] = useState('')
   const [showCitySearch, setShowCitySearch] = useState(false)
+  const navigate = useNavigate()
+
+  const cityStateMap = {
+    'Ponta Grossa': 'PR', 'Curitiba': 'PR', 'Londrina': 'PR', 'Maringá': 'PR',
+    'São Paulo': 'SP', 'Rio de Janeiro': 'RJ', 'Belo Horizonte': 'MG',
+    'Porto Alegre': 'RS', 'Brasília': 'DF', 'Salvador': 'BA',
+    'Fortaleza': 'CE', 'Recife': 'PE', 'Manaus': 'AM', 'Belém': 'PA'
+  }
 
   useEffect(() => {
-    detectUserLocation()
-    loadAuctions()
-  }, [filter, searchCity])
+    checkUser()
+    detectLocation()
+  }, [])
 
-  const detectUserLocation = async () => {
+  useEffect(() => {
+    if (user) loadAuctions()
+  }, [user, userCity])
+
+  useEffect(() => {
+    filterAuctions()
+  }, [auctions, filter])
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      navigate('/')
+      return
+    }
+    setUser(session.user)
+  }
+
+  const detectLocation = async () => {
     try {
       const response = await fetch('https://ipapi.co/json/')
       const data = await response.json()
-      if (data.city && data.region_code) {
+      if (data.city && cityStateMap[data.city]) {
         setUserCity(data.city)
-        setUserState(data.region_code)
+        setUserState(cityStateMap[data.city])
       }
     } catch (error) {
-      console.log('Usando localizaÃ§Ã£o padrÃ£o: Ponta Grossa - PR')
+      console.log('Usando localização padrão: Ponta Grossa - PR')
     }
   }
 
   const loadAuctions = async () => {
-    let query = supabase.from('auctions').select('*').order('created_at', { ascending: false })
-    
-    if (filter === 'active') {
-      query = query.eq('status', 'active')
-    } else if (filter === 'ended') {
-      query = query.eq('status', 'ended')
-    }
-
-    if (searchCity) {
-      query = query.ilike('city', '%' + searchCity + '%')
-    } else {
-      query = query.eq('city', userCity)
-    }
-    
-    const { data } = await query
+    const { data } = await supabase
+      .from('auctions')
+      .select('*')
+      .eq('city', userCity)
+      .order('created_at', { ascending: false })
     if (data) setAuctions(data)
-    setLoading(false)
   }
 
-  const handleCitySearch = (e) => {
-    e.preventDefault()
-    if (!searchCity.trim()) return
-
-    // Buscar sigla do estado
-    const normalizedCity = searchCity.toLowerCase().trim()
-    const state = cityStateMap[normalizedCity]
-    
-    if (state) {
-      setSearchState(state)
+  const filterAuctions = () => {
+    const now = new Date()
+    if (filter === 'active') {
+      setFilteredAuctions(auctions.filter(a => 
+        (a.status === 'active' || !a.status) && new Date(a.ends_at) > now
+      ))
+    } else if (filter === 'ended') {
+      setFilteredAuctions(auctions.filter(a => 
+        a.status === 'ended' || new Date(a.ends_at) <= now
+      ))
     } else {
-      setSearchState('BR') // Estado genÃ©rico se nÃ£o encontrar
+      setFilteredAuctions(auctions)
     }
-
-    loadAuctions()
-    setShowCitySearch(false)
   }
 
-  const clearCityFilter = () => {
-    setSearchCity('')
-    setSearchState('')
-    loadAuctions()
+  const handleCitySearch = (city) => {
+    if (cityStateMap[city]) {
+      setUserCity(city)
+      setUserState(cityStateMap[city])
+      setShowCitySearch(false)
+      setSearchCity('')
+    } else {
+      alert('Cidade não encontrada!')
+    }
   }
 
-  const displayCity = searchCity || userCity
-  const displayState = searchState || userState
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/')
+  }
+
+  const isEnded = (auction) => {
+    return auction.status === 'ended' || new Date(auction.ends_at) <= new Date()
+  }
+
+  if (!user) return <div>Carregando...</div>
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ margin: 0 }}>LANCE ðŸ”¨ JÃ</h1>
-          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <Notifications user={user} />
-            <button onClick={onLogout} style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid white', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}>Sair</button>
-          </div>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.1)' }}>
+        <h1 style={{ color: 'white', margin: 0, fontSize: '32px', fontWeight: 'bold' }}>LANCE 🔨 JÁ</h1>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <Notifications user={user} />
+          <button onClick={handleLogout} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Sair</button>
         </div>
       </div>
 
-      <div style={{ background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)', padding: '40px 20px', textAlign: 'center', color: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ margin: '0 0 10px 0', fontSize: '36px', fontWeight: 'bold', textTransform: 'uppercase' }}>
-            O LEILÃƒO DA SUA REGIÃƒO
-          </h2>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', margin: '10px 0', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
-            {displayCity.toUpperCase()} - {displayState}
-          </div>
-          <div style={{ fontSize: '18px', opacity: 0.9, marginTop: '10px' }}>
-            automÃ³veis, objetos, mÃ³veis e imÃ³veis
-          </div>
-          
-          {!showCitySearch ? (
-            <button onClick={() => setShowCitySearch(true)} style={{ marginTop: '20px', padding: '12px 30px', background: 'rgba(255,255,255,0.2)', border: '2px solid white', color: 'white', borderRadius: '25px', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>
-              ðŸ” Buscar em outra cidade
-            </button>
-          ) : (
-            <form onSubmit={handleCitySearch} style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="Digite o nome da cidade..." style={{ padding: '12px 20px', borderRadius: '25px', border: 'none', fontSize: '16px', width: '300px' }} autoFocus />
-              <button type="submit" style={{ padding: '12px 30px', background: 'white', color: '#667eea', border: 'none', borderRadius: '25px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>Buscar</button>
-              <button type="button" onClick={() => { setShowCitySearch(false); clearCityFilter(); }} style={{ padding: '12px 30px', background: 'rgba(255,255,255,0.2)', border: '2px solid white', color: 'white', borderRadius: '25px', fontSize: '16px', cursor: 'pointer' }}>Cancelar</button>
-            </form>
-          )}
-
-          {searchCity && (
-            <div style={{ marginTop: '15px' }}>
-              <span style={{ background: 'rgba(255,255,255,0.2)', padding: '8px 15px', borderRadius: '20px', fontSize: '14px' }}>
-                Buscando em: {searchCity}
-                <button onClick={clearCityFilter} style={{ background: 'none', border: 'none', color: 'white', marginLeft: '10px', cursor: 'pointer', fontSize: '16px' }}>âœ•</button>
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 20px' }}>
-        <button onClick={onCreate} style={{ width: '100%', padding: '20px', background: '#667eea', color: 'white', border: 'none', borderRadius: '15px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '30px' }}>+ CRIAR NOVO LEILÃƒO</button>
+      <div style={{ padding: '60px 40px', textAlign: 'center' }}>
+        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>O LEILÃO DA SUA REGIÃO</h2>
+        <h3 style={{ color: 'white', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{userCity} - {userState}</h3>
+        <p style={{ color: 'white', fontSize: '20px', margin: '0 0 30px 0' }}>automóveis, objetos, móveis e imóveis</p>
+        <button onClick={() => setShowCitySearch(!showCitySearch)} style={{ padding: '15px 30px', background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white', borderRadius: '15px', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>🔍 Buscar em outra cidade</button>
         
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-          <button onClick={() => setFilter('active')} style={{ padding: '10px 20px', background: filter === 'active' ? '#667eea' : 'white', color: filter === 'active' ? 'white' : '#333', border: '2px solid #667eea', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>ðŸ”¥ Ativos</button>
-          <button onClick={() => setFilter('ended')} style={{ padding: '10px 20px', background: filter === 'ended' ? '#667eea' : 'white', color: filter === 'ended' ? 'white' : '#333', border: '2px solid #667eea', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>ðŸ Encerrados</button>
-          <button onClick={() => setFilter('all')} style={{ padding: '10px 20px', background: filter === 'all' ? '#667eea' : 'white', color: filter === 'all' ? 'white' : '#333', border: '2px solid #667eea', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>ðŸ“‹ Todos</button>
-        </div>
-
-        <h2>{filter === 'active' ? 'ðŸ”¥ LeilÃµes Ativos' : filter === 'ended' ? 'ðŸ LeilÃµes Encerrados' : 'ðŸ“‹ Todos os LeilÃµes'}</h2>
-        {loading ? <div>Carregando...</div> : auctions.length === 0 ? <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '15px' }}><h3>Nenhum leilÃ£o encontrado em {displayCity}</h3><p style={{ color: '#666' }}>Tente buscar em outra cidade</p></div> : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>{auctions.map(a => <div key={a.id} onClick={() => onOpenAuction(a.id)} style={{ background: 'white', borderRadius: '15px', padding: '20px', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', position: 'relative' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)' }}>
-          {a.status === 'ended' && (
-            <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#f44336', color: 'white', padding: '5px 10px', borderRadius: '5px', fontSize: '12px', fontWeight: 'bold' }}>ðŸ ENCERRADO</div>
-          )}
-          {a.images && a.images.length > 0 ? (
-            <div style={{ width: '100%', height: '180px', borderRadius: '10px', marginBottom: '15px', overflow: 'hidden' }}>
-              <img src={a.images[0]} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-          ) : (
-            <div style={{ width: '100%', height: '180px', background: '#f0f0f0', borderRadius: '10px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>ðŸ“¦</div>
-          )}
-          <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>{a.title}</h3>
-          <p style={{ margin: '0 0 15px 0', fontSize: '14px', color: '#999' }}>ðŸ“ {a.city}</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '15px', borderTop: '1px solid #f0f0f0' }}>
-            <div>
-              <div style={{ fontSize: '12px', color: '#999' }}>Lance atual</div>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#667eea' }}>R$ {a.current_price.toFixed(2)}</div>
+        {showCitySearch && (
+          <div style={{ marginTop: '20px', background: 'white', borderRadius: '15px', padding: '20px', maxWidth: '500px', margin: '20px auto' }}>
+            <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="Digite o nome da cidade..." style={{ width: '100%', padding: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px', marginBottom: '15px' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+              {Object.keys(cityStateMap).filter(c => c.toLowerCase().includes(searchCity.toLowerCase())).map(city => (
+                <button key={city} onClick={() => handleCitySearch(city)} style={{ padding: '12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>{city} - {cityStateMap[city]}</button>
+              ))}
             </div>
           </div>
-        </div>)}</div>}
+        )}
+      </div>
+
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 40px' }}>
+        <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: '25px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: '24px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '30px' }}>+ CRIAR NOVO LEILÃO</button>
+
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
+          <button onClick={() => setFilter('active')} style={{ flex: 1, padding: '15px', background: filter === 'active' ? '#667eea' : 'white', color: filter === 'active' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>🔥 Ativos</button>
+          <button onClick={() => setFilter('ended')} style={{ flex: 1, padding: '15px', background: filter === 'ended' ? '#667eea' : 'white', color: filter === 'ended' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>🏁 Encerrados</button>
+          <button onClick={() => setFilter('all')} style={{ flex: 1, padding: '15px', background: filter === 'all' ? '#667eea' : 'white', color: filter === 'all' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>📋 Todos</button>
+        </div>
+
+        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>🔥 Leilões {filter === 'active' ? 'Ativos' : filter === 'ended' ? 'Encerrados' : ''}</h2>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          {filteredAuctions.map(auction => (
+            <div key={auction.id} onClick={() => navigate(/leilao/)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+              {isEnded(auction) && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#f44336', color: 'white', padding: '8px 15px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', zIndex: 10 }}>🏁 ENCERRADO</div>
+              )}
+              <img src={auction.photos?.[0] || 'https://via.placeholder.com/300x200'} alt={auction.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+              <div style={{ padding: '20px' }}>
+                <h3 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>{auction.title}</h3>
+                <p style={{ color: '#666', marginBottom: '15px' }}>{auction.city}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontSize: '14px', color: '#999' }}>Lance atual</div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#667eea' }}>R$ {parseFloat(auction.starting_bid || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredAuctions.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.1)', borderRadius: '15px' }}>
+            <p style={{ color: 'white', fontSize: '24px' }}>Nenhum leilão encontrado em {userCity}</p>
+          </div>
+        )}
       </div>
     </div>
   )
