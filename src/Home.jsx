@@ -12,18 +12,15 @@ function Home() {
   const [userState, setUserState] = useState('PR')
   const [searchCity, setSearchCity] = useState('')
   const [showCitySearch, setShowCitySearch] = useState(false)
+  const [allCities, setAllCities] = useState([])
+  const [filteredCities, setFilteredCities] = useState([])
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
-  const cityStateMap = {
-    'Ponta Grossa': 'PR', 'Curitiba': 'PR', 'Londrina': 'PR', 'Maringá': 'PR',
-    'São Paulo': 'SP', 'Rio de Janeiro': 'RJ', 'Belo Horizonte': 'MG',
-    'Porto Alegre': 'RS', 'Brasília': 'DF', 'Salvador': 'BA',
-    'Fortaleza': 'CE', 'Recife': 'PE', 'Manaus': 'AM', 'Belém': 'PA'
-  }
 
   useEffect(() => {
     checkUser()
     detectLocation()
+    loadBrazilianCities()
   }, [])
 
   useEffect(() => {
@@ -33,6 +30,27 @@ function Home() {
   useEffect(() => {
     filterAuctions()
   }, [auctions, filter])
+
+  useEffect(() => {
+    if (searchCity.length >= 2) {
+      const filtered = allCities.filter(city => 
+        city.nome.toLowerCase().includes(searchCity.toLowerCase())
+      ).slice(0, 50)
+      setFilteredCities(filtered)
+    } else {
+      setFilteredCities([])
+    }
+  }, [searchCity, allCities])
+
+  const loadBrazilianCities = async () => {
+    try {
+      const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome')
+      const data = await response.json()
+      setAllCities(data)
+    } catch (error) {
+      console.error('Erro ao carregar cidades:', error)
+    }
+  }
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -47,9 +65,9 @@ function Home() {
     try {
       const response = await fetch('https://ipapi.co/json/')
       const data = await response.json()
-      if (data.city && cityStateMap[data.city]) {
+      if (data.city) {
         setUserCity(data.city)
-        setUserState(cityStateMap[data.city])
+        setUserState(data.region_code || 'BR')
       }
     } catch (error) {
       console.log('Usando localização padrão: Ponta Grossa - PR')
@@ -78,15 +96,11 @@ function Home() {
     }
   }
 
-  const handleCitySearch = (city) => {
-    if (cityStateMap[city]) {
-      setUserCity(city)
-      setUserState(cityStateMap[city])
-      setShowCitySearch(false)
-      setSearchCity('')
-    } else {
-      alert('Cidade não encontrada!')
-    }
+  const handleCitySelect = (city) => {
+    setUserCity(city.nome)
+    setUserState(city.microrregiao.mesorregiao.UF.sigla)
+    setShowCitySearch(false)
+    setSearchCity('')
   }
 
   const handleLogout = async () => {
@@ -103,7 +117,7 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.1)' }}>
-        <h1 style={{ color: 'white', margin: 0, fontSize: '32px', fontWeight: 'bold' }}>LANCE 🔨 JÁ</h1>
+        <h1 style={{ color: 'white', margin: 0, fontSize: '32px', fontWeight: 'bold' }}>LEILÃO DO BAIRRO</h1>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <Notifications user={user} />
           <button onClick={handleLogout} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Sair</button>
@@ -111,18 +125,40 @@ function Home() {
       </div>
 
       <div style={{ padding: '60px 40px', textAlign: 'center' }}>
-        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>COMPRE E VENDA!</h2>
+        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>COMPRE E VENDA PERTO DE VOCÊ</h2>
         <h3 style={{ color: 'white', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{userCity} - {userState}</h3>
         <p style={{ color: 'white', fontSize: '20px', margin: '0 0 30px 0' }}>serviços, objetos, móveis e imóveis</p>
         <button onClick={() => setShowCitySearch(!showCitySearch)} style={{ padding: '15px 30px', background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white', borderRadius: '15px', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>🔍 Buscar em outra cidade</button>
         
         {showCitySearch && (
-          <div style={{ marginTop: '20px', background: 'white', borderRadius: '15px', padding: '20px', maxWidth: '500px', margin: '20px auto' }}>
-            <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="Digite o nome da cidade..." style={{ width: '100%', padding: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px', marginBottom: '15px' }} />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-              {Object.keys(cityStateMap).filter(c => c.toLowerCase().includes(searchCity.toLowerCase())).map(city => (
-                <button key={city} onClick={() => handleCitySearch(city)} style={{ padding: '12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>{city} - {cityStateMap[city]}</button>
-              ))}
+          <div style={{ marginTop: '20px', background: 'white', borderRadius: '15px', padding: '20px', maxWidth: '600px', margin: '20px auto' }}>
+            <input 
+              type="text" 
+              value={searchCity} 
+              onChange={(e) => setSearchCity(e.target.value)} 
+              placeholder="Digite o nome da cidade (mínimo 2 letras)..." 
+              style={{ width: '100%', padding: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px', marginBottom: '15px' }} 
+            />
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {searchCity.length < 2 && (
+                <p style={{ textAlign: 'center', color: '#999' }}>Digite pelo menos 2 letras para buscar</p>
+              )}
+              {filteredCities.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                  {filteredCities.map(city => (
+                    <button 
+                      key={city.id} 
+                      onClick={() => handleCitySelect(city)} 
+                      style={{ padding: '12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', textAlign: 'left' }}
+                    >
+                      {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchCity.length >= 2 && filteredCities.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#999' }}>Nenhuma cidade encontrada</p>
+              )}
             </div>
           </div>
         )}
