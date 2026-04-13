@@ -75,8 +75,6 @@ function Home() {
       setFilteredAuctions(auctions.filter(a => 
         a.status === 'ended' || new Date(a.ends_at) <= now
       ))
-    } else {
-      setFilteredAuctions(auctions)
     }
   }
 
@@ -113,9 +111,9 @@ function Home() {
       </div>
 
       <div style={{ padding: '60px 40px', textAlign: 'center' }}>
-        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>O LEILÃO DA SUA REGIÃO</h2>
+        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>COMPRE E VENDA!</h2>
         <h3 style={{ color: 'white', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{userCity} - {userState}</h3>
-        <p style={{ color: 'white', fontSize: '20px', margin: '0 0 30px 0' }}>automóveis, objetos, móveis e imóveis</p>
+        <p style={{ color: 'white', fontSize: '20px', margin: '0 0 30px 0' }}>serviços, objetos, móveis e imóveis</p>
         <button onClick={() => setShowCitySearch(!showCitySearch)} style={{ padding: '15px 30px', background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white', borderRadius: '15px', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>🔍 Buscar em outra cidade</button>
         
         {showCitySearch && (
@@ -131,15 +129,17 @@ function Home() {
       </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 40px' }}>
-        <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: '25px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: '24px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '30px' }}>+ CRIAR NOVO LEILÃO</button>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: '25px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: '24px', fontWeight: 'bold', cursor: 'pointer' }}>+ CRIAR NOVO LEILÃO</button>
+          <div style={{ fontSize: '14px', color: 'white', marginTop: '10px', fontWeight: 'normal' }}>clique e venda!</div>
+        </div>
 
         <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
           <button onClick={() => setFilter('active')} style={{ flex: 1, padding: '15px', background: filter === 'active' ? '#667eea' : 'white', color: filter === 'active' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>🔥 Ativos</button>
           <button onClick={() => setFilter('ended')} style={{ flex: 1, padding: '15px', background: filter === 'ended' ? '#667eea' : 'white', color: filter === 'ended' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>🏁 Encerrados</button>
-          <button onClick={() => setFilter('all')} style={{ flex: 1, padding: '15px', background: filter === 'all' ? '#667eea' : 'white', color: filter === 'all' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>📋 Todos</button>
         </div>
 
-        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>🔥 Leilões {filter === 'active' ? 'Ativos' : filter === 'ended' ? 'Encerrados' : ''}</h2>
+        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>🔥 Leilões {filter === 'active' ? 'Ativos' : 'Encerrados'}</h2>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
           {filteredAuctions.map(auction => (
