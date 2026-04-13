@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
+import logo from './assets/logo.png'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -8,61 +9,53 @@ function Login() {
   const [isLogin, setIsLogin] = useState(true)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault()
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        alert('Login realizado com sucesso!')
         navigate('/home')
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password })
+        const { error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
         alert('Conta criada! Faça login.')
         setIsLogin(true)
       }
     } catch (error) {
-      alert('Erro: ' + error.message)
+      alert(error.message)
     }
   }
 
   const handleFacebookLogin = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          redirectTo: window.location.origin + '/home'
-        }
-      })
-      if (error) throw error
-    } catch (error) {
-      alert('Erro ao conectar com Facebook: ' + error.message)
-    }
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: { redirectTo: window.location.origin + '/home' }
+    })
+    if (error) alert(error.message)
   }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-      <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', maxWidth: '400px', width: '100%' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '36px', color: '#667eea' }}>LEILÃO DO BAIRRO</h1>
-        <p style={{ textAlign: 'center', color: '#999', marginBottom: '30px' }}>compre e venda perto de você</p>
+      <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', width: '100%', maxWidth: '450px' }}>
         
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <img src={logo} alt="LEILÃO DO BAIRRO" style={{ width: '100%', maxWidth: '350px', height: 'auto', margin: '0 auto 20px' }} />
+        </div>
+
         <button onClick={handleFacebookLogin} style={{ width: '100%', padding: '15px', background: '#1877F2', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
           <span style={{ fontSize: '20px' }}>f</span> Entrar com Facebook
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }}></div>
-          <span style={{ padding: '0 10px', color: '#999', fontSize: '14px' }}>OU</span>
-          <div style={{ flex: 1, height: '1px', background: '#ddd' }}></div>
-        </div>
+        <div style={{ textAlign: 'center', margin: '20px 0', color: '#999', fontSize: '14px' }}>OU</div>
 
-        <form onSubmit={handleSubmit}>
-          <input type="email" placeholder="Seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%', padding: '15px', marginBottom: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} />
-          <input type="password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', padding: '15px', marginBottom: '20px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} />
-          <button type="submit" style={{ width: '100%', padding: '15px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}>{isLogin ? 'ENTRAR' : 'CRIAR CONTA'}</button>
-          <button type="button" onClick={() => setIsLogin(!isLogin)} style={{ width: '100%', padding: '15px', background: 'transparent', color: '#667eea', border: '2px solid #667eea', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>{isLogin ? 'CRIAR CONTA' : 'JÁ TENHO CONTA'}</button>
+        <form onSubmit={handleAuth}>
+          <input type="email" placeholder="Seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: '15px', marginBottom: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} required />
+          <input type="password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '15px', marginBottom: '20px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px' }} required />
+          <button type="submit" style={{ width: '100%', padding: '15px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px' }}>{isLogin ? 'ENTRAR' : 'CRIAR CONTA'}</button>
         </form>
+
+        <button onClick={() => setIsLogin(!isLogin)} style={{ width: '100%', padding: '15px', background: 'white', color: '#667eea', border: '2px solid #667eea', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>{isLogin ? 'CRIAR CONTA' : 'JÁ TENHO CONTA'}</button>
       </div>
     </div>
   )
