@@ -66,7 +66,8 @@ function NovoLeilao() {
                     initial_price: parseFloat(startingBid),
                     current_price: parseFloat(startingBid),
                     neighborhood, city: cityName, ends_at: endsAt,
-                    images: photos, seller_id: user.id, status: 'active'
+                    images: photos, seller_id: user.id, status: 'active',
+              latitude: -25.0916, longitude: -50.1668, state: 'PR'
           })
           if (error) { alert('Erro: ' + error.message) }
           else { alert('Leilao criado!'); navigate('/home') }
@@ -94,7 +95,7 @@ function NovoLeilao() {
                                              h('input', { style: inp, value: title, onChange: e => setTitle(e.target.value), placeholder: 'Ex: Sofa em otimo estado', required: true })
                                            ),
                                  h(Field, { label: 'Descricao' },
-                                             h('textarea', { style: { ...inp, height: '100px', resize: 'vertical' }, value: description, onChange: e => setDescription(e.target.value), placeholder: 'Descreva o item...' })
+                                             h('textarea', { key: 'desc-field', style: { ...inp, height: '100px', resize: 'vertical' }, inputMode: 'text', value: description, onChange: e => setDescription(e.target.value), placeholder: 'Descreva o item...' })
                                            ),
                                  h(Field, { label: 'Categoria' },
                                              h('select', { style: inp, value: category, onChange: e => setCategory(e.target.value) },
