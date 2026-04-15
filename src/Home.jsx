@@ -179,7 +179,7 @@ function Home() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
           {filteredAuctions.map(auction => (
-            <div key={auction.id} onClick={() => navigate(/leilao/)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+            <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
               {isEnded(auction) && (
                 <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#f44336', color: 'white', padding: '8px 15px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', zIndex: 10 }}>🏁 ENCERRADO</div>
               )}
