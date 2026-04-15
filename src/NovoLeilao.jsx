@@ -23,7 +23,7 @@ function NovoLeilao() {
           try {
                     const r = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome')
                     const d = await r.json()
-                    setAllCities(d.map(m => m.nome + ' - ' + m.microrregiao.mesorregiao.UF.sigla))
+                    setAllCities(d.map(m => m.nome + ' - ' + (m.microrregiao?.mesorregiao?.UF?.sigla || m['regiao-imediata']?.['regiao-intermediaria']?.UF?.sigla || '')).filter(s => s.trim() !== ' - '))
           } catch (e) {}
   }
 
