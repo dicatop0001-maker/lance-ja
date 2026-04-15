@@ -9,32 +9,27 @@ import MeusLeiloes from './MeusLeiloes'
 import VendedorPerfil from './VendedorPerfil'
 
 function PrivateRoute({ children }) {
-    const [session, setSession] = useState(undefined)
-
+  const [session, setSession] = useState(undefined)
   useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-                setSession(session)
-        })
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
   }, [])
-
   if (session === undefined) return null
-    return session ? children : <Navigate to="/" replace />
+  if (!session) return React.createElement(Navigate, { to: '/', replace: true })
+  return children
 }
 
 function App() {
-    return (
-          <Router>
-                <Routes>
-                        <Route path="/" element={<Login />} />
-                        <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>PrivateRoute>} />
-                                <Route path="/novo" element={<PrivateRoute><NovoLeilao /></PrivateRoute>PrivateRoute>} />
-                                        <Route path="/leilao/:id" element={<PrivateRoute><DetalhesLeilao /></PrivateRoute>PrivateRoute>} />
-                                                <Route path="/meus-leiloes" element={<PrivateRoute><MeusLeiloes /></PrivateRoute>PrivateRoute>} />
-                                                        <Route path="/vendedor/:sellerId" element={<VendedorPerfil />} />
-                                                        <Route path="*" element={<Navigate to="/" replace />} />
-                                                </Route>Routes>
-                                        </Route>Router>
-                                  )
-                                  }
-                                
-                                export default App</Router>
+  return React.createElement(Router, null,
+    React.createElement(Routes, null,
+      React.createElement(Route, { path: '/', element: React.createElement(Login) }),
+      React.createElement(Route, { path: '/home', element: React.createElement(PrivateRoute, null, React.createElement(Home)) }),
+      React.createElement(Route, { path: '/novo', element: React.createElement(PrivateRoute, null, React.createElement(NovoLeilao)) }),
+      React.createElement(Route, { path: '/leilao/:id', element: React.createElement(PrivateRoute, null, React.createElement(DetalhesLeilao)) }),
+      React.createElement(Route, { path: '/meus-leiloes', element: React.createElement(PrivateRoute, null, React.createElement(MeusLeiloes)) }),
+      React.createElement(Route, { path: '/vendedor/:sellerId', element: React.createElement(VendedorPerfil) }),
+      React.createElement(Route, { path: '*', element: React.createElement(Navigate, { to: '/', replace: true }) })
+    )
+  )
+}
+
+export default App
