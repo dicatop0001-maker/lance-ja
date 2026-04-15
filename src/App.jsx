@@ -26,7 +26,7 @@ function App() {
       React.createElement(Route, { path: '/novo', element: React.createElement(PrivateRoute, null, React.createElement(NovoLeilao)) }),
       React.createElement(Route, { path: '/leilao/:id', element: React.createElement(PrivateRoute, null, React.createElement(DetalhesLeilao)) }),
       React.createElement(Route, { path: '/meus-leiloes', element: React.createElement(PrivateRoute, null, React.createElement(MeusLeiloes)) }),
-      React.createElement(Route, { path: '/vendedor/:sellerId', element: React.createElement(VendedorPerfil) }),
+      React.createElement(Route, { path: '/vendedor/:sellerId', element: React.createElement(PrivateRoute, null, React.createElement(VendedorPerfil)) }),
       React.createElement(Route, { path: '*', element: React.createElement(Navigate, { to: '/', replace: true }) })
     )
   )
