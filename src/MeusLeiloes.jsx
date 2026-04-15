@@ -150,7 +150,7 @@ function MeusLeiloes() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
               {myAuctions.map(auction => (
-                <div key={auction.id} onClick={() => navigate(/leilao/)} style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                   <img src={auction.photos?.[0] || 'https://via.placeholder.com/250x150'} alt={auction.title} style={{ width: '100%', height: '150px', objectFit: 'cover' }} />
                   <div style={{ padding: '15px' }}>
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>{auction.title}</h3>
