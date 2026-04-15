@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import Login from './Login'
 import Home from './Home'
