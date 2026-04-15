@@ -63,10 +63,10 @@ function NovoLeilao() {
           const cityName = city.includes(' - ') ? city.split(' - ')[0] : city
           const { error } = await supabase.from('auctions').insert({
                     title, description, category,
-                    starting_bid: parseFloat(startingBid),
-                    current_bid: parseFloat(startingBid),
+                    initial_price: parseFloat(startingBid),
+                    current_price: parseFloat(startingBid),
                     neighborhood, city: cityName, ends_at: endsAt,
-                    photos, user_id: user.id, seller_email: user.email, status: 'active'
+                    images: photos, seller_id: user.id, status: 'active'
           })
           if (error) { alert('Erro: ' + error.message) }
           else { alert('Leilao criado!'); navigate('/home') }
