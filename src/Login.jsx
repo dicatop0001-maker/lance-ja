@@ -7,7 +7,7 @@ import './styles.css'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(true)h
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -83,7 +83,7 @@ function Login() {
             alt="LEILÃO DO BAIRRO" 
             style={{ 
               width: '100%', 
-              maxWidth: '320px', 
+              maxWidth: '500px', 
               height: 'auto',
               animation: 'fadeIn 0.6s ease-out'
             }} 
