@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import { useParams, useNavigate } from 'react-router-dom'
 import Chat from './Chat'
 
-function DetalhesLeilao({ auctionId, user, onBack }) {
+function DetalhesLeilao() {
+  const { id: auctionId } = useParams()
+  const navigate = useNavigate()
+  const [user, setUser] = useState(null)
   const [auction, setAuction] = useState(null)
   const [bids, setBids] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,6 +17,7 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   const [showChat, setShowChat] = useState(false)
 
   useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user))
     loadData()
     const unsubscribe = subscribeToNewBids()
     return () => {
@@ -136,8 +141,8 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
       alert('Erro: ' + error.message)
     } else {
       await supabase.from('auctions').update({ current_price: amount }).eq('id', auctionId)
-      await createNotification(auction.seller_id, 'ðŸ”¨ Novo lance de R$ ' + amount.toFixed(2) + ' no leilÃ£o: ' + auction.title)
-      alert('ðŸŽ‰ Lance enviado!')
+      await createNotification(auction.seller_id, 'Ã°Å¸âÂ¨ Novo lance de R$ ' + amount.toFixed(2) + ' no leilÃÂ£o: ' + auction.title)
+      alert('Ã°Å¸Å½â° Lance enviado!')
       setBidValue('')
       loadAuction()
       loadBids()
@@ -145,7 +150,7 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   }
 
   if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
-  if (!auction) return <div style={{ padding: '40px', textAlign: 'center' }}>LeilÃ£o nÃ£o encontrado</div>
+  if (!auction) return <div style={{ padding: '40px', textAlign: 'center' }}>LeilÃÂ£o nÃÂ£o encontrado</div>
 
   const hasImages = auction.images && auction.images.length > 0
   const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
@@ -153,8 +158,8 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
-        <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', marginRight: '15px' }}>â† Voltar</button>
-        <span style={{ fontSize: '24px', fontWeight: 'bold' }}>Detalhes do LeilÃ£o</span>
+        <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', marginRight: '15px' }}>Ã¢â Â Voltar</button>
+        <span style={{ fontSize: '24px', fontWeight: 'bold' }}>Detalhes do LeilÃÂ£o</span>
       </div>
       <div style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
         <div>
@@ -174,14 +179,14 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
               )}
             </div>
           ) : (
-            <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '120px', marginBottom: '20px' }}>ðŸ“¦</div>
+            <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '120px', marginBottom: '20px' }}>Ã°Å¸âÂ¦</div>
           )}
           <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginTop: '20px' }}>
             <h1 style={{ margin: '0 0 20px 0', fontSize: '32px' }}>{auction.title}</h1>
-            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '20px' }}>{auction.description || 'Sem descriÃ§Ã£o'}</p>
+            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '20px' }}>{auction.description || 'Sem descriÃÂ§ÃÂ£o'}</p>
             <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '20px' }}>
               <div style={{ marginBottom: '10px' }}><strong>Categoria:</strong> {auction.category}</div>
-              <div style={{ marginBottom: '10px' }}><strong>LocalizaÃ§Ã£o:</strong> {auction.neighborhood}, {auction.city} - {auction.state}</div>
+              <div style={{ marginBottom: '10px' }}><strong>LocalizaÃÂ§ÃÂ£o:</strong> {auction.neighborhood}, {auction.city} - {auction.state}</div>
               <div style={{ marginBottom: '10px' }}><strong>Criado em:</strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>
             </div>
           </div>
@@ -193,27 +198,27 @@ function DetalhesLeilao({ auctionId, user, onBack }) {
             <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '30px', color: isEnded ? '#f44336' : '#333' }}>
               {new Date(auction.ends_at).toLocaleString('pt-BR')}
-              {isEnded && <span style={{ fontSize: '16px', color: '#f44336', marginLeft: '10px' }}>ðŸ ENCERRADO</span>}
+              {isEnded && <span style={{ fontSize: '16px', color: '#f44336', marginLeft: '10px' }}>Ã°Å¸ÂÂ ENCERRADO</span>}
             </div>
             {!isEnded && auction.seller_id !== user.id && (
               <form onSubmit={handleBid}>
-                <input type="number" value={bidValue} onChange={(e) => setBidValue(e.target.value)} placeholder={'MÃ­nimo: R$ ' + (auction.current_price + 0.01).toFixed(2)} step="0.01" required style={{ width: '100%', padding: '15px', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: '18px', boxSizing: 'border-box', marginBottom: '15px' }} />
-                <button type="submit" style={{ width: '100%', padding: '20px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>ðŸ”¨ DAR LANCE</button>
+                <input type="number" value={bidValue} onChange={(e) => setBidValue(e.target.value)} placeholder={'MÃÂ­nimo: R$ ' + (auction.current_price + 0.01).toFixed(2)} step="0.01" required style={{ width: '100%', padding: '15px', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: '18px', boxSizing: 'border-box', marginBottom: '15px' }} />
+                <button type="submit" style={{ width: '100%', padding: '20px', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Ã°Å¸âÂ¨ DAR LANCE</button>
               </form>
             )}
             {!isEnded && auction.seller_id === user.id && (
-              <div style={{ background: '#fff3e0', padding: '20px', borderRadius: '10px', textAlign: 'center', color: '#f57c00' }}>VocÃª Ã© o vendedor deste leilÃ£o</div>
+              <div style={{ background: '#fff3e0', padding: '20px', borderRadius: '10px', textAlign: 'center', color: '#f57c00' }}>VocÃÂª ÃÂ© o vendedor deste leilÃÂ£o</div>
             )}
           </div>
           <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 20px 0' }}>ðŸ“Š HistÃ³rico de Lances ({bids.length})</h3>
+            <h3 style={{ margin: '0 0 20px 0' }}>Ã°Å¸âÅ  HistÃÂ³rico de Lances ({bids.length})</h3>
             {bids.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda</div>
             ) : (
               <div>{bids.map((bid, i) => (
                 <div key={bid.id} style={{ padding: '15px', background: i === 0 ? '#f0f5ff' : '#f9f9f9', borderRadius: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 'bold' }}>{bid.users?.name || bid.users?.email || 'AnÃ´nimo'}</div>
+                    <div style={{ fontWeight: 'bold' }}>{bid.users?.name || bid.users?.email || 'AnÃÂ´nimo'}</div>
                     <div style={{ fontSize: '12px', color: '#999' }}>{new Date(bid.created_at).toLocaleString('pt-BR')}</div>
                   </div>
                   <div style={{ fontSize: '20px', fontWeight: 'bold', color: i === 0 ? '#667eea' : '#333' }}>R$ {bid.amount.toFixed(2)}</div>
