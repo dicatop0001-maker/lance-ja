@@ -7,7 +7,7 @@ import './styles.css'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isLogin, setIsLogin] = useState(true)h
+  const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
