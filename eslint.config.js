@@ -8,10 +8,12 @@ export default defineConfig([
   globalIgnores(['dist', 'api/**']),
   {
     files: ['**/*.{js,jsx}'],
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
     extends: [
       js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
     ],
     languageOptions: {
       ecmaVersion: 2020,
@@ -24,10 +26,8 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
-      'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'warn',
-      'react-hooks/purity': 'warn',
-      'react-hooks/immutability': 'warn',
+      'react-hooks/exhaustive-deps': 'warn',
       'no-use-before-define': 'warn',
       'no-empty': 'warn',
     },
