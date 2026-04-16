@@ -1,4 +1,4 @@
-💰📅🎯📱import { useState } from 'react'
+import  { useState } from 'react'
 import { supabase } from './supabaseClient'
 
 function PaymentModal({ user, auction, amount, plan, onClose, onSuccess }) {
