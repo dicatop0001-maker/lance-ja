@@ -23,6 +23,21 @@ const blinkStyle = `
   animation: bounce 0.8s ease-in-out infinite;
   font-size: 2em;
 }
+
+@media (max-width: 599px) {
+  .navbar-mobile-row {
+    flex-direction: column !important;
+  }
+  .navbar-mobile-logo-full {
+    flex: 1 1 100% !important;
+    order: -1 !important;
+    justify-content: center !important;
+  }
+  .navbar-mobile-btns {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
 `
 
 function Home() {
@@ -140,40 +155,44 @@ function Home() {
       {/* NAVBAR */}
       <nav style={{
         padding: '10px 16px',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
-        justifyContent: 'space-between',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: 'blur(8px)',
-        gap: '10px'
+        gap: '10px',
+        minHeight: '100px'
       }}>
-
-        {/* ESQUERDA */}
-        <div style={{ display: 'flex', alignItems: 'center', order: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <button
             onClick={() => navigate('/meus-leiloes')}
             style={{
-              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
-              background: '#1e3a8a', color: 'white',
-              border: '3px solid #4a90d9', borderRadius: '50px',
-              cursor: 'pointer', fontWeight: 'bold',
-              fontSize: 'clamp(12px,1.8vw,16px)', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+              padding: '14px 28px',
+              background: '#1e3a8a',
+              color: 'white',
+              border: '3px solid #4a90d9',
+              borderRadius: '50px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
+              letterSpacing: '0.5px'
             }}
-          >Meus Leiloes</button>
+          >
+            Meus Leiloes
+          </button>
         </div>
 
-        {/* LOGO CENTRO */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '1 1 200px', order: 2 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <img
             src="/logo-leilao.png"
             alt="Leilao do Bairro"
             style={{
-              height: 'clamp(65px,18vw,200px)',
-              maxWidth: 'clamp(160px,65vw,500px)',
-              objectFit: 'contain', borderRadius: '10px',
+              height: 'clamp(160px, 28vw, 360px)',
+              maxWidth: '60vw',
+              objectFit: 'contain',
+              borderRadius: '10px',
               cursor: 'pointer',
               filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))'
             }}
@@ -181,22 +200,27 @@ function Home() {
           />
         </div>
 
-        {/* DIREITA */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', order: 3 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <Notifications user={user} />
           <button
             onClick={handleLogout}
             style={{
-              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
-              background: '#1e3a8a', color: 'white',
-              border: '3px solid #4a90d9', borderRadius: '50px',
-              cursor: 'pointer', fontWeight: 'bold',
-              fontSize: 'clamp(12px,1.8vw,16px)', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+              padding: '14px 28px',
+              background: '#1e3a8a',
+              color: 'white',
+              border: '3px solid #4a90d9',
+              borderRadius: '50px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
+              letterSpacing: '0.5px'
             }}
-          >Sair</button>
+          >
+            Sair
+          </button>
         </div>
-
       </nav>
 
       {/* HERO */}
