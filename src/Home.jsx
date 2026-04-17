@@ -229,27 +229,12 @@ function Home() {
               { val: 'moveis', label: 'Moveis' },
               { val: 'imoveis', label: 'Imoveis' },
               { val: 'outros', label: 'Outros' },
-              { val: 'servicos', label: 'Servicos' }
+              { val: 'servicos', label: 'Servicos (lance menor vence)' }
             ].map(cat => (
               <button key={cat.val} onClick={() => setSelectedCategory(cat.val)} style={{ padding: '7px 16px', borderRadius: '20px', border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)', background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)', color: 'white', fontWeight: selectedCategory === cat.val ? 'bold' : 'normal', fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 {cat.label}
               </button>
             ))}
-          </div>
-          {/* BOTOES DESTAQUE — ELETRONICOS E SERVICOS */}
-          <div style={{ marginTop: '10px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setSelectedCategory(selectedCategory === 'eletronicos' ? '' : 'eletronicos')}
-              style={{ padding: '10px 36px', borderRadius: '30px', border: selectedCategory === 'eletronicos' ? '2px solid white' : '2px solid rgba(255,255,255,0.5)', background: selectedCategory === 'eletronicos' ? '#15803d' : 'rgba(21,128,61,0.45)', color: 'white', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(21,128,61,0.4)', letterSpacing: '0.5px', minWidth: '260px' }}
-            >
-              📱 Eletronicos, Maquinas, Celulares
-            </button>
-            <button
-              onClick={() => setSelectedCategory(selectedCategory === 'servicos' ? '' : 'servicos')}
-              style={{ padding: '10px 36px', borderRadius: '30px', border: selectedCategory === 'servicos' ? '2px solid white' : '2px solid rgba(255,255,255,0.5)', background: selectedCategory === 'servicos' ? '#1e3a8a' : 'rgba(30,58,138,0.45)', color: 'white', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.4)', letterSpacing: '0.5px', minWidth: '260px' }}
-            >
-              🔧 Servicos (lance menor vence)
-            </button>
           </div>
         </div>
         {loading ? (
