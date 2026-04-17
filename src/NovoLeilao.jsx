@@ -97,8 +97,33 @@ function NovoLeilao() {
               style={{ ...inp, height: '100px', resize: 'vertical' }}
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Descreva o item..."
+              placeholder={category === 'servicos' ? 'Ex: 20m2 de grama para cortar | 3 comodos para pintar | 15m2 ceramica para instalar...' : 'Descreva o item...'}
             />
+            {category === 'servicos' && (
+              <div style={{
+                marginTop: '10px',
+                padding: '14px 16px',
+                background: '#eff6ff',
+                border: '2px solid #1e3a8a',
+                borderRadius: '12px',
+                fontSize: '14px',
+                color: '#1e3a8a'
+              }}>
+                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  🔧 SERVICOS — O MENOR LANCE VENCE!
+                </div>
+                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
+                  Descreva exatamente o servico com medidas ou quantidade:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
+                  <li>20 metros quadrados de grama para cortar</li>
+                  <li>20 metros quadrados de parede para pintar</li>
+                  <li>20 metros quadrados de ceramica para instalar</li>
+                  <li>Limpeza de 3 comodos + banheiro</li>
+                  <li>Instalacao de 2 ar condicionado split</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div>
             <label style={lbl}>Categoria</label>
@@ -107,7 +132,7 @@ function NovoLeilao() {
               <option value="eletronicos">Eletronicos</option>
               <option value="moveis">Moveis</option>
               <option value="imoveis">Imoveis</option>
-              <option value="servicos">Servicos</option>
+              <option value="servicos">Servicos (menor lance vence)</option>
               <option value="objetos">Objetos</option>
               <option value="outros">Outros</option>
             </select>
