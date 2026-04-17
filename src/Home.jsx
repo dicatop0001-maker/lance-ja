@@ -155,13 +155,14 @@ function Home() {
       {/* NAVBAR */}
       <nav style={{
         padding: '10px 16px',
-        display: 'grid',
-        gridTemplateColumns: '1fr auto 1fr',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
+        justifyContent: 'space-between',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: 'blur(8px)',
-        gap: '10px',
-        minHeight: '100px'
+        gap: '8px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <button
