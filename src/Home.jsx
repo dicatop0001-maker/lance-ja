@@ -140,44 +140,40 @@ function Home() {
       {/* NAVBAR */}
       <nav style={{
         padding: '10px 16px',
-        display: 'grid',
-        gridTemplateColumns: '1fr auto 1fr',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         alignItems: 'center',
+        justifyContent: 'space-between',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: 'blur(8px)',
-        gap: '10px',
-        minHeight: '100px'
+        gap: '10px'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+
+        {/* ESQUERDA */}
+        <div style={{ display: 'flex', alignItems: 'center', order: 1 }}>
           <button
             onClick={() => navigate('/meus-leiloes')}
             style={{
-              padding: '14px 28px',
-              background: '#1e3a8a',
-              color: 'white',
-              border: '3px solid #4a90d9',
-              borderRadius: '50px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-              letterSpacing: '0.5px'
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(12px,1.8vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
             }}
-          >
-            Meus Leiloes
-          </button>
+          >Meus Leiloes</button>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* LOGO CENTRO */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '1 1 200px', order: 2 }}>
           <img
             src="/logo-leilao.png"
             alt="Leilao do Bairro"
             style={{
-              height: 'clamp(160px, 28vw, 360px)',
-              maxWidth: '60vw',
-              objectFit: 'contain',
-              borderRadius: '10px',
+              height: 'clamp(65px,18vw,200px)',
+              maxWidth: 'clamp(160px,65vw,500px)',
+              objectFit: 'contain', borderRadius: '10px',
               cursor: 'pointer',
               filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))'
             }}
@@ -185,27 +181,22 @@ function Home() {
           />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        {/* DIREITA */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', order: 3 }}>
           <Notifications user={user} />
           <button
             onClick={handleLogout}
             style={{
-              padding: '14px 28px',
-              background: '#1e3a8a',
-              color: 'white',
-              border: '3px solid #4a90d9',
-              borderRadius: '50px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-              letterSpacing: '0.5px'
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(12px,1.8vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
             }}
-          >
-            Sair
-          </button>
+          >Sair</button>
         </div>
+
       </nav>
 
       {/* HERO */}
