@@ -76,7 +76,7 @@ function DetalhesLeilao() {
 
   const loadAuction = async () => {
     const { data, error } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
-    if (error) console.error('Erro ao carregar leilao:', error.message)
+    if (error) console.error('Erro ao carregar leilão:', error.message)
     if (data) setAuction(data)
     setLoading(false)
   }
@@ -191,13 +191,13 @@ function DetalhesLeilao() {
 
   const handleBid = async (e) => {
     e.preventDefault()
-    if (!user) { alert('Voce precisa estar logado para dar um lance!'); return }
+    if (!user) { alert('Você precisa estar logado para dar um lance!'); return }
     if (!auction) return
     const amount = parseFloat(bidValue)
     if (isServico) {
-      if (isNaN(amount) || amount <= 0) { alert('Digite um valor valido!'); return }
+      if (isNaN(amount) || amount <= 0) { alert('Digite um valor válido!'); return }
       if (amount >= auction.current_price) {
-        alert('Para servicos o MENOR lance vence! Seu lance deve ser MENOR que R$ ' + auction.current_price.toFixed(2))
+        alert('Para serviços o MENOR lance vence! Seu lance deve ser MENOR que R$ ' + auction.current_price.toFixed(2))
         return
       }
     } else {
@@ -219,10 +219,10 @@ function DetalhesLeilao() {
       .from('auctions')
       .update({ current_price: amount })
       .eq('id', auctionId)
-    if (updateError) { console.error('Erro ao atualizar preco:', updateError.message) }
+    if (updateError) { console.error('Erro ao atualizar preço:', updateError.message) }
     await createNotification(
       auction.seller_id,
-      'Novo lance de R$ ' + amount.toFixed(2) + ' no leilao: ' + auction.title
+      'Novo lance de R$ ' + amount.toFixed(2) + ' no leilão: ' + auction.title
     )
     setBidLoading(false)
     setBidValue('')
@@ -239,7 +239,7 @@ function DetalhesLeilao() {
 
   if (!auction) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
-      <div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div>
+      <div style={{ fontSize: '18px', color: '#666' }}>Leilão não encontrado</div>
     </div>
   )
 
@@ -247,8 +247,8 @@ function DetalhesLeilao() {
   const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
   const isSeller = user && auction.seller_id === user.id
   const bidPlaceholder = isServico
-    ? 'Lance maximo: R$ ' + (auction.current_price - 0.01).toFixed(2)
-    : 'Minimo: R$ ' + (auction.current_price + 0.01).toFixed(2)
+    ? 'Lance máximo: R$ ' + (auction.current_price - 0.01).toFixed(2)
+    : 'Mínimo: R$ ' + (auction.current_price + 0.01).toFixed(2)
 
   const userBids = bids.filter(b => b.user_id === user?.id)
   const isWinner = bids.length > 0 && bids[0].user_id === user?.id
@@ -258,12 +258,12 @@ function DetalhesLeilao() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', overflowX: 'hidden' }}>
       <style>{detalhesStyle}</style>
 
-      {/* CABECALHO */}
+      {/* CABEÇALHO */}
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '16px 20px', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' }}>
           &larr; Voltar
         </button>
-        <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>Detalhes do Leilao</span>
+        <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>Detalhes do Leilão</span>
       </div>
 
       {/* GRID RESPONSIVO */}
@@ -291,10 +291,10 @@ function DetalhesLeilao() {
           )}
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginTop: '16px' }}>
             <h1 style={{ margin: '0 0 16px 0', fontSize: 'clamp(20px, 5vw, 32px)', wordBreak: 'break-word' }}>{auction.title}</h1>
-            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descricao'}</p>
+            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descrição'}</p>
             <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '16px' }}>
               <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Categoria:</strong> {auction.category}</div>
-              <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Localizacao:</strong> {auction.neighborhood ? auction.neighborhood + ', ' : ''}{auction.city} - {auction.state}</div>
+              <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Localização:</strong> {auction.neighborhood ? auction.neighborhood + ', ' : ''}{auction.city} - {auction.state}</div>
               <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Criado em:</strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>
             </div>
           </div>
@@ -305,7 +305,7 @@ function DetalhesLeilao() {
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
             {isServico && (
               <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
-                🔧 SERVICO — O MENOR LANCE VENCE!
+                🔧 SERVIÇO — O MENOR LANCE VENCE!
               </div>
             )}
             <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isServico ? 'Menor lance atual' : 'Lance atual'}</div>
@@ -339,17 +339,17 @@ function DetalhesLeilao() {
 
             {!isEnded && isSeller && (
               <div style={{ background: '#fff3e0', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f57c00', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
-                Voce e o vendedor deste leilao
+                Você é o vendedor deste leilão
               </div>
             )}
 
             {isEnded && (
               <div style={{ background: '#ffeaea', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f44336', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
-                Este leilao foi encerrado
+                Este leilão foi encerrado
               </div>
             )}
 
-            {/* BOTAO LIBERAR CHAT PARA TODOS — so aparece para o vendedor apos encerrar */}
+            {/* BOTÃO LIBERAR CHAT PARA TODOS — só aparece para o vendedor após encerrar */}
             {isEnded && isSeller && bids.length > 0 && (
               <div style={{ marginTop: '16px' }}>
                 {chatUnlockedForAll ? (
@@ -369,9 +369,9 @@ function DetalhesLeilao() {
             )}
           </div>
 
-          {/* HISTORICO DE LANCES */}
+          {/* HISTÓRICO DE LANCES */}
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Histórico de Lances (<span translate="no">{bids.length}</span>)</h3>
             {bids.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#999', padding: '20px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>Nenhum lance ainda. Seja o primeiro!</div>
             ) : (
@@ -380,7 +380,7 @@ function DetalhesLeilao() {
                   <div key={bid.id} style={{ padding: 'clamp(10px, 3vw, 15px)', background: i === 0 ? '#f0fff4' : '#f9f9f9', borderRadius: '10px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {bid.users?.name || bid.users?.email || 'Anonimo'}
+                        {bid.users?.name || bid.users?.email || 'Anônimo'}
                       </div>
                       <div style={{ fontSize: 'clamp(11px, 3vw, 12px)', color: '#999' }}>
                         {new Date(bid.created_at).toLocaleString('pt-BR')}
@@ -400,7 +400,7 @@ function DetalhesLeilao() {
             <Chat auction={auction} user={user} otherUser={otherUser} canChat={canChat} />
           )}
 
-          {/* CHAT PARA NAO-VENCEDORES quando vendedor liberou para todos */}
+          {/* CHAT PARA NÃO-VENCEDORES quando vendedor liberou para todos */}
           {isEnded && chatUnlockedForAll && isNonWinnerBidder && user && (
             <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)', marginTop: '16px' }}>
               <div style={{ background: '#e8f5e9', padding: '12px 16px', borderRadius: '10px', marginBottom: '16px', fontSize: 'clamp(13px, 3.5vw, 15px)', color: '#2e7d32', fontWeight: 'bold' }}>
