@@ -12,30 +12,40 @@ function Notifications({ user }) {
 
     loadNotifications()
 
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current)
-      channelRef.current = null
-    }
-
-    const channel = supabase
-      .channel('notifications-' + user.id)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'notifications',
-        filter: 'user_id=eq.' + user.id
-      }, () => {
-        loadNotifications()
-      })
-      .subscribe()
-
-    channelRef.current = channel
-
-    return () => {
+    // Cleanup existing subscription before creating new one
+    try {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current)
         channelRef.current = null
       }
+    } catch (e) {}
+
+    // Create new subscription with try/catch guard
+    try {
+      const channel = supabase
+        .channel('notifications-' + user.id + '-' + Date.now())
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: 'user_id=eq.' + user.id
+        }, () => {
+          loadNotifications()
+        })
+        .subscribe()
+
+      channelRef.current = channel
+    } catch (e) {
+      console.log('Notification subscription skipped:', e.message)
+    }
+
+    return () => {
+      try {
+        if (channelRef.current) {
+          supabase.removeChannel(channelRef.current)
+          channelRef.current = null
+        }
+      } catch (e) {}
     }
   }, [user])
 
