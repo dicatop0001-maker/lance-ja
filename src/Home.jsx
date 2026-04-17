@@ -54,10 +54,7 @@ function Home() {
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      navigate('/')
-      return
-    }
+    if (!session) { navigate('/'); return }
     setUser(session.user)
   }
 
@@ -118,43 +115,153 @@ function Home() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.1)' }}>
-        <h1 style={{ color: 'white', margin: 0, fontSize: '32px', fontWeight: 'bold' }}>LEILAO DO BAIRRO</h1>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <button onClick={() => navigate('/meus-leiloes')} style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Meus Leiloes</button>
-          <Notifications user={user} />
-          <button onClick={handleLogout} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Sair</button>
-        </div>
-      </div>
 
-      <div style={{ padding: '60px 40px', textAlign: 'center' }}>
-        <h2 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '2px' }}>COMPRE E VENDA PERTO DE VOCE</h2>
-        <h3 style={{ color: 'white', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{userCity} - {userState}</h3>
-        <p style={{ color: 'white', fontSize: '20px', margin: '0 0 30px 0' }}>servicos, objetos, moveis e imoveis</p>
-        <button onClick={() => setShowCitySearch(!showCitySearch)} style={{ padding: '15px 30px', background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white', borderRadius: '15px', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>Buscar em outra cidade</button>
+      {/* NAVBAR */}
+      <nav style={{
+        padding: '12px 20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: 'rgba(255,255,255,0.12)',
+        backdropFilter: 'blur(8px)',
+        flexWrap: 'wrap',
+        gap: '10px'
+      }}>
+        {/* LOGO */}
+        <img
+          src="/logo-leilao.png"
+          alt="Leilão do Bairro"
+          style={{
+            height: '56px',
+            maxWidth: '220px',
+            objectFit: 'contain',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+          onClick={() => navigate('/home')}
+        />
+
+        {/* BOTÕES NAVBAR */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => navigate('/meus-leiloes')}
+            style={{
+              padding: '12px 22px',
+              background: 'rgba(255,255,255,0.25)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.8)',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '15px',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Meus Leilões
+          </button>
+          <Notifications user={user} />
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '12px 22px',
+              background: 'rgba(255,255,255,0.25)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.8)',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '15px',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Sair
+          </button>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <div style={{ padding: '30px 20px 10px', textAlign: 'center' }}>
+        <h3 style={{
+          color: 'white',
+          fontSize: 'clamp(32px, 7vw, 60px)',
+          fontWeight: 'bold',
+          margin: '0 0 6px 0'
+        }}>
+          {userCity} – {userState}
+        </h3>
+        <p style={{
+          color: 'rgba(255,255,255,0.9)',
+          fontSize: 'clamp(14px, 2.5vw, 20px)',
+          margin: '0 0 20px 0'
+        }}>
+          veículos, objetos, móveis e imóveis
+        </p>
+
+        {/* BOTÃO BUSCAR CIDADE */}
+        <button
+          onClick={() => setShowCitySearch(!showCitySearch)}
+          style={{
+            padding: '14px 28px',
+            background: 'rgba(255,255,255,0.3)',
+            color: 'white',
+            border: '2px solid white',
+            borderRadius: '15px',
+            fontSize: 'clamp(14px, 2vw, 18px)',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            marginBottom: '16px'
+          }}
+        >
+          Buscar em outra cidade
+        </button>
 
         {showCitySearch && (
-          <div style={{ marginTop: '20px', background: 'white', borderRadius: '15px', padding: '20px', maxWidth: '600px', margin: '20px auto' }}>
+          <div style={{
+            marginTop: '10px',
+            background: 'white',
+            borderRadius: '15px',
+            padding: '20px',
+            maxWidth: '600px',
+            margin: '10px auto 0'
+          }}>
             <input
               type="text"
               value={searchCity}
               onChange={(e) => setSearchCity(e.target.value)}
-              placeholder="Digite o nome da cidade (minimo 2 letras)..."
-              style={{ width: '100%', padding: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px', marginBottom: '15px', boxSizing: 'border-box' }}
+              placeholder="Digite o nome da cidade (mínimo 2 letras)..."
+              style={{
+                width: '100%',
+                padding: '15px',
+                border: '2px solid #ddd',
+                borderRadius: '10px',
+                fontSize: '16px',
+                marginBottom: '15px',
+                boxSizing: 'border-box'
+              }}
             />
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
               {searchCity.length < 2 && (
                 <p style={{ textAlign: 'center', color: '#999' }}>Digite pelo menos 2 letras para buscar</p>
               )}
               {filteredCities.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
                   {filteredCities.map(city => (
                     <button
                       key={city.id}
                       onClick={() => handleCitySelect(city)}
-                      style={{ padding: '12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', textAlign: 'left' }}
+                      style={{
+                        padding: '12px',
+                        background: '#667eea',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        textAlign: 'left'
+                      }}
                     >
-                      {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
+                      {city.nome} – {city.microrregiao.mesorregiao.UF.sigla}
                     </button>
                   ))}
                 </div>
@@ -167,37 +274,118 @@ function Home() {
         )}
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 40px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: '25px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: '24px', fontWeight: 'bold', cursor: 'pointer' }}>+ CRIAR NOVO LEILAO</button>
-          <div style={{ fontSize: '14px', color: 'white', marginTop: '10px', fontWeight: 'normal' }}>clique e venda!</div>
+      {/* CONTEÚDO PRINCIPAL */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
+
+        {/* BOTÃO CRIAR NOVO LEILÃO */}
+        <div style={{ marginBottom: '20px' }}>
+          <button
+            onClick={() => navigate('/novo')}
+            style={{
+              width: '100%',
+              padding: 'clamp(16px, 3vw, 25px)',
+              background: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '15px',
+              fontSize: 'clamp(18px, 3vw, 24px)',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            + CRIAR NOVO LEILÃO
+          </button>
+          <div style={{ fontSize: '14px', color: 'white', marginTop: '8px', textAlign: 'center' }}>
+            clique e venda!
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
-          <button onClick={() => setFilter('active')} style={{ flex: 1, padding: '15px', background: filter === 'active' ? '#667eea' : 'white', color: filter === 'active' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Ativos</button>
-          <button onClick={() => setFilter('ended')} style={{ flex: 1, padding: '15px', background: filter === 'ended' ? '#667eea' : 'white', color: filter === 'ended' ? 'white' : '#333', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Encerrados</button>
+        {/* FILTROS */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+          <button
+            onClick={() => setFilter('active')}
+            style={{
+              flex: 1,
+              padding: '14px',
+              background: filter === 'active' ? '#667eea' : 'white',
+              color: filter === 'active' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: 'clamp(15px, 2vw, 18px)',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            Ativos
+          </button>
+          <button
+            onClick={() => setFilter('ended')}
+            style={{
+              flex: 1,
+              padding: '14px',
+              background: filter === 'ended' ? '#667eea' : 'white',
+              color: filter === 'ended' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: 'clamp(15px, 2vw, 18px)',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            Encerrados
+          </button>
         </div>
 
-        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>Leiloes {filter === 'active' ? 'Ativos' : 'Encerrados'}</h2>
+        <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '20px' }}>
+          Leilões {filter === 'active' ? 'Ativos' : 'Encerrados'}
+        </h2>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>Carregando leiloes...</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>
+            Carregando leilões...
+          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '20px'
+          }}>
             {filteredAuctions.map(auction => (
-              <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+              <div
+                key={auction.id}
+                onClick={() => navigate('/leilao/' + auction.id)}
+                style={{
+                  background: 'white',
+                  borderRadius: '15px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  position: 'relative'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              >
                 {isEnded(auction) && (
-                  <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#f44336', color: 'white', padding: '8px 15px', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', zIndex: 10 }}>ENCERRADO</div>
+                  <div style={{
+                    position: 'absolute', top: '10px', right: '10px',
+                    background: '#f44336', color: 'white',
+                    padding: '6px 12px', borderRadius: '8px',
+                    fontWeight: 'bold', fontSize: '13px', zIndex: 10
+                  }}>
+                    ENCERRADO
+                  </div>
                 )}
-                <img src={auction.images?.[0] || 'https://via.placeholder.com/300x200'} alt={auction.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-                <div style={{ padding: '20px' }}>
-                  <h3 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>{auction.title}</h3>
-                  <p style={{ color: '#666', marginBottom: '15px' }}>{auction.city}</p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: '14px', color: '#999' }}>Lance atual</div>
-                      <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#667eea' }}>R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                    </div>
+                <img
+                  src={auction.images?.[0] || 'https://via.placeholder.com/300x200'}
+                  alt={auction.title}
+                  style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+                />
+                <div style={{ padding: '16px' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: 'clamp(16px, 2vw, 20px)' }}>{auction.title}</h3>
+                  <p style={{ color: '#666', marginBottom: '12px', fontSize: '14px' }}>{auction.city}</p>
+                  <div style={{ fontSize: '13px', color: '#999' }}>Lance atual</div>
+                  <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: '#667eea' }}>
+                    R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>
@@ -206,8 +394,13 @@ function Home() {
         )}
 
         {!loading && filteredAuctions.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.1)', borderRadius: '15px' }}>
-            <p style={{ color: 'white', fontSize: '24px' }}>Nenhum leilao encontrado em {userCity}</p>
+          <div style={{
+            textAlign: 'center', padding: '60px',
+            background: 'rgba(255,255,255,0.1)', borderRadius: '15px'
+          }}>
+            <p style={{ color: 'white', fontSize: '22px' }}>
+              Nenhum leilão encontrado em {userCity}
+            </p>
           </div>
         )}
       </div>
