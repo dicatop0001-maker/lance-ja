@@ -3,11 +3,32 @@ import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
 
+const blinkStyle = `
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.aviso-lance {
+  animation: blink 1.2s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.mao-bounce {
+  display: inline-block;
+  animation: bounce 0.8s ease-in-out infinite;
+  font-size: 2em;
+}
+`
+
 function Home() {
   const [user, setUser] = useState(null)
   const [auctions, setAuctions] = useState([])
-  const [filteredAuctions, setFilteredAuctions] = useState([])
-  const [filter, setFilter] = useState('active')
+  const [activeAuctions, setActiveAuctions] = useState([])
   const [userCity, setUserCity] = useState('Ponta Grossa')
   const [userState, setUserState] = useState('PR')
   const [searchCity, setSearchCity] = useState('')
@@ -28,8 +49,13 @@ function Home() {
   }, [user, userCity])
 
   useEffect(() => {
-    filterAuctions()
-  }, [auctions, filter])
+    const now = new Date()
+    setActiveAuctions(
+      auctions.filter(a =>
+        (a.status === 'active' || !a.status) && new Date(a.ends_at) > now
+      )
+    )
+  }, [auctions])
 
   useEffect(() => {
     if (searchCity.length >= 2) {
@@ -82,19 +108,6 @@ function Home() {
     setLoading(false)
   }
 
-  const filterAuctions = () => {
-    const now = new Date()
-    if (filter === 'active') {
-      setFilteredAuctions(auctions.filter(a =>
-        (a.status === 'active' || !a.status) && new Date(a.ends_at) > now
-      ))
-    } else if (filter === 'ended') {
-      setFilteredAuctions(auctions.filter(a =>
-        a.status === 'ended' || new Date(a.ends_at) <= now
-      ))
-    }
-  }
-
   const handleCitySelect = (city) => {
     setUserCity(city.nome)
     setUserState(city.microrregiao.mesorregiao.UF.sigla)
@@ -107,16 +120,13 @@ function Home() {
     navigate('/')
   }
 
-  const isEnded = (auction) => {
-    return auction.status === 'ended' || new Date(auction.ends_at) <= new Date()
-  }
-
   if (!user) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <style>{blinkStyle}</style>
 
-      {/* NAVBAR - 3 colunas: Meus Leiloes | LOGO CENTRAL GRANDE | Notificacoes + Sair */}
+      {/* NAVBAR */}
       <nav style={{
         padding: '10px 16px',
         display: 'grid',
@@ -127,8 +137,6 @@ function Home() {
         gap: '10px',
         minHeight: '100px'
       }}>
-
-        {/* ESQUERDA - Meus Leiloes */}
         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <button
             onClick={() => navigate('/meus-leiloes')}
@@ -148,7 +156,6 @@ function Home() {
           </button>
         </div>
 
-        {/* CENTRO - LOGO GRANDE DESTACADA */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <img
             src="/logo-leilao.png"
@@ -165,7 +172,6 @@ function Home() {
           />
         </div>
 
-        {/* DIREITA - Notificacoes + Sair */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <Notifications user={user} />
           <button
@@ -205,7 +211,6 @@ function Home() {
           veiculos, objetos, moveis e imoveis
         </p>
 
-        {/* BOTAO BUSCAR CIDADE */}
         <button
           onClick={() => setShowCitySearch(!showCitySearch)}
           style={{
@@ -312,49 +317,34 @@ function Home() {
           </div>
         </div>
 
-        {/* FILTROS */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-          <button
-            onClick={() => setFilter('active')}
-            style={{
-              flex: 1,
-              padding: '14px',
-              background: filter === 'active' ? '#667eea' : 'white',
-              color: filter === 'active' ? 'white' : '#333',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: 'clamp(15px, 2vw, 18px)',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            Ativos
-          </button>
-          <button
-            onClick={() => setFilter('ended')}
-            style={{
-              flex: 1,
-              padding: '14px',
-              background: filter === 'ended' ? '#667eea' : 'white',
-              color: filter === 'ended' ? 'white' : '#333',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: 'clamp(15px, 2vw, 18px)',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            Encerrados
-          </button>
+        {/* AVISO PISCANDO */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '20px',
+          padding: '14px',
+          background: 'rgba(255,255,255,0.15)',
+          borderRadius: '14px'
+        }}>
+          <span className="aviso-lance" style={{
+            color: 'white',
+            fontSize: 'clamp(16px, 2.5vw, 22px)',
+            fontWeight: 'bold',
+            letterSpacing: '0.5px'
+          }}>
+            <span className="mao-bounce">👇</span>
+            escolha e de um lance!
+            <span className="mao-bounce">👇</span>
+          </span>
         </div>
 
+        {/* TITULO LEILOES ATIVOS */}
         <h2 style={{
           color: 'white',
           fontSize: 'clamp(22px, 4vw, 32px)',
           fontWeight: 'bold',
           marginBottom: '20px'
         }}>
-          Leiloes {filter === 'active' ? 'Ativos' : 'Encerrados'}
+          Leiloes Ativos
         </h2>
 
         {loading ? (
@@ -367,7 +357,7 @@ function Home() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '20px'
           }}>
-            {filteredAuctions.map(auction => (
+            {activeAuctions.map(auction => (
               <div
                 key={auction.id}
                 onClick={() => navigate('/leilao/' + auction.id)}
@@ -382,22 +372,6 @@ function Home() {
                 onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
               >
-                {isEnded(auction) && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    background: '#f44336',
-                    color: 'white',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    fontWeight: 'bold',
-                    fontSize: '13px',
-                    zIndex: 10
-                  }}>
-                    ENCERRADO
-                  </div>
-                )}
                 <img
                   src={auction.images?.[0] || 'https://via.placeholder.com/300x200'}
                   alt={auction.title}
@@ -416,7 +390,7 @@ function Home() {
           </div>
         )}
 
-        {!loading && filteredAuctions.length === 0 && (
+        {!loading && activeAuctions.length === 0 && (
           <div style={{
             textAlign: 'center',
             padding: '60px',
@@ -424,7 +398,10 @@ function Home() {
             borderRadius: '15px'
           }}>
             <p style={{ color: 'white', fontSize: '22px' }}>
-              Nenhum leilao encontrado em {userCity}
+              Nenhum leilao ativo em {userCity}
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginTop: '10px' }}>
+              Seja o primeiro a criar um leilao na sua cidade!
             </p>
           </div>
         )}
