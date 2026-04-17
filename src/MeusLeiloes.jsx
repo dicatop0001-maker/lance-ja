@@ -70,11 +70,7 @@ function MeusLeiloes() {
     const link = window.location.origin + '/vendedor/' + user.id
     setShareLink(link)
     try {
-      const qrUrl = await QRCode.toDataURL(link, {
-        width: 300,
-        margin: 2,
-        color: { dark: '#667eea', light: '#ffffff' }
-      })
+      const qrUrl = await QRCode.toDataURL(link, { width: 300, margin: 2, color: { dark: '#667eea', light: '#ffffff' } })
       setQrCodeUrl(qrUrl)
     } catch (error) {
       console.error('Erro ao gerar QR Code:', error)
@@ -116,10 +112,7 @@ function MeusLeiloes() {
 
         {/* CABECALHO */}
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'clamp(16px, 4vw, 30px)', gap: '12px' }}>
-          <button
-            onClick={() => navigate('/home')}
-            style={{ background: 'white', border: 'none', padding: 'clamp(8px, 2vw, 10px) clamp(14px, 3vw, 20px)', borderRadius: '10px', fontSize: 'clamp(14px, 3.5vw, 18px)', cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
+          <button onClick={() => navigate('/home')} style={{ background: 'white', border: 'none', padding: 'clamp(8px, 2vw, 10px) clamp(14px, 3vw, 20px)', borderRadius: '10px', fontSize: 'clamp(14px, 3.5vw, 18px)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
             Voltar
           </button>
           <h1 style={{ color: 'white', margin: 0, fontSize: 'clamp(20px, 5vw, 32px)' }}>Meus Leiloes</h1>
@@ -136,16 +129,9 @@ function MeusLeiloes() {
             </p>
             {qrCodeUrl && (
               <div>
-                <img
-                  src={qrCodeUrl}
-                  alt="QR Code"
-                  style={{ width: 'clamp(180px, 60vw, 300px)', height: 'clamp(180px, 60vw, 300px)', margin: '16px auto', display: 'block' }}
-                />
+                <img src={qrCodeUrl} alt="QR Code" style={{ width: 'clamp(180px, 60vw, 300px)', height: 'clamp(180px, 60vw, 300px)', margin: '16px auto', display: 'block' }} />
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px' }}>
-                  <button
-                    onClick={downloadQRCode}
-                    style={{ padding: 'clamp(10px, 3vw, 15px) clamp(16px, 4vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(13px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer' }}
-                  >
+                  <button onClick={downloadQRCode} style={{ padding: 'clamp(10px, 3vw, 15px) clamp(16px, 4vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(13px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer' }}>
                     Baixar QR Code
                   </button>
                 </div>
@@ -157,32 +143,21 @@ function MeusLeiloes() {
           <div style={{ background: 'white', borderRadius: '20px', padding: 'clamp(16px, 4vw, 30px)' }}>
             <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Estatisticas</h2>
             <div style={{ background: '#f0f5ff', padding: 'clamp(12px, 3vw, 20px)', borderRadius: '15px', marginBottom: '16px' }}>
-              <div style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{views}</div>
+              <div translate="no" style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{views}</div>
               <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>visualizacoes do seu perfil</div>
             </div>
             <div style={{ background: '#f0f5ff', padding: 'clamp(12px, 3vw, 20px)', borderRadius: '15px', marginBottom: '16px' }}>
-              <div style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{myAuctions.length}</div>
+              <div translate="no" style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{myAuctions.length}</div>
               <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>leiloes criados</div>
             </div>
             <h3 style={{ fontSize: 'clamp(14px, 4vw, 18px)' }}>Compartilhar Link</h3>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-              <input
-                type="text"
-                value={shareLink}
-                readOnly
-                style={{ flex: 1, padding: 'clamp(10px, 3vw, 12px)', border: '2px solid #ddd', borderRadius: '10px', fontSize: 'clamp(11px, 3vw, 14px)', minWidth: 0 }}
-              />
-              <button
-                onClick={copyLink}
-                style={{ padding: 'clamp(10px, 3vw, 12px) clamp(12px, 3vw, 20px)', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', whiteSpace: 'nowrap' }}
-              >
+              <input type="text" value={shareLink} readOnly style={{ flex: 1, padding: 'clamp(10px, 3vw, 12px)', border: '2px solid #ddd', borderRadius: '10px', fontSize: 'clamp(11px, 3vw, 14px)', minWidth: 0 }} />
+              <button onClick={copyLink} style={{ padding: 'clamp(10px, 3vw, 12px) clamp(12px, 3vw, 20px)', background: '#667eea', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', whiteSpace: 'nowrap' }}>
                 Copiar
               </button>
             </div>
-            <button
-              onClick={shareWhatsApp}
-              style={{ width: '100%', padding: 'clamp(12px, 3vw, 15px)', background: '#25D366', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: 'bold', cursor: 'pointer' }}
-            >
+            <button onClick={shareWhatsApp} style={{ width: '100%', padding: 'clamp(12px, 3vw, 15px)', background: '#25D366', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: 'bold', cursor: 'pointer' }}>
               Compartilhar no WhatsApp
             </button>
           </div>
@@ -190,40 +165,29 @@ function MeusLeiloes() {
 
         {/* LISTA DE LEILOES */}
         <div style={{ background: 'white', borderRadius: '20px', padding: 'clamp(16px, 4vw, 30px)' }}>
-          <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Seus Leiloes ({myAuctions.length})</h2>
+          <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>
+            Seus Leiloes (<span translate="no">{myAuctions.length}</span>)
+          </h2>
           {myAuctions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
               <p style={{ fontSize: 'clamp(15px, 4vw, 18px)' }}>Voce ainda nao criou nenhum leilao</p>
-              <button
-                onClick={() => navigate('/novo')}
-                style={{ padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' }}
-              >
+              <button onClick={() => navigate('/novo')} style={{ padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' }}>
                 + Criar Primeiro Leilao
               </button>
             </div>
           ) : (
             <div className="ml-grid-leiloes">
               {myAuctions.map(auction => (
-                <div
-                  key={auction.id}
-                  onClick={() => navigate('/leilao/' + auction.id)}
-                  style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                >
+                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: '#f9f9f9', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                   {isEnded(auction) && (
                     <div style={{ position: 'absolute', top: '8px', right: '8px', background: '#f44336', color: 'white', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', fontSize: '12px', zIndex: 10 }}>
                       ENCERRADO
                     </div>
                   )}
-                  <img
-                    src={auction.images?.[0] || 'https://via.placeholder.com/250x150'}
-                    alt={auction.title}
-                    style={{ width: '100%', height: 'clamp(100px, 30vw, 150px)', objectFit: 'cover' }}
-                  />
+                  <img src={auction.images?.[0] || 'https://via.placeholder.com/250x150'} alt={auction.title} style={{ width: '100%', height: 'clamp(100px, 30vw, 150px)', objectFit: 'cover' }} />
                   <div style={{ padding: 'clamp(10px, 3vw, 15px)' }}>
                     <h3 style={{ margin: '0 0 8px 0', fontSize: 'clamp(14px, 3.5vw, 18px)', wordBreak: 'break-word' }}>{auction.title}</h3>
-                    <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: '#667eea' }}>
+                    <div translate="no" style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: '#667eea' }}>
                       R$ {parseFloat(auction.current_price || auction.initial_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </div>
                     <div style={{ fontSize: 'clamp(11px, 3vw, 12px)', color: '#999', marginTop: '4px' }}>{auction.city}</div>
