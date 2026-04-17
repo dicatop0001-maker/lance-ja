@@ -58,7 +58,7 @@ function Notifications({ user }) {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
         style={{
