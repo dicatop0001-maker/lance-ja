@@ -185,7 +185,7 @@ function Home() {
           </button>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '1 1 0', order: 2 }}>
           <img
             src="/logo-leilao.png"
             alt="Leilao do Bairro"
