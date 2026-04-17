@@ -161,7 +161,7 @@ function Home() {
             src="/logo-leilao.png"
             alt="Leilao do Bairro"
             style={{
-              height: 'clamp(80px, 14vw, 180px)',
+              height: 'clamp(160px, 28vw, 360px)',
               maxWidth: '60vw',
               objectFit: 'contain',
               borderRadius: '10px',
