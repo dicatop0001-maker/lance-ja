@@ -30,6 +30,7 @@ function DetalhesLeilao() {
   const [bids, setBids] = useState([])
   const [loading, setLoading] = useState(true)
   const [bidValue, setBidValue] = useState('')
+  const [bidLoading, setBidLoading] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [canChat, setCanChat] = useState(false)
   const [otherUser, setOtherUser] = useState(null)
@@ -37,6 +38,7 @@ function DetalhesLeilao() {
   const userRef = useRef(null)
   const auctionRef = useRef(null)
   const bidsRef = useRef([])
+  const channelRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -44,8 +46,12 @@ function DetalhesLeilao() {
       userRef.current = user
     })
     loadData()
-    const unsubscribe = subscribeToNewBids()
-    return () => { if (unsubscribe) unsubscribe() }
+    channelRef.current = subscribeToNewBids()
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current)
+      }
+    }
   }, [])
 
   const loadData = async () => {
@@ -65,14 +71,52 @@ function DetalhesLeilao() {
   }, [auction, bids])
 
   const loadAuction = async () => {
-    const { data } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
-    if (data) { setAuction(data) }
+    const { data, error } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
+    if (error) console.error('Erro ao carregar leilao:', error.message)
+    if (data) setAuction(data)
     setLoading(false)
   }
 
+  // BUG CORRIGIDO: busca bids sem join com users (evita erro de foreign key inexistente)
+  // e depois busca o nome/email de cada usuario separadamente via profiles
   const loadBids = async () => {
-    const { data } = await supabase.from('bids').select('*, users(name, email)').eq('auction_id', auctionId).order('created_at', { ascending: false })
-    if (data) setBids(data)
+    const { data, error } = await supabase
+      .from('bids')
+      .select('*')
+      .eq('auction_id', auctionId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Erro ao carregar lances:', error.message)
+      setBids([])
+      return
+    }
+
+    if (!data || data.length === 0) {
+      setBids([])
+      return
+    }
+
+    // Buscar nomes/emails dos usuarios via tabela profiles
+    const userIds = [...new Set(data.map(b => b.user_id))]
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, name, email')
+      .in('id', userIds)
+
+    // Montar mapa id -> perfil
+    const profileMap = {}
+    if (profiles) {
+      profiles.forEach(p => { profileMap[p.id] = p })
+    }
+
+    // Enriquecer cada bid com dados do usuario
+    const enriched = data.map(bid => ({
+      ...bid,
+      users: profileMap[bid.user_id] || null
+    }))
+
+    setBids(enriched)
   }
 
   const loadOtherUser = (currentAuction, currentBids) => {
@@ -98,7 +142,7 @@ function DetalhesLeilao() {
       .eq('user_id', u.id)
       .eq('status', 'active')
       .gte('ends_at', new Date().toISOString())
-      .single()
+      .maybeSingle()
     if (subscription) { setCanChat(true); return }
     const { data: unlock } = await supabase
       .from('contact_unlocks')
@@ -106,30 +150,40 @@ function DetalhesLeilao() {
       .eq('user_id', u.id)
       .eq('auction_id', auctionId)
       .eq('payment_status', 'paid')
-      .single()
+      .maybeSingle()
     if (unlock) { setCanChat(true) }
   }
 
+  // BUG CORRIGIDO: retorna o channel diretamente (nao uma funcao wrapper)
   const subscribeToNewBids = () => {
-    const channel = supabase.channel('bids-' + auctionId)
-    channel
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids', filter: 'auction_id=eq.' + auctionId }, () => {
+    const channel = supabase
+      .channel('bids-' + auctionId)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'bids',
+        filter: 'auction_id=eq.' + auctionId
+      }, () => {
         loadAuction()
         loadBids()
       })
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    return channel
   }
 
   const createNotification = async (sellerId, message) => {
-    await supabase.from('notifications').insert([{ user_id: sellerId, message: message, read: false }])
+    await supabase.from('notifications').insert([{ user_id: sellerId, message, read: false }])
   }
 
   const isServico = auction?.category === 'servicos'
 
   const handleBid = async (e) => {
     e.preventDefault()
+    if (!user) { alert('Voce precisa estar logado para dar um lance!'); return }
+    if (!auction) return
+
     const amount = parseFloat(bidValue)
+
     if (isServico) {
       if (isNaN(amount) || amount <= 0) {
         alert('Digite um valor valido!')
@@ -141,28 +195,54 @@ function DetalhesLeilao() {
       }
     } else {
       if (isNaN(amount) || amount <= auction.current_price) {
-        alert('Lance deve ser maior que R$ ' + auction.current_price.toFixed(2))
+        alert('Lance deve ser MAIOR que R$ ' + auction.current_price.toFixed(2))
         return
       }
     }
-    const { error } = await supabase.from('bids').insert([{ auction_id: auctionId, user_id: user.id, amount }])
-    if (error) {
-      alert('Erro: ' + error.message)
-    } else {
-      await supabase.from('auctions').update({ current_price: amount }).eq('id', auctionId)
-      await createNotification(
-        auction.seller_id,
-        'Novo lance de R$ ' + amount.toFixed(2) + ' no leilao: ' + auction.title
-      )
-      alert('Lance enviado com sucesso!')
-      setBidValue('')
-      loadAuction()
-      loadBids()
+
+    setBidLoading(true)
+    const { error: bidError } = await supabase
+      .from('bids')
+      .insert([{ auction_id: auctionId, user_id: user.id, amount }])
+
+    if (bidError) {
+      alert('Erro ao registrar lance: ' + bidError.message)
+      setBidLoading(false)
+      return
     }
+
+    const { error: updateError } = await supabase
+      .from('auctions')
+      .update({ current_price: amount })
+      .eq('id', auctionId)
+
+    if (updateError) {
+      console.error('Erro ao atualizar preco:', updateError.message)
+    }
+
+    await createNotification(
+      auction.seller_id,
+      'Novo lance de R$ ' + amount.toFixed(2) + ' no leilao: ' + auction.title
+    )
+
+    setBidLoading(false)
+    setBidValue('')
+    alert('Lance enviado com sucesso!')
+    loadAuction()
+    loadBids()
   }
 
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
-  if (!auction) return <div style={{ padding: '40px', textAlign: 'center' }}>Leilao nao encontrado</div>
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+      <div style={{ fontSize: '18px', color: '#667eea' }}>Carregando...</div>
+    </div>
+  )
+
+  if (!auction) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+      <div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div>
+    </div>
+  )
 
   const hasImages = auction.images && auction.images.length > 0
   const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
@@ -185,10 +265,10 @@ function DetalhesLeilao() {
         <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>Detalhes do Leilao</span>
       </div>
 
-      {/* GRID RESPONSIVO — 2 colunas no desktop, 1 no celular */}
+      {/* GRID RESPONSIVO */}
       <div className="detalhes-grid">
 
-        {/* COLUNA ESQUERDA — Imagens e informacoes */}
+        {/* COLUNA ESQUERDA */}
         <div>
           {hasImages ? (
             <div>
@@ -224,7 +304,7 @@ function DetalhesLeilao() {
           </div>
         </div>
 
-        {/* COLUNA DIREITA — Lance e historico */}
+        {/* COLUNA DIREITA */}
         <div>
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
             {isServico && (
@@ -252,13 +332,15 @@ function DetalhesLeilao() {
                   step="0.01"
                   min="0.01"
                   required
+                  disabled={bidLoading}
                   style={{ width: '100%', padding: 'clamp(12px, 3vw, 15px)', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', boxSizing: 'border-box', marginBottom: '12px' }}
                 />
                 <button
                   type="submit"
-                  style={{ width: '100%', padding: 'clamp(14px, 4vw, 20px)', background: isServico ? '#16a34a' : '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', fontWeight: 'bold', cursor: 'pointer' }}
+                  disabled={bidLoading}
+                  style={{ width: '100%', padding: 'clamp(14px, 4vw, 20px)', background: bidLoading ? '#aaa' : (isServico ? '#16a34a' : '#667eea'), color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', fontWeight: 'bold', cursor: bidLoading ? 'not-allowed' : 'pointer' }}
                 >
-                  {isServico ? 'DAR LANCE (MENOR VENCE)' : 'DAR LANCE'}
+                  {bidLoading ? 'ENVIANDO...' : (isServico ? 'DAR LANCE (MENOR VENCE)' : 'DAR LANCE')}
                 </button>
               </form>
             )}
@@ -267,13 +349,18 @@ function DetalhesLeilao() {
                 Voce e o vendedor deste leilao
               </div>
             )}
+            {isEnded && (
+              <div style={{ background: '#ffeaea', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f44336', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
+                Este leilao foi encerrado
+              </div>
+            )}
           </div>
 
           {/* HISTORICO DE LANCES */}
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>
             {bids.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#999', padding: '20px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>Nenhum lance ainda</div>
+              <div style={{ textAlign: 'center', color: '#999', padding: '20px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>Nenhum lance ainda. Seja o primeiro!</div>
             ) : (
               <div>
                 {bids.map((bid, i) => (
