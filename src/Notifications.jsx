@@ -9,16 +9,11 @@ function Notifications({ user }) {
 
   useEffect(() => {
     if (!user) return
-
     loadNotifications()
-
-    // BUG CORRIGIDO: remover canal antigo antes de criar novo,
-    // e usar .on() antes de .subscribe() na ordem correta
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current)
       channelRef.current = null
     }
-
     const channel = supabase
       .channel('notifications-' + user.id + '-' + Date.now())
       .on('postgres_changes', {
@@ -30,9 +25,7 @@ function Notifications({ user }) {
         loadNotifications()
       })
       .subscribe()
-
     channelRef.current = channel
-
     return () => {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current)
@@ -70,83 +63,34 @@ function Notifications({ user }) {
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        style={{
-          padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
-          background: '#1e3a8a',
-          color: 'white',
-          border: '3px solid #4a90d9',
-          borderRadius: '50px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: 'clamp(11px,2vw,16px)',
-          whiteSpace: 'nowrap',
-          boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-          position: 'relative'
-        }}
+        style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)', position: 'relative' }}
       >
-        Notificacoes
+        Notificações
         {unreadCount > 0 && (
-          <span style={{
-            position: 'absolute',
-            top: '-8px',
-            right: '-8px',
-            background: '#ef4444',
-            color: 'white',
-            borderRadius: '50%',
-            width: '22px',
-            height: '22px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
+          <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#ef4444', color: 'white', borderRadius: '50%', width: '22px', height: '22px', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {unreadCount}
           </span>
         )}
       </button>
 
       {showDropdown && (
-        <div style={{
-          position: 'absolute',
-          top: '60px',
-          right: '0',
-          background: 'white',
-          borderRadius: '15px',
-          padding: '16px',
-          minWidth: '300px',
-          maxWidth: '90vw',
-          maxHeight: '400px',
-          overflowY: 'auto',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-          zIndex: 1000
-        }}>
+        <div style={{ position: 'absolute', top: '60px', right: '0', background: 'white', borderRadius: '15px', padding: '16px', minWidth: '300px', maxWidth: '90vw', maxHeight: '400px', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', zIndex: 1000 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px', color: '#333' }}>Notificacoes</h3>
+            <h3 style={{ margin: 0, fontSize: '18px', color: '#333' }}>Notificações</h3>
             {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                style={{ background: 'none', border: 'none', color: '#667eea', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
-              >
+              <button onClick={markAllAsRead} style={{ background: 'none', border: 'none', color: '#667eea', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>
                 Marcar todas como lidas
               </button>
             )}
           </div>
           {notifications.length === 0 ? (
-            <p style={{ color: '#999', textAlign: 'center', padding: '20px' }}>Nenhuma notificacao</p>
+            <p style={{ color: '#999', textAlign: 'center', padding: '20px' }}>Nenhuma notificação</p>
           ) : (
             notifications.map(notif => (
               <div
                 key={notif.id}
                 onClick={() => markAsRead(notif.id)}
-                style={{
-                  padding: '12px',
-                  borderRadius: '10px',
-                  marginBottom: '8px',
-                  background: notif.read ? '#f9f9f9' : '#e8f4fd',
-                  cursor: 'pointer',
-                  borderLeft: notif.read ? '3px solid #ddd' : '3px solid #667eea'
-                }}
+                style={{ padding: '12px', borderRadius: '10px', marginBottom: '8px', background: notif.read ? '#f9f9f9' : '#e8f4fd', cursor: 'pointer', borderLeft: notif.read ? '3px solid #ddd' : '3px solid #667eea' }}
               >
                 <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#333' }}>{notif.message}</p>
                 <p style={{ margin: 0, fontSize: '12px', color: '#999' }}>
