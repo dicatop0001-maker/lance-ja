@@ -470,7 +470,8 @@ function Home() {
               { val: 'objetos', label: 'Objetos' },
               { val: 'moveis', label: 'Moveis' },
               { val: 'imoveis', label: 'Imoveis' },
-              { val: 'outros', label: 'Outros' }
+              { val: 'outros', label: 'Outros' },
+              { val: 'servicos', label: 'Servicos' }
             ].map(cat => (
               <button
                 key={cat.val}
@@ -490,6 +491,28 @@ function Home() {
                 {cat.label}
               </button>
             ))}
+          </div>
+          {/* BOTAO SERVICOS MENOR LANCE */}
+          <div style={{ marginTop: '10px', textAlign: 'center' }}>
+            <button
+              onClick={() => setSelectedCategory(selectedCategory === 'servicos' ? '' : 'servicos')}
+              style={{
+                padding: '10px 36px',
+                borderRadius: '30px',
+                border: selectedCategory === 'servicos' ? '2px solid white' : '2px solid rgba(255,255,255,0.5)',
+                background: selectedCategory === 'servicos' ? '#1e3a8a' : 'rgba(30,58,138,0.45)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '15px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 15px rgba(30,58,138,0.4)',
+                letterSpacing: '0.5px',
+                minWidth: '260px'
+              }}
+            >
+              🔧 Servicos (menor lance vence)
+            </button>
           </div>
         </div>
 
