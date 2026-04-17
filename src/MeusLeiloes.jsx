@@ -127,9 +127,15 @@ function MeusLeiloes() {
             <p style={{ color: '#666', marginBottom: '16px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
               Compartilhe este QR Code para as pessoas verem todos os seus leiloes
             </p>
+            {/* LOGO ACIMA DO QR CODE */}
+            <img
+              src="/logo-leilao.png"
+              alt="Leilao do Bairro"
+              style={{ width: 'clamp(160px, 50vw, 280px)', height: 'auto', margin: '0 auto 12px auto', display: 'block', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+            />
             {qrCodeUrl && (
               <div>
-                <img src={qrCodeUrl} alt="QR Code" style={{ width: 'clamp(180px, 60vw, 300px)', height: 'clamp(180px, 60vw, 300px)', margin: '16px auto', display: 'block' }} />
+                <img src={qrCodeUrl} alt="QR Code" style={{ width: 'clamp(180px, 60vw, 300px)', height: 'clamp(180px, 60vw, 300px)', margin: '0 auto', display: 'block' }} />
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '16px' }}>
                   <button onClick={downloadQRCode} style={{ padding: 'clamp(10px, 3vw, 15px) clamp(16px, 4vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(13px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer' }}>
                     Baixar QR Code
