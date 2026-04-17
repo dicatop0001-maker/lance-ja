@@ -199,14 +199,14 @@ function Home() {
 
         {/* ESQUERDA DESKTOP */}
         <div className="lj-nav-left">
-          <button onClick={() => navigate('/meus-leiloes')} style={
+          <button onClick={() => navigate('/meus-leiloes')} style={{
               padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
               background: '#1e3a8a', color: 'white',
               border: '3px solid #4a90d9', borderRadius: '50px',
               cursor: 'pointer', fontWeight: 'bold',
               fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
               boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
-            }>
+            }}>
             Meus Leiloes
           </button>
         </div>
@@ -230,39 +230,39 @@ function Home() {
         {/* DIREITA DESKTOP */}
         <div className="lj-nav-right">
           <Notifications user={user} />
-          <button onClick={handleLogout} style={
+          <button onClick={handleLogout} style={{
               padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
               background: '#1e3a8a', color: 'white',
               border: '3px solid #4a90d9', borderRadius: '50px',
               cursor: 'pointer', fontWeight: 'bold',
               fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
               boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
-            }>
+            }}>
             Sair
           </button>
         </div>
 
         {/* TODOS BOTOES MOBILE */}
         <div className="lj-nav-mobile-btns" style={{ display: 'none' }}>
-          <button onClick={() => navigate('/meus-leiloes')} style={
+          <button onClick={() => navigate('/meus-leiloes')} style={{
               padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
               background: '#1e3a8a', color: 'white',
               border: '3px solid #4a90d9', borderRadius: '50px',
               cursor: 'pointer', fontWeight: 'bold',
               fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
               boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
-            }>
+            }}>
             Meus Leiloes
           </button>
           <Notifications user={user} />
-          <button onClick={handleLogout} style={
+          <button onClick={handleLogout} style={{
               padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
               background: '#1e3a8a', color: 'white',
               border: '3px solid #4a90d9', borderRadius: '50px',
               cursor: 'pointer', fontWeight: 'bold',
               fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
               boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
-            }>
+            }}>
             Sair
           </button>
         </div>
