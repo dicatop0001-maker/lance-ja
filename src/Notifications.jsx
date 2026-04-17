@@ -61,28 +61,78 @@ function Notifications({ user }) {
     <div style={{ position: 'relative' }}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid white', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', position: 'relative' }}
+        style={{
+          padding: '14px 28px',
+          background: '#1e3a8a',
+          color: 'white',
+          border: '3px solid #4a90d9',
+          borderRadius: '50px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          whiteSpace: 'nowrap',
+          boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
+          letterSpacing: '0.5px',
+          position: 'relative'
+        }}
       >
-        🔔 Notificações
+        Notificacoes
         {unreadCount > 0 && (
-          <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+          <span style={{
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+            background: '#ef4444',
+            color: 'white',
+            borderRadius: '50%',
+            width: '22px',
+            height: '22px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
             {unreadCount}
           </span>
         )}
       </button>
+
       {showDropdown && (
-        <div style={{ position: 'absolute', top: '60px', right: 0, background: 'white', borderRadius: '15px', boxShadow: '0 5px 20px rgba(0,0,0,0.3)', minWidth: '350px', maxHeight: '400px', overflowY: 'auto', zIndex: 1000 }}>
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          right: '0',
+          background: 'white',
+          borderRadius: '15px',
+          padding: '16px',
+          minWidth: '320px',
+          maxHeight: '400px',
+          overflowY: 'auto',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          zIndex: 1000
+        }}>
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#333' }}>Notificacoes</h3>
           {notifications.length === 0 ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>Nenhuma notificação</div>
+            <p style={{ color: '#999', textAlign: 'center', padding: '20px' }}>Nenhuma notificacao</p>
           ) : (
             notifications.map(notif => (
               <div
                 key={notif.id}
                 onClick={() => markAsRead(notif.id)}
-                style={{ padding: '15px', borderBottom: '1px solid #eee', cursor: 'pointer', background: notif.read ? 'white' : '#f0f5ff' }}
+                style={{
+                  padding: '12px',
+                  borderRadius: '10px',
+                  marginBottom: '8px',
+                  background: notif.read ? '#f9f9f9' : '#e8f4fd',
+                  cursor: 'pointer',
+                  borderLeft: notif.read ? '3px solid #ddd' : '3px solid #667eea'
+                }}
               >
-                <div style={{ fontSize: '14px', color: '#333' }}>{notif.message}</div>
-                <div style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>{new Date(notif.created_at).toLocaleString('pt-BR')}</div>
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#333' }}>{notif.message}</p>
+                <p style={{ margin: 0, fontSize: '12px', color: '#999' }}>
+                  {new Date(notif.created_at).toLocaleDateString('pt-BR')}
+                </p>
               </div>
             ))
           )}
