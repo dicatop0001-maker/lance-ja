@@ -200,8 +200,7 @@ function Home() {
               fontSize: '16px',
               whiteSpace: 'nowrap',
               boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-              letterSpacing: '0.5px',
-              marginTop: '10px'
+              letterSpacing: '0.5px'
             }}
           >
             Sair
