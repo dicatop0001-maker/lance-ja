@@ -29,6 +29,8 @@ function Home() {
   const [user, setUser] = useState(null)
   const [auctions, setAuctions] = useState([])
   const [activeAuctions, setActiveAuctions] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [userCity, setUserCity] = useState('Ponta Grossa')
   const [userState, setUserState] = useState('PR')
   const [searchCity, setSearchCity] = useState('')
@@ -119,6 +121,15 @@ function Home() {
     await supabase.auth.signOut()
     navigate('/')
   }
+
+  const displayedAuctions = activeAuctions.filter(a => {
+    const matchSearch = searchTerm === '' ||
+      (a.title && a.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (a.description && a.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchCat = selectedCategory === '' ||
+      (a.category && a.category.toLowerCase() === selectedCategory.toLowerCase())
+    return matchSearch && matchCat
+  })
 
   if (!user) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
 
@@ -347,10 +358,80 @@ function Home() {
           color: 'white',
           fontSize: 'clamp(22px, 4vw, 32px)',
           fontWeight: 'bold',
-          marginBottom: '20px'
+          marginBottom: '16px'
         }}>
           Leiloes Ativos
         </h2>
+
+        {/* BUSCA E FILTRO CATEGORIA */}
+        <div style={{
+          background: 'rgba(255,255,255,0.15)',
+          borderRadius: '16px',
+          padding: '14px 16px',
+          marginBottom: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: 'white',
+            borderRadius: '30px',
+            padding: '8px 16px',
+            gap: '10px'
+          }}>
+            <span style={{ fontSize: '20px' }}>🔍</span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Buscar leilao..."
+              style={{
+                border: 'none',
+                outline: 'none',
+                fontSize: '15px',
+                width: '100%',
+                background: 'transparent',
+                color: '#333'
+              }}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#999', padding: '0' }}
+              >X</button>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {[
+              { val: '', label: 'Todos' },
+              { val: 'veiculos', label: 'Veiculos' },
+              { val: 'objetos', label: 'Objetos' },
+              { val: 'moveis', label: 'Moveis' },
+              { val: 'imoveis', label: 'Imoveis' },
+              { val: 'outros', label: 'Outros' }
+            ].map(cat => (
+              <button
+                key={cat.val}
+                onClick={() => setSelectedCategory(cat.val)}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: '20px',
+                  border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)',
+                  background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)',
+                  color: 'white',
+                  fontWeight: selectedCategory === cat.val ? 'bold' : 'normal',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>
@@ -362,7 +443,7 @@ function Home() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '20px'
           }}>
-            {activeAuctions.map(auction => (
+            {displayedAuctions.map(auction => (
               <div
                 key={auction.id}
                 onClick={() => navigate('/leilao/' + auction.id)}
@@ -395,7 +476,7 @@ function Home() {
           </div>
         )}
 
-        {!loading && activeAuctions.length === 0 && (
+        {!loading && displayedAuctions.length === 0 && (
           <div style={{
             textAlign: 'center',
             padding: '60px',
