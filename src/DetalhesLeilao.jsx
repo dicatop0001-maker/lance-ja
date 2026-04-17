@@ -24,6 +24,11 @@ const detalhesStyle = `
 `
 
 function DetalhesLeilao() {
+  const formatBRL = (value) => {
+    if (typeof value !== 'number') return '0,00'
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
   const { id: auctionId } = useParams()
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
@@ -197,12 +202,12 @@ function DetalhesLeilao() {
     if (isServico) {
       if (isNaN(amount) || amount <= 0) { alert('Digite um valor válido!'); return }
       if (amount >= auction.current_price) {
-        alert('Para serviços o MENOR lance vence! Seu lance deve ser MENOR que R$ ' + auction.current_price.toFixed(2))
+        alert('Para serviços o MENOR lance vence! Seu lance deve ser MENOR que R$ ' + formatBRL(auction.current_price))
         return
       }
     } else {
       if (isNaN(amount) || amount <= auction.current_price) {
-        alert('Lance deve ser MAIOR que R$ ' + auction.current_price.toFixed(2))
+        alert('Lance deve ser MAIOR que R$ ' + formatBRL(auction.current_price))
         return
       }
     }
@@ -222,7 +227,7 @@ function DetalhesLeilao() {
     if (updateError) { console.error('Erro ao atualizar preço:', updateError.message) }
     await createNotification(
       auction.seller_id,
-      'Novo lance de R$ ' + amount.toFixed(2) + ' no leilão: ' + auction.title
+      'Novo lance de R$ ' + formatBRL(amount) + ' no leilão: ' + auction.title
     )
     setBidLoading(false)
     setBidValue('')
@@ -247,8 +252,8 @@ function DetalhesLeilao() {
   const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
   const isSeller = user && auction.seller_id === user.id
   const bidPlaceholder = isServico
-    ? 'Lance máximo: R$ ' + (auction.current_price - 0.01).toFixed(2)
-    : 'Mínimo: R$ ' + (auction.current_price + 0.01).toFixed(2)
+    ? 'Lance máximo: R$ ' + formatBRL(auction.current_price - 0.01)
+    : 'Mínimo: R$ ' + formatBRL(auction.current_price + 0.01)
 
   const userBids = bids.filter(b => b.user_id === user?.id)
   const isWinner = bids.length > 0 && bids[0].user_id === user?.id
@@ -310,7 +315,7 @@ function DetalhesLeilao() {
             )}
             <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isServico ? 'Menor lance atual' : 'Lance atual'}</div>
             <div style={{ fontSize: 'clamp(36px, 9vw, 48px)', fontWeight: 'bold', color: isServico ? '#16a34a' : '#667eea', marginBottom: '16px' }}>
-              R$ {auction.current_price.toFixed(2)}
+              R$ {formatBRL(auction.current_price)}
             </div>
             <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
             <div style={{ fontSize: 'clamp(16px, 4vw, 24px)', fontWeight: 'bold', marginBottom: '24px', color: isEnded ? '#f44336' : '#333' }}>
@@ -387,7 +392,7 @@ function DetalhesLeilao() {
                       </div>
                     </div>
                     <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: i === 0 ? (isServico ? '#16a34a' : '#667eea') : '#333', whiteSpace: 'nowrap' }}>
-                      R$ {bid.amount.toFixed(2)}
+                      R$ {formatBRL(bid.amount)}
                     </div>
                   </div>
                 ))}
