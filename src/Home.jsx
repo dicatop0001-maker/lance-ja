@@ -116,33 +116,20 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
 
-      {/* NAVBAR */}
+      {/* NAVBAR - 3 colunas: Meus Leiloes | LOGO CENTRAL GRANDE | Notificacoes + Sair */}
       <nav style={{
-        padding: '12px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
+        padding: '10px 16px',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: 'blur(8px)',
-        flexWrap: 'wrap',
-        gap: '10px'
+        gap: '10px',
+        minHeight: '100px'
       }}>
-        {/* LOGO */}
-        <img
-          src="/logo-leilao.png"
-          alt="Leilão do Bairro"
-          style={{
-            height: '56px',
-            maxWidth: '220px',
-            objectFit: 'contain',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-          onClick={() => navigate('/home')}
-        />
 
-        {/* BOTÕES NAVBAR */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* ESQUERDA - Meus Leiloes */}
+        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <button
             onClick={() => navigate('/meus-leiloes')}
             style={{
@@ -157,8 +144,29 @@ function Home() {
               whiteSpace: 'nowrap'
             }}
           >
-            Meus Leilões
+            Meus Leiloes
           </button>
+        </div>
+
+        {/* CENTRO - LOGO GRANDE DESTACADA */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <img
+            src="/logo-leilao.png"
+            alt="Leilao do Bairro"
+            style={{
+              height: 'clamp(80px, 14vw, 180px)',
+              maxWidth: '60vw',
+              objectFit: 'contain',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))'
+            }}
+            onClick={() => navigate('/home')}
+          />
+        </div>
+
+        {/* DIREITA - Notificacoes + Sair */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <Notifications user={user} />
           <button
             onClick={handleLogout}
@@ -187,17 +195,17 @@ function Home() {
           fontWeight: 'bold',
           margin: '0 0 6px 0'
         }}>
-          {userCity} – {userState}
+          {userCity} - {userState}
         </h3>
         <p style={{
           color: 'rgba(255,255,255,0.9)',
           fontSize: 'clamp(14px, 2.5vw, 20px)',
           margin: '0 0 20px 0'
         }}>
-          veículos, objetos, móveis e imóveis
+          veiculos, objetos, moveis e imoveis
         </p>
 
-        {/* BOTÃO BUSCAR CIDADE */}
+        {/* BOTAO BUSCAR CIDADE */}
         <button
           onClick={() => setShowCitySearch(!showCitySearch)}
           style={{
@@ -228,7 +236,7 @@ function Home() {
               type="text"
               value={searchCity}
               onChange={(e) => setSearchCity(e.target.value)}
-              placeholder="Digite o nome da cidade (mínimo 2 letras)..."
+              placeholder="Digite o nome da cidade (minimo 2 letras)..."
               style={{
                 width: '100%',
                 padding: '15px',
@@ -244,7 +252,11 @@ function Home() {
                 <p style={{ textAlign: 'center', color: '#999' }}>Digite pelo menos 2 letras para buscar</p>
               )}
               {filteredCities.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                  gap: '10px'
+                }}>
                   {filteredCities.map(city => (
                     <button
                       key={city.id}
@@ -261,7 +273,7 @@ function Home() {
                         textAlign: 'left'
                       }}
                     >
-                      {city.nome} – {city.microrregiao.mesorregiao.UF.sigla}
+                      {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
                     </button>
                   ))}
                 </div>
@@ -274,10 +286,10 @@ function Home() {
         )}
       </div>
 
-      {/* CONTEÚDO PRINCIPAL */}
+      {/* CONTEUDO PRINCIPAL */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
 
-        {/* BOTÃO CRIAR NOVO LEILÃO */}
+        {/* BOTAO CRIAR NOVO LEILAO */}
         <div style={{ marginBottom: '20px' }}>
           <button
             onClick={() => navigate('/novo')}
@@ -293,7 +305,7 @@ function Home() {
               cursor: 'pointer'
             }}
           >
-            + CRIAR NOVO LEILÃO
+            + CRIAR NOVO LEILAO
           </button>
           <div style={{ fontSize: '14px', color: 'white', marginTop: '8px', textAlign: 'center' }}>
             clique e venda!
@@ -336,13 +348,18 @@ function Home() {
           </button>
         </div>
 
-        <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '20px' }}>
-          Leilões {filter === 'active' ? 'Ativos' : 'Encerrados'}
+        <h2 style={{
+          color: 'white',
+          fontSize: 'clamp(22px, 4vw, 32px)',
+          fontWeight: 'bold',
+          marginBottom: '20px'
+        }}>
+          Leiloes {filter === 'active' ? 'Ativos' : 'Encerrados'}
         </h2>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>
-            Carregando leilões...
+            Carregando leiloes...
           </div>
         ) : (
           <div style={{
@@ -367,10 +384,16 @@ function Home() {
               >
                 {isEnded(auction) && (
                   <div style={{
-                    position: 'absolute', top: '10px', right: '10px',
-                    background: '#f44336', color: 'white',
-                    padding: '6px 12px', borderRadius: '8px',
-                    fontWeight: 'bold', fontSize: '13px', zIndex: 10
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: '#f44336',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontWeight: 'bold',
+                    fontSize: '13px',
+                    zIndex: 10
                   }}>
                     ENCERRADO
                   </div>
@@ -395,11 +418,13 @@ function Home() {
 
         {!loading && filteredAuctions.length === 0 && (
           <div style={{
-            textAlign: 'center', padding: '60px',
-            background: 'rgba(255,255,255,0.1)', borderRadius: '15px'
+            textAlign: 'center',
+            padding: '60px',
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '15px'
           }}>
             <p style={{ color: 'white', fontSize: '22px' }}>
-              Nenhum leilão encontrado em {userCity}
+              Nenhum leilao encontrado em {userCity}
             </p>
           </div>
         )}
