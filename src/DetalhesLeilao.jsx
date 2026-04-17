@@ -3,6 +3,25 @@ import { supabase } from './supabaseClient'
 import { useParams, useNavigate } from 'react-router-dom'
 import Chat from './Chat'
 
+const detalhesStyle = `
+  .detalhes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+  @media (max-width: 768px) {
+    .detalhes-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 16px auto;
+      padding: 0 12px;
+    }
+  }
+`
+
 function DetalhesLeilao() {
   const { id: auctionId } = useParams()
   const navigate = useNavigate()
@@ -111,7 +130,6 @@ function DetalhesLeilao() {
   const handleBid = async (e) => {
     e.preventDefault()
     const amount = parseFloat(bidValue)
-
     if (isServico) {
       if (isNaN(amount) || amount <= 0) {
         alert('Digite um valor valido!')
@@ -127,7 +145,6 @@ function DetalhesLeilao() {
         return
       }
     }
-
     const { error } = await supabase.from('bids').insert([{ auction_id: auctionId, user_id: user.id, amount }])
     if (error) {
       alert('Erro: ' + error.message)
@@ -149,28 +166,43 @@ function DetalhesLeilao() {
 
   const hasImages = auction.images && auction.images.length > 0
   const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
-
   const bidPlaceholder = isServico
     ? 'Lance maximo: R$ ' + (auction.current_price - 0.01).toFixed(2)
     : 'Minimo: R$ ' + (auction.current_price + 0.01).toFixed(2)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
-        <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', marginRight: '15px' }}>&larr; Voltar</button>
-        <span style={{ fontSize: '24px', fontWeight: 'bold' }}>Detalhes do Leilao</span>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', overflowX: 'hidden' }}>
+      <style>{detalhesStyle}</style>
+
+      {/* CABECALHO */}
+      <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '16px 20px', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button
+          onClick={() => navigate('/home')}
+          style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' }}
+        >
+          &larr; Voltar
+        </button>
+        <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>Detalhes do Leilao</span>
       </div>
-      <div style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+
+      {/* GRID RESPONSIVO — 2 colunas no desktop, 1 no celular */}
+      <div className="detalhes-grid">
+
+        {/* COLUNA ESQUERDA — Imagens e informacoes */}
         <div>
           {hasImages ? (
             <div>
-              <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', marginBottom: '15px', overflow: 'hidden' }}>
+              <div style={{ background: '#f0f0f0', borderRadius: '16px', height: 'clamp(220px, 55vw, 400px)', marginBottom: '12px', overflow: 'hidden' }}>
                 <img src={auction.images[currentImageIndex]} alt={auction.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               {auction.images.length > 1 && (
-                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                   {auction.images.map((img, i) => (
-                    <div key={i} onClick={() => setCurrentImageIndex(i)} style={{ minWidth: '80px', height: '80px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', border: i === currentImageIndex ? '3px solid #667eea' : '3px solid transparent' }}>
+                    <div
+                      key={i}
+                      onClick={() => setCurrentImageIndex(i)}
+                      style={{ minWidth: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', border: i === currentImageIndex ? '3px solid #667eea' : '3px solid transparent', flexShrink: 0 }}
+                    >
                       <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ))}
@@ -178,32 +210,38 @@ function DetalhesLeilao() {
               )}
             </div>
           ) : (
-            <div style={{ background: '#f0f0f0', borderRadius: '20px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '80px', marginBottom: '20px' }}>📦</div>
+            <div style={{ background: '#f0f0f0', borderRadius: '16px', height: 'clamp(220px, 55vw, 400px)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '80px', marginBottom: '12px' }}>📦</div>
           )}
-          <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginTop: '20px' }}>
-            <h1 style={{ margin: '0 0 20px 0', fontSize: '32px' }}>{auction.title}</h1>
-            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '20px' }}>{auction.description || 'Sem descricao'}</p>
-            <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '20px' }}>
-              <div style={{ marginBottom: '10px' }}><strong>Categoria:</strong> {auction.category}</div>
-              <div style={{ marginBottom: '10px' }}><strong>Localizacao:</strong> {auction.neighborhood}, {auction.city} - {auction.state}</div>
-              <div style={{ marginBottom: '10px' }}><strong>Criado em:</strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>
+
+          <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginTop: '16px' }}>
+            <h1 style={{ margin: '0 0 16px 0', fontSize: 'clamp(20px, 5vw, 32px)', wordBreak: 'break-word' }}>{auction.title}</h1>
+            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descricao'}</p>
+            <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '16px' }}>
+              <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Categoria:</strong> {auction.category}</div>
+              <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Localizacao:</strong> {auction.neighborhood ? auction.neighborhood + ', ' : ''}{auction.city} - {auction.state}</div>
+              <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Criado em:</strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>
             </div>
           </div>
         </div>
+
+        {/* COLUNA DIREITA — Lance e historico */}
         <div>
-          <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginBottom: '20px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
             {isServico && (
-              <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: '14px', color: '#1e3a8a', fontWeight: '700' }}>
+              <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
                 🔧 SERVICO — O MENOR LANCE VENCE!
               </div>
             )}
-            <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>{isServico ? 'Menor lance atual' : 'Lance atual'}</div>
-            <div style={{ fontSize: '48px', fontWeight: 'bold', color: isServico ? '#16a34a' : '#667eea', marginBottom: '20px' }}>R$ {auction.current_price.toFixed(2)}</div>
-            <div style={{ fontSize: '14px', color: '#999', marginBottom: '5px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '30px', color: isEnded ? '#f44336' : '#333' }}>
-              {new Date(auction.ends_at).toLocaleString('pt-BR')}
-              {isEnded && <span style={{ fontSize: '16px', color: '#f44336', marginLeft: '10px' }}>ENCERRADO</span>}
+            <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isServico ? 'Menor lance atual' : 'Lance atual'}</div>
+            <div style={{ fontSize: 'clamp(36px, 9vw, 48px)', fontWeight: 'bold', color: isServico ? '#16a34a' : '#667eea', marginBottom: '16px' }}>
+              R$ {auction.current_price.toFixed(2)}
             </div>
+            <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
+            <div style={{ fontSize: 'clamp(16px, 4vw, 24px)', fontWeight: 'bold', marginBottom: '24px', color: isEnded ? '#f44336' : '#333' }}>
+              {new Date(auction.ends_at).toLocaleString('pt-BR')}
+              {isEnded && <span style={{ fontSize: 'clamp(13px, 3.5vw, 16px)', color: '#f44336', marginLeft: '8px' }}>ENCERRADO</span>}
+            </div>
+
             {!isEnded && user && auction.seller_id !== user.id && (
               <form onSubmit={handleBid}>
                 <input
@@ -214,33 +252,52 @@ function DetalhesLeilao() {
                   step="0.01"
                   min="0.01"
                   required
-                  style={{ width: '100%', padding: '15px', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: '18px', boxSizing: 'border-box', marginBottom: '15px' }}
+                  style={{ width: '100%', padding: 'clamp(12px, 3vw, 15px)', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', boxSizing: 'border-box', marginBottom: '12px' }}
                 />
-                <button type="submit" style={{ width: '100%', padding: '20px', background: isServico ? '#16a34a' : '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>
+                <button
+                  type="submit"
+                  style={{ width: '100%', padding: 'clamp(14px, 4vw, 20px)', background: isServico ? '#16a34a' : '#667eea', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', fontWeight: 'bold', cursor: 'pointer' }}
+                >
                   {isServico ? 'DAR LANCE (MENOR VENCE)' : 'DAR LANCE'}
                 </button>
               </form>
             )}
             {!isEnded && user && auction.seller_id === user.id && (
-              <div style={{ background: '#fff3e0', padding: '20px', borderRadius: '10px', textAlign: 'center', color: '#f57c00' }}>Voce e o vendedor deste leilao</div>
+              <div style={{ background: '#fff3e0', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f57c00', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
+                Voce e o vendedor deste leilao
+              </div>
             )}
           </div>
-          <div style={{ background: 'white', borderRadius: '20px', padding: '30px', marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 20px 0' }}>Historico de Lances ({bids.length})</h3>
+
+          {/* HISTORICO DE LANCES */}
+          <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>
             {bids.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda</div>
+              <div style={{ textAlign: 'center', color: '#999', padding: '20px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>Nenhum lance ainda</div>
             ) : (
-              <div>{bids.map((bid, i) => (
-                <div key={bid.id} style={{ padding: '15px', background: i === 0 ? '#f0fff4' : '#f9f9f9', borderRadius: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontWeight: 'bold' }}>{bid.users?.name || bid.users?.email || 'Anonimo'}</div>
-                    <div style={{ fontSize: '12px', color: '#999' }}>{new Date(bid.created_at).toLocaleString('pt-BR')}</div>
+              <div>
+                {bids.map((bid, i) => (
+                  <div
+                    key={bid.id}
+                    style={{ padding: 'clamp(10px, 3vw, 15px)', background: i === 0 ? '#f0fff4' : '#f9f9f9', borderRadius: '10px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {bid.users?.name || bid.users?.email || 'Anonimo'}
+                      </div>
+                      <div style={{ fontSize: 'clamp(11px, 3vw, 12px)', color: '#999' }}>
+                        {new Date(bid.created_at).toLocaleString('pt-BR')}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: i === 0 ? (isServico ? '#16a34a' : '#667eea') : '#333', whiteSpace: 'nowrap' }}>
+                      R$ {bid.amount.toFixed(2)}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: i === 0 ? (isServico ? '#16a34a' : '#667eea') : '#333' }}>R$ {bid.amount.toFixed(2)}</div>
-                </div>
-              ))}</div>
+                ))}
+              </div>
             )}
           </div>
+
           {showChat && isEnded && otherUser && (
             <Chat auction={auction} user={user} otherUser={otherUser} canChat={canChat} />
           )}
