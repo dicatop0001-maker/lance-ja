@@ -141,15 +141,17 @@ function Home() {
           <button
             onClick={() => navigate('/meus-leiloes')}
             style={{
-              padding: '12px 22px',
-              background: 'rgba(255,255,255,0.25)',
+              padding: '14px 28px',
+              background: '#1e3a8a',
               color: 'white',
-              border: '2px solid rgba(255,255,255,0.8)',
-              borderRadius: '12px',
+              border: '3px solid #4a90d9',
+              borderRadius: '50px',
               cursor: 'pointer',
               fontWeight: 'bold',
-              fontSize: '15px',
-              whiteSpace: 'nowrap'
+              fontSize: '16px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
+              letterSpacing: '0.5px'
             }}
           >
             Meus Leiloes
@@ -177,15 +179,18 @@ function Home() {
           <button
             onClick={handleLogout}
             style={{
-              padding: '12px 22px',
-              background: 'rgba(255,255,255,0.25)',
+              padding: '14px 28px',
+              background: '#1e3a8a',
               color: 'white',
-              border: '2px solid rgba(255,255,255,0.8)',
-              borderRadius: '12px',
+              border: '3px solid #4a90d9',
+              borderRadius: '50px',
               cursor: 'pointer',
               fontWeight: 'bold',
-              fontSize: '15px',
-              whiteSpace: 'nowrap'
+              fontSize: '16px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
+              letterSpacing: '0.5px',
+              marginTop: '10px'
             }}
           >
             Sair
