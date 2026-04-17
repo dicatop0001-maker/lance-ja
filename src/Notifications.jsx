@@ -12,44 +12,37 @@ function Notifications({ user }) {
 
     loadNotifications()
 
-    // Cleanup existing subscription before creating new one
-    try {
+    // BUG CORRIGIDO: remover canal antigo antes de criar novo,
+    // e usar .on() antes de .subscribe() na ordem correta
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current)
+      channelRef.current = null
+    }
+
+    const channel = supabase
+      .channel('notifications-' + user.id + '-' + Date.now())
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: 'user_id=eq.' + user.id
+      }, () => {
+        loadNotifications()
+      })
+      .subscribe()
+
+    channelRef.current = channel
+
+    return () => {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current)
         channelRef.current = null
       }
-    } catch (e) {}
-
-    // Create new subscription with try/catch guard
-    try {
-      const channel = supabase
-        .channel('notifications-' + user.id + '-' + Date.now())
-        .on('postgres_changes', {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: 'user_id=eq.' + user.id
-        }, () => {
-          loadNotifications()
-        })
-        .subscribe()
-
-      channelRef.current = channel
-    } catch (e) {
-      console.log('Notification subscription skipped:', e.message)
-    }
-
-    return () => {
-      try {
-        if (channelRef.current) {
-          supabase.removeChannel(channelRef.current)
-          channelRef.current = null
-        }
-      } catch (e) {}
     }
   }, [user])
 
   const loadNotifications = async () => {
+    if (!user) return
     const { data } = await supabase
       .from('notifications')
       .select('*')
@@ -67,22 +60,27 @@ function Notifications({ user }) {
     loadNotifications()
   }
 
+  const markAllAsRead = async () => {
+    if (!user) return
+    await supabase.from('notifications').update({ read: true }).eq('user_id', user.id).eq('read', false)
+    loadNotifications()
+  }
+
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
         style={{
-          padding: '14px 28px',
+          padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
           background: '#1e3a8a',
           color: 'white',
           border: '3px solid #4a90d9',
           borderRadius: '50px',
           cursor: 'pointer',
           fontWeight: 'bold',
-          fontSize: '16px',
+          fontSize: 'clamp(11px,2vw,16px)',
           whiteSpace: 'nowrap',
           boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-          letterSpacing: '0.5px',
           position: 'relative'
         }}
       >
@@ -116,13 +114,24 @@ function Notifications({ user }) {
           background: 'white',
           borderRadius: '15px',
           padding: '16px',
-          minWidth: '320px',
+          minWidth: '300px',
+          maxWidth: '90vw',
           maxHeight: '400px',
           overflowY: 'auto',
           boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
           zIndex: 1000
         }}>
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#333' }}>Notificacoes</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', color: '#333' }}>Notificacoes</h3>
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllAsRead}
+                style={{ background: 'none', border: 'none', color: '#667eea', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+              >
+                Marcar todas como lidas
+              </button>
+            )}
+          </div>
           {notifications.length === 0 ? (
             <p style={{ color: '#999', textAlign: 'center', padding: '20px' }}>Nenhuma notificacao</p>
           ) : (
