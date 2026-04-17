@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,28 +9,47 @@ function NovoLeilao() {
   const [startingBid, setStartingBid] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
   const [city, setCity] = useState('Ponta Grossa')
+  const [cityState, setCityState] = useState('PR')
   const [endsAt, setEndsAt] = useState('')
   const [photos, setPhotos] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [allCities, setAllCities] = useState([])
   const [filteredCities, setFilteredCities] = useState([])
   const [showCityDropdown, setShowCityDropdown] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => { loadCities() }, [])
+  useEffect(() => {
+    loadCities()
+    detectUserCity()
+  }, [])
+
+  const detectUserCity = async () => {
+    try {
+      const res = await fetch('https://ipapi.co/json/')
+      const data = await res.json()
+      if (data.city) {
+        setCity(data.city)
+        setCityState(data.region_code || 'BR')
+      }
+    } catch (e) {}
+  }
 
   const loadCities = async () => {
     try {
       const r = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome')
       const d = await r.json()
-      setAllCities(d.map(m => m.nome + ' - ' + (m.microrregiao?.mesorregiao?.UF?.sigla || m['regiao-imediata']?.['regiao-intermediaria']?.UF?.sigla || '')).filter(s => s.trim() !== ' - '))
+      setAllCities(d)
     } catch (e) {}
   }
 
   const handleCityInput = (val) => {
     setCity(val)
+    setCityState('')
     if (val.length >= 2) {
-      const f = allCities.filter(c => c.toLowerCase().startsWith(val.toLowerCase())).slice(0, 8)
+      const f = allCities
+        .filter(c => c.nome.toLowerCase().startsWith(val.toLowerCase()))
+        .slice(0, 8)
       setFilteredCities(f)
       setShowCityDropdown(f.length > 0)
     } else {
@@ -38,15 +57,29 @@ function NovoLeilao() {
     }
   }
 
+  const selectCity = (c) => {
+    const uf = c.microrregiao?.mesorregiao?.UF?.sigla
+      || c['regiao-imediata']?.['regiao-intermediaria']?.UF?.sigla
+      || 'BR'
+    setCity(c.nome)
+    setCityState(uf)
+    setShowCityDropdown(false)
+  }
+
   const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files)
-    if (files.length + photos.length > 5) { alert('Maximo 5 fotos!'); return }
+    if (files.length + photos.length > 5) {
+      alert('Máximo 5 fotos!'); return
+    }
     setUploading(true)
     const uploaded = []
     for (const file of files) {
       const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
       const { error } = await supabase.storage.from('auction-photos').upload(fname, file)
-      if (!error) {
+      if (error) {
+        console.error('Erro ao enviar foto:', error.message)
+        alert('Erro ao enviar foto: ' + error.message)
+      } else {
         const { data: u } = supabase.storage.from('auction-photos').getPublicUrl(fname)
         uploaded.push(u.publicUrl)
       }
@@ -57,105 +90,176 @@ function NovoLeilao() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!title || !startingBid || !endsAt) { alert('Preencha os campos obrigatorios!'); return }
+    if (!title.trim()) { alert('Preencha o título!'); return }
+    if (!startingBid || parseFloat(startingBid) <= 0) { alert('Informe um lance inicial válido!'); return }
+    if (!endsAt) { alert('Informe a data de encerramento!'); return }
+    if (!city.trim()) { alert('Informe a cidade!'); return }
+
+    setSubmitting(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { navigate('/'); return }
-    const cityName = city.includes(' - ') ? city.split(' - ')[0] : city
+
     const { error } = await supabase.from('auctions').insert({
-      title, description, category,
+      title: title.trim(),
+      description: description.trim(),
+      category,
       initial_price: parseFloat(startingBid),
       current_price: parseFloat(startingBid),
-      neighborhood, city: cityName, ends_at: endsAt,
-      images: photos, seller_id: user.id, status: 'active',
-      latitude: -25.0916, longitude: -50.1668, state: 'PR'
+      neighborhood: neighborhood.trim(),
+      city: city.trim(),
+      state: cityState || 'BR',
+      ends_at: endsAt,
+      images: photos,
+      seller_id: user.id,
+      status: 'active',
+      latitude: -25.0916,
+      longitude: -50.1668
     })
-    if (error) { alert('Erro: ' + error.message) } else { alert('Leilao criado!'); navigate('/home') }
+
+    setSubmitting(false)
+
+    if (error) {
+      alert('Erro ao criar leilão: ' + error.message)
+    } else {
+      alert('Leilão criado com sucesso!')
+      navigate('/home')
+    }
   }
 
-  const inp = { width: '100%', padding: '14px 16px', border: '2px solid #e2e8f0', borderRadius: '12px', fontSize: '16px', boxSizing: 'border-box', fontFamily: 'inherit' }
-  const lbl = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#374151', fontSize: '14px' }
+  const inp = {
+    width: '100%',
+    padding: '14px 16px',
+    border: '2px solid #e2e8f0',
+    borderRadius: '12px',
+    fontSize: '16px',
+    boxSizing: 'border-box',
+    fontFamily: 'inherit'
+  }
+  const lbl = {
+    display: 'block',
+    marginBottom: '6px',
+    fontWeight: '600',
+    color: '#374151',
+    fontSize: '14px'
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto', background: 'white', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
-          <button onClick={() => navigate('/home')} style={{ background: 'none', border: '2px solid #e2e8f0', borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', fontSize: '16px' }}>Voltar</button>
-          <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#1a202c' }}>Criar Novo Leilao</h1>
+          <button onClick={() => navigate('/home')} style={{ background: 'none', border: '2px solid #e2e8f0', borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', fontSize: '16px' }}>
+            Voltar
+          </button>
+          <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: '#1a202c' }}>Criar Novo Leilão</h1>
         </div>
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+          {/* TITULO */}
           <div>
-            <label style={lbl}>Titulo *</label>
-            <input style={inp} value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex: Sofa em otimo estado" required />
+            <label style={lbl}>Título *</label>
+            <input
+              style={inp}
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Ex: Sofá em ótimo estado"
+              required
+            />
           </div>
+
+          {/* DESCRICAO */}
           <div>
-            <label style={lbl}>Descricao</label>
+            <label style={lbl}>Descrição</label>
             <textarea
               style={{ ...inp, height: '100px', resize: 'vertical' }}
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder={
                 category === 'servicos'
-                  ? 'Ex: 20m2 de grama para cortar | 3 comodos para pintar | 15m2 ceramica para instalar...'
+                  ? 'Ex: 20m² de grama para cortar | 3 cômodos para pintar...'
                   : category === 'eletronicos'
-                  ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Maquina de lavar 10kg...'
+                  ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Máquina de lavar 10kg...'
                   : 'Descreva o item...'
               }
             />
             {category === 'servicos' && (
               <div style={{ marginTop: '10px', padding: '14px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: '14px', color: '#1e3a8a' }}>
                 <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  🔧 SERVICOS — O MENOR LANCE VENCE!
+                  🔧 SERVIÇOS — O MENOR LANCE VENCE!
                 </div>
                 <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
-                  Descreva exatamente o servico com medidas ou quantidade:
+                  Descreva exatamente o serviço com medidas ou quantidade:
                 </p>
                 <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
                   <li>20 metros quadrados de grama para cortar</li>
                   <li>20 metros quadrados de parede para pintar</li>
-                  <li>20 metros quadrados de ceramica para instalar</li>
-                  <li>Limpeza de 3 comodos + banheiro</li>
-                  <li>Instalacao de 2 ar condicionado split</li>
+                  <li>20 metros quadrados de cerâmica para instalar</li>
+                  <li>Limpeza de 3 cômodos + banheiro</li>
+                  <li>Instalação de 2 ar condicionado split</li>
                 </ul>
               </div>
             )}
             {category === 'eletronicos' && (
               <div style={{ marginTop: '10px', padding: '14px 16px', background: '#f0fdf4', border: '2px solid #15803d', borderRadius: '12px', fontSize: '14px', color: '#15803d' }}>
                 <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  📱 ELETRONICOS, MAQUINAS E CELULARES
+                  📱 ELETRÔNICOS, MÁQUINAS E CELULARES
                 </div>
                 <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
-                  Descreva o item com modelo, estado de conservacao e acessorios inclusos:
+                  Descreva o item com modelo, estado de conservação e acessórios inclusos:
                 </p>
                 <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
                   <li>Celular: modelo, armazenamento, cor e estado</li>
                   <li>Notebook: processador, RAM, HD/SSD e tela</li>
-                  <li>Maquina de lavar: capacidade e marca</li>
-                  <li>TV: tamanho, resolucao e Smart ou nao</li>
-                  <li>Outros eletronicos: marca, modelo e funcionando</li>
+                  <li>Máquina de lavar: capacidade e marca</li>
+                  <li>TV: tamanho, resolução e Smart ou não</li>
+                  <li>Outros eletrônicos: marca, modelo e funcionando</li>
                 </ul>
               </div>
             )}
           </div>
+
+          {/* CATEGORIA */}
           <div>
             <label style={lbl}>Categoria</label>
             <select style={inp} value={category} onChange={e => setCategory(e.target.value)}>
-              <option value="veiculos">Veiculos</option>
-              <option value="eletronicos">Eletronicos, Maquinas, Celulares</option>
-              <option value="moveis">Moveis</option>
-              <option value="imoveis">Imoveis</option>
-              <option value="servicos">Servicos (menor lance vence)</option>
+              <option value="veiculos">Veículos</option>
+              <option value="eletronicos">Eletrônicos, Máquinas, Celulares</option>
+              <option value="moveis">Móveis</option>
+              <option value="imoveis">Imóveis</option>
+              <option value="servicos">Serviços (menor lance vence)</option>
               <option value="objetos">Objetos</option>
               <option value="outros">Outros</option>
             </select>
           </div>
+
+          {/* LANCE INICIAL */}
           <div>
             <label style={lbl}>Lance Inicial (R$) *</label>
-            <input style={inp} type="number" min="1" step="0.01" value={startingBid} onChange={e => setStartingBid(e.target.value)} placeholder="0.00" required />
+            <input
+              style={inp}
+              type="number"
+              min="1"
+              step="0.01"
+              value={startingBid}
+              onChange={e => setStartingBid(e.target.value)}
+              placeholder="0.00"
+              required
+            />
           </div>
+
+          {/* BAIRRO */}
           <div>
             <label style={lbl}>Bairro</label>
-            <input style={inp} value={neighborhood} onChange={e => setNeighborhood(e.target.value)} placeholder="Ex: Centro" />
+            <input
+              style={inp}
+              value={neighborhood}
+              onChange={e => setNeighborhood(e.target.value)}
+              placeholder="Ex: Centro"
+            />
           </div>
+
+          {/* CIDADE */}
           <div>
             <label style={lbl}>Cidade *</label>
             <div style={{ position: 'relative' }}>
@@ -167,39 +271,89 @@ function NovoLeilao() {
                 placeholder="Digite sua cidade..."
                 required
               />
+              {cityState && (
+                <div style={{ marginTop: '4px', fontSize: '12px', color: '#667eea', fontWeight: '600' }}>
+                  Estado: {cityState}
+                </div>
+              )}
               {showCityDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '2px solid #e2e8f0', borderRadius: '12px', zIndex: 999, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', maxHeight: '200px', overflowY: 'auto' }}>
-                  {filteredCities.map((c, i) => (
-                    <div key={i} onMouseDown={() => { setCity(c); setShowCityDropdown(false) }} style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', fontSize: '14px' }}>{c}</div>
-                  ))}
+                  {filteredCities.map((c, i) => {
+                    const uf = c.microrregiao?.mesorregiao?.UF?.sigla || ''
+                    return (
+                      <div
+                        key={i}
+                        onMouseDown={() => selectCity(c)}
+                        style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', fontSize: '14px' }}
+                      >
+                        {c.nome} - {uf}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>
           </div>
+
+          {/* DATA DE ENCERRAMENTO */}
           <div>
             <label style={lbl}>Data de Encerramento *</label>
-            <input style={inp} type="datetime-local" value={endsAt} onChange={e => setEndsAt(e.target.value)} required />
+            <input
+              style={inp}
+              type="datetime-local"
+              value={endsAt}
+              onChange={e => setEndsAt(e.target.value)}
+              required
+            />
           </div>
+
+          {/* FOTOS */}
           <div>
-            <label style={lbl}>Fotos (maximo 5)</label>
+            <label style={lbl}>Fotos (máximo 5)</label>
             <div>
-              <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} style={{ ...inp, padding: '10px', cursor: 'pointer' }} />
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoUpload}
+                style={{ ...inp, padding: '10px', cursor: 'pointer' }}
+              />
               {uploading && <p style={{ color: '#667eea', fontSize: '14px', marginTop: '8px' }}>Enviando fotos...</p>}
               {photos.length > 0 && (
                 <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
                   {photos.map((p, i) => (
                     <div key={i} style={{ position: 'relative' }}>
                       <img src={p} alt="foto" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px' }} />
-                      <button type="button" onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))} style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '11px' }}>x</button>
+                      <button
+                        type="button"
+                        onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))}
+                        style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '11px' }}
+                      >x</button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
-          <button type="submit" disabled={uploading} style={{ padding: '16px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '14px', fontSize: '18px', fontWeight: '800', cursor: uploading ? 'not-allowed' : 'pointer' }}>
-            {uploading ? 'ENVIANDO FOTOS...' : 'CRIAR LEILAO'}
+
+          {/* BOTAO SUBMIT */}
+          <button
+            type="submit"
+            disabled={uploading || submitting}
+            style={{
+              padding: '16px',
+              background: (uploading || submitting) ? '#aaa' : 'linear-gradient(135deg, #667eea, #764ba2)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '14px',
+              fontSize: '18px',
+              fontWeight: '800',
+              cursor: (uploading || submitting) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {uploading ? 'ENVIANDO FOTOS...' : submitting ? 'CRIANDO LEILÃO...' : 'CRIAR LEILÃO'}
           </button>
+
         </form>
       </div>
     </div>
