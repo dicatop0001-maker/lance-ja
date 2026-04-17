@@ -138,24 +138,20 @@ function Home() {
       <style>{blinkStyle}</style>
       {/* NAVBAR */}
       <nav className="lj-nav">
-        {/* ESQUERDA DESKTOP */}
         <div className="lj-nav-left">
           <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>
             Meus Leiloes
           </button>
         </div>
-        {/* LOGO CENTRO */}
         <div className="lj-nav-logo">
           <img src="/logo-leilao.png" alt="Leilao do Bairro" style={{ height: 'clamp(65px,18vw,200px)', maxWidth: 'clamp(160px,55vw,500px)', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
         </div>
-        {/* DIREITA DESKTOP */}
         <div className="lj-nav-right">
           <Notifications user={user} />
           <button onClick={handleLogout} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>
             Sair
           </button>
         </div>
-        {/* TODOS BOTOES MOBILE */}
         <div className="lj-nav-mobile-btns" style={{ display: 'none' }}>
           <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>
             Meus Leiloes
@@ -240,13 +236,19 @@ function Home() {
               </button>
             ))}
           </div>
-          {/* BOTAO DESTAQUE ELETRONICOS, MAQUINAS, CELULARES */}
-          <div style={{ marginTop: '10px', textAlign: 'center' }}>
+          {/* BOTOES DESTAQUE — ELETRONICOS E SERVICOS */}
+          <div style={{ marginTop: '10px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={() => setSelectedCategory(selectedCategory === 'eletronicos' ? '' : 'eletronicos')}
               style={{ padding: '10px 36px', borderRadius: '30px', border: selectedCategory === 'eletronicos' ? '2px solid white' : '2px solid rgba(255,255,255,0.5)', background: selectedCategory === 'eletronicos' ? '#15803d' : 'rgba(21,128,61,0.45)', color: 'white', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(21,128,61,0.4)', letterSpacing: '0.5px', minWidth: '260px' }}
             >
               📱 Eletronicos, Maquinas, Celulares
+            </button>
+            <button
+              onClick={() => setSelectedCategory(selectedCategory === 'servicos' ? '' : 'servicos')}
+              style={{ padding: '10px 36px', borderRadius: '30px', border: selectedCategory === 'servicos' ? '2px solid white' : '2px solid rgba(255,255,255,0.5)', background: selectedCategory === 'servicos' ? '#1e3a8a' : 'rgba(30,58,138,0.45)', color: 'white', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.4)', letterSpacing: '0.5px', minWidth: '260px' }}
+            >
+              🔧 Servicos (lance menor vence)
             </button>
           </div>
         </div>
