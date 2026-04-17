@@ -69,14 +69,10 @@ function NovoLeilao() {
       images: photos, seller_id: user.id, status: 'active',
       latitude: -25.0916, longitude: -50.1668, state: 'PR'
     })
-    if (error) { alert('Erro: ' + error.message) }
-    else { alert('Leilao criado!'); navigate('/home') }
+    if (error) { alert('Erro: ' + error.message) } else { alert('Leilao criado!'); navigate('/home') }
   }
 
-  const inp = {
-    width: '100%', padding: '14px 16px', border: '2px solid #e2e8f0',
-    borderRadius: '12px', fontSize: '16px', boxSizing: 'border-box', fontFamily: 'inherit'
-  }
+  const inp = { width: '100%', padding: '14px 16px', border: '2px solid #e2e8f0', borderRadius: '12px', fontSize: '16px', boxSizing: 'border-box', fontFamily: 'inherit' }
   const lbl = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#374151', fontSize: '14px' }
 
   return (
@@ -97,18 +93,16 @@ function NovoLeilao() {
               style={{ ...inp, height: '100px', resize: 'vertical' }}
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder={category === 'servicos' ? 'Ex: 20m2 de grama para cortar | 3 comodos para pintar | 15m2 ceramica para instalar...' : 'Descreva o item...'}
+              placeholder={
+                category === 'servicos'
+                  ? 'Ex: 20m2 de grama para cortar | 3 comodos para pintar | 15m2 ceramica para instalar...'
+                  : category === 'eletronicos'
+                  ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Maquina de lavar 10kg...'
+                  : 'Descreva o item...'
+              }
             />
             {category === 'servicos' && (
-              <div style={{
-                marginTop: '10px',
-                padding: '14px 16px',
-                background: '#eff6ff',
-                border: '2px solid #1e3a8a',
-                borderRadius: '12px',
-                fontSize: '14px',
-                color: '#1e3a8a'
-              }}>
+              <div style={{ marginTop: '10px', padding: '14px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: '14px', color: '#1e3a8a' }}>
                 <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   🔧 SERVICOS — O MENOR LANCE VENCE!
                 </div>
@@ -124,12 +118,29 @@ function NovoLeilao() {
                 </ul>
               </div>
             )}
+            {category === 'eletronicos' && (
+              <div style={{ marginTop: '10px', padding: '14px 16px', background: '#f0fdf4', border: '2px solid #15803d', borderRadius: '12px', fontSize: '14px', color: '#15803d' }}>
+                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📱 ELETRONICOS, MAQUINAS E CELULARES
+                </div>
+                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
+                  Descreva o item com modelo, estado de conservacao e acessorios inclusos:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
+                  <li>Celular: modelo, armazenamento, cor e estado</li>
+                  <li>Notebook: processador, RAM, HD/SSD e tela</li>
+                  <li>Maquina de lavar: capacidade e marca</li>
+                  <li>TV: tamanho, resolucao e Smart ou nao</li>
+                  <li>Outros eletronicos: marca, modelo e funcionando</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div>
             <label style={lbl}>Categoria</label>
             <select style={inp} value={category} onChange={e => setCategory(e.target.value)}>
               <option value="veiculos">Veiculos</option>
-              <option value="eletronicos">Eletronicos</option>
+              <option value="eletronicos">Eletronicos, Maquinas, Celulares</option>
               <option value="moveis">Moveis</option>
               <option value="imoveis">Imoveis</option>
               <option value="servicos">Servicos (menor lance vence)</option>
