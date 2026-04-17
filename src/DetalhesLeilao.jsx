@@ -198,7 +198,8 @@ function DetalhesLeilao() {
     e.preventDefault()
     if (!user) { alert('Você precisa estar logado para dar um lance!'); return }
     if (!auction) return
-    const amount = parseFloat(bidValue)
+    const rawValue = String(bidValue).trim().replace(',', '.')
+    const amount = parseFloat(rawValue)
     if (isServico) {
       if (isNaN(amount) || amount <= 0) { alert('Digite um valor válido!'); return }
       if (amount >= auction.current_price) {
@@ -326,7 +327,8 @@ function DetalhesLeilao() {
             {!isEnded && user && auction.seller_id !== user.id && (
               <form onSubmit={handleBid}>
                 <input
-                  type="number"
+                  type="text"
+                inputMode="decimal"
                   value={bidValue}
                   onChange={(e) => setBidValue(e.target.value)}
                   placeholder={bidPlaceholder}
