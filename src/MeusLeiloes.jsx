@@ -95,7 +95,7 @@ function MeusLeiloes() {
   }
 
   const shareWhatsApp = () => {
-    const text = encodeURIComponent('Confira meus leiloes no Leilao do Bairro: ' + shareLink)
+    const text = encodeURIComponent('Confira meus leilões no Leilão do Bairro: ' + shareLink)
     window.open('https://wa.me/?text=' + text, '_blank')
   }
 
@@ -110,27 +110,27 @@ function MeusLeiloes() {
       <style>{meusLeiloesStyle}</style>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-        {/* CABECALHO */}
+        {/* CABEÇALHO */}
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'clamp(16px, 4vw, 30px)', gap: '12px' }}>
           <button onClick={() => navigate('/home')} style={{ background: 'white', border: 'none', padding: 'clamp(8px, 2vw, 10px) clamp(14px, 3vw, 20px)', borderRadius: '10px', fontSize: 'clamp(14px, 3.5vw, 18px)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
             Voltar
           </button>
-          <h1 style={{ color: 'white', margin: 0, fontSize: 'clamp(20px, 5vw, 32px)' }}>Meus Leiloes</h1>
+          <h1 style={{ color: 'white', margin: 0, fontSize: 'clamp(20px, 5vw, 32px)' }}>Meus Leilões</h1>
         </div>
 
-        {/* GRID TOPO — QR Code e Estatisticas */}
+        {/* GRID TOPO — QR Code e Estatísticas */}
         <div className="ml-grid-topo">
 
           {/* QR CODE */}
           <div style={{ background: 'white', borderRadius: '20px', padding: 'clamp(16px, 4vw, 30px)', textAlign: 'center' }}>
-            <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Divulgue seus Leiloes</h2>
+            <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Divulgue seus Leilões</h2>
             <p style={{ color: '#666', marginBottom: '16px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
-              Compartilhe este QR Code para as pessoas verem todos os seus leiloes
+              Compartilhe este QR Code para as pessoas verem todos os seus leilões
             </p>
             {/* LOGO ACIMA DO QR CODE */}
             <img
               src="/logo-leilao.png"
-              alt="Leilao do Bairro"
+              alt="Leilão do Bairro"
               style={{ width: 'clamp(160px, 50vw, 280px)', height: 'auto', margin: '0 auto 12px auto', display: 'block', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
             />
             {qrCodeUrl && (
@@ -145,16 +145,16 @@ function MeusLeiloes() {
             )}
           </div>
 
-          {/* ESTATISTICAS E COMPARTILHAMENTO */}
+          {/* ESTATÍSTICAS E COMPARTILHAMENTO */}
           <div style={{ background: 'white', borderRadius: '20px', padding: 'clamp(16px, 4vw, 30px)' }}>
-            <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Estatisticas</h2>
+            <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>Estatísticas</h2>
             <div style={{ background: '#f0f5ff', padding: 'clamp(12px, 3vw, 20px)', borderRadius: '15px', marginBottom: '16px' }}>
               <div translate="no" style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{views}</div>
-              <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>visualizacoes do seu perfil</div>
+              <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>visualizações do seu perfil</div>
             </div>
             <div style={{ background: '#f0f5ff', padding: 'clamp(12px, 3vw, 20px)', borderRadius: '15px', marginBottom: '16px' }}>
               <div translate="no" style={{ fontSize: 'clamp(32px, 9vw, 48px)', fontWeight: 'bold', color: '#667eea', textAlign: 'center' }}>{myAuctions.length}</div>
-              <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>leiloes criados</div>
+              <div style={{ textAlign: 'center', color: '#666', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>leilões criados</div>
             </div>
             <h3 style={{ fontSize: 'clamp(14px, 4vw, 18px)' }}>Compartilhar Link</h3>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
@@ -169,16 +169,16 @@ function MeusLeiloes() {
           </div>
         </div>
 
-        {/* LISTA DE LEILOES */}
+        {/* LISTA DE LEILÕES */}
         <div style={{ background: 'white', borderRadius: '20px', padding: 'clamp(16px, 4vw, 30px)' }}>
           <h2 style={{ marginTop: 0, fontSize: 'clamp(16px, 4vw, 22px)' }}>
-            Seus Leiloes (<span translate="no">{myAuctions.length}</span>)
+            Seus Leilões (<span translate="no">{myAuctions.length}</span>)
           </h2>
           {myAuctions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-              <p style={{ fontSize: 'clamp(15px, 4vw, 18px)' }}>Voce ainda nao criou nenhum leilao</p>
+              <p style={{ fontSize: 'clamp(15px, 4vw, 18px)' }}>Você ainda não criou nenhum leilão</p>
               <button onClick={() => navigate('/novo')} style={{ padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' }}>
-                + Criar Primeiro Leilao
+                + Criar Primeiro Leilão
               </button>
             </div>
           ) : (
