@@ -4,3 +4,19 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* ===== RESPONSIVIDADE GLOBAL ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; padding: 0; overflow-x: hidden; }
+img { max-width: 100%; height: auto; }
+input, textarea, select, button { max-width: 100%; }
+
+@media (max-width: 600px) {
+  button { white-space: normal !important; word-break: break-word; }
+}
+@media (max-width: 480px) {
+  h1 { font-size: clamp(22px, 6vw, 32px) !important; }
+  h2 { font-size: clamp(18px, 5vw, 26px) !important; }
+  h3 { font-size: clamp(15px, 4vw, 20px) !important; }
+}
