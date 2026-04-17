@@ -38,6 +38,48 @@ const blinkStyle = `
     justify-content: center !important;
   }
 }
+
+.lj-nav {
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  gap: 10px;
+}
+.lj-nav-logo {
+  display: flex;
+  justify-content: center;
+}
+.lj-nav-left, .lj-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lj-nav-right { justify-content: flex-end; }
+@media (max-width: 599px) {
+  .lj-nav {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .lj-nav-logo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .lj-nav-left { display: none; }
+  .lj-nav-right { display: none; }
+  .lj-nav-mobile-btns {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex !important;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+@media (min-width: 600px) {
+  .lj-nav-mobile-btns { display: none !important; }
+}
 `
 
 function Home() {
@@ -153,47 +195,31 @@ function Home() {
       <style>{blinkStyle}</style>
 
       {/* NAVBAR */}
-      <nav style={{
-        padding: '10px 16px',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: 'rgba(255,255,255,0.12)',
-        backdropFilter: 'blur(8px)',
-        gap: '8px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <button
-            onClick={() => navigate('/meus-leiloes')}
-            style={{
-              padding: '14px 28px',
-              background: '#1e3a8a',
-              color: 'white',
-              border: '3px solid #4a90d9',
-              borderRadius: '50px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-              letterSpacing: '0.5px'
-            }}
-          >
+      <nav className="lj-nav">
+
+        {/* ESQUERDA DESKTOP */}
+        <div className="lj-nav-left">
+          <button onClick={() => navigate('/meus-leiloes')} style={
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+            }>
             Meus Leiloes
           </button>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '1 1 0', order: 2 }}>
+        {/* LOGO CENTRO */}
+        <div className="lj-nav-logo">
           <img
             src="/logo-leilao.png"
             alt="Leilao do Bairro"
             style={{
-              height: 'clamp(160px, 28vw, 360px)',
-              maxWidth: '60vw',
-              objectFit: 'contain',
-              borderRadius: '10px',
+              height: 'clamp(65px,18vw,200px)',
+              maxWidth: 'clamp(160px,55vw,500px)',
+              objectFit: 'contain', borderRadius: '10px',
               cursor: 'pointer',
               filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))'
             }}
@@ -201,27 +227,46 @@ function Home() {
           />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        {/* DIREITA DESKTOP */}
+        <div className="lj-nav-right">
           <Notifications user={user} />
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '14px 28px',
-              background: '#1e3a8a',
-              color: 'white',
-              border: '3px solid #4a90d9',
-              borderRadius: '50px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 15px rgba(30,58,138,0.5)',
-              letterSpacing: '0.5px'
-            }}
-          >
+          <button onClick={handleLogout} style={
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+            }>
             Sair
           </button>
         </div>
+
+        {/* TODOS BOTOES MOBILE */}
+        <div className="lj-nav-mobile-btns" style={{ display: 'none' }}>
+          <button onClick={() => navigate('/meus-leiloes')} style={
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+            }>
+            Meus Leiloes
+          </button>
+          <Notifications user={user} />
+          <button onClick={handleLogout} style={
+              padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)',
+              background: '#1e3a8a', color: 'white',
+              border: '3px solid #4a90d9', borderRadius: '50px',
+              cursor: 'pointer', fontWeight: 'bold',
+              fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+            }>
+            Sair
+          </button>
+        </div>
+
       </nav>
 
       {/* HERO */}
