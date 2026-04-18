@@ -113,7 +113,10 @@ function Home() {
 
   useEffect(() => {
     const n = new Date()
-    setActiveAuctions(auctions.filter(a => (a.status === 'active' || !a.status) && new Date(a.ends_at) > n))
+    setActiveAuctions(auctions.filter(a =>
+      (a.status === 'active' || !a.status) &&
+      (a.tipo === 'anuncio' || !a.ends_at || new Date(a.ends_at) > n)
+    ))
   }, [auctions])
 
   useEffect(() => {
@@ -247,22 +250,25 @@ function Home() {
 
       {/* CONTEUDO PRINCIPAL */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
-        {/* BOTAO CRIAR NOVO LEILAO */}
-        <div style={{ marginBottom: '20px' }}>
+        {/* BOTOES CRIAR */}
+        <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button onClick={() => navigate('/anuncio')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#f97316', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>
+            📢 + CRIAR SEU ANÚNCIO
+          </button>
           <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>
-            + CRIAR NOVO LEILÃO
+            🔨 + CRIAR NOVO LEILÃO
           </button>
         </div>
         {/* TITULO LEILOES ATIVOS */}
         <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '16px' }}>
-          Leilões Ativos
+          Leilões e itens Ativos
         </h2>
 
         {/* BUSCA E FILTRO CATEGORIA */}
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '16px', padding: '14px 16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '30px', padding: '8px 16px', gap: '10px' }}>
             <span style={{ fontSize: '20px' }}>🔍</span>
-            <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Buscar leilão..." style={{ border: 'none', outline: 'none', fontSize: '15px', width: '100%', background: 'transparent', color: '#333' }} />
+            <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Buscar leilões e itens..." style={{ border: 'none', outline: 'none', fontSize: '15px', width: '100%', background: 'transparent', color: '#333' }} />
             {searchTerm && (
               <button onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#999', padding: '0' }}>X</button>
             )}
@@ -331,8 +337,13 @@ function Home() {
                   <div style={{ padding: '16px' }}>
                     <h3 style={{ margin: '0 0 8px 0', fontSize: 'clamp(16px, 2vw, 20px)' }}>{auction.title}</h3>
                     <p style={{ color: '#666', marginBottom: '12px', fontSize: '14px' }}>{auction.city}</p>
-                    <div style={{ fontSize: '13px', color: '#999' }}>Lance atual</div>
-                    <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: '#667eea' }}>
+                    {(auction.tipo === 'anuncio' || !auction.ends_at) && (
+                      <div style={{ display: 'inline-block', background: '#f97316', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '3px 10px', borderRadius: '20px', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                        📢 ANÚNCIO
+                      </div>
+                    )}
+                    <div style={{ fontSize: '13px', color: '#999' }}>{(auction.tipo === 'anuncio' || !auction.ends_at) ? 'Preço' : 'Lance atual'}</div>
+                    <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: (auction.tipo === 'anuncio' || !auction.ends_at) ? '#f97316' : '#667eea' }}>
                       R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </div>
                   </div>
