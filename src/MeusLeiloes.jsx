@@ -95,7 +95,7 @@ function MeusLeiloes() {
 
   const copyLink = () => { navigator.clipboard.writeText(shareLink); alert('Link copiado!') }
   const shareWhatsApp = () => {
-    const text = encodeURIComponent('Confira meus leilões no Leilão do Bairro: ' + shareLink)
+    const text = encodeURIComponent('Confira meus leilões no Zap Bairro: ' + shareLink)
     window.open('https://wa.me/?text=' + text, '_blank')
   }
 
@@ -229,7 +229,7 @@ function MeusLeiloes() {
             <p style={{ color: '#666', marginBottom: '16px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
               Compartilhe este QR Code para as pessoas verem todos os seus leilões
             </p>
-            <img src="/logo-leilao.png" alt="Leilão do Bairro" style={{ width: 'clamp(160px, 50vw, 280px)', height: 'auto', margin: '0 auto 12px auto', display: 'block', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }} />
+            <img src="/logo-leilao.png" alt="Zap Bairro" style={{ width: 'clamp(160px, 50vw, 280px)', height: 'auto', margin: '0 auto 12px auto', display: 'block', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }} />
             {qrCodeUrl && (
               <div>
                 <img src={qrCodeUrl} alt="QR Code" style={{ width: 'clamp(180px, 60vw, 300px)', height: 'clamp(180px, 60vw, 300px)', margin: '0 auto', display: 'block' }} />
