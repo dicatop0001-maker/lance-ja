@@ -20,10 +20,7 @@ function NovoLeilao() {
   const [photoError, setPhotoError] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    loadCities()
-    detectUserCity()
-  }, [])
+  useEffect(() => { loadCities(); detectUserCity() }, [])
 
   const detectUserCity = async () => {
     try {
@@ -67,13 +64,27 @@ function NovoLeilao() {
     setPhotoError(false)
     const uploaded = []
     for (const file of files) {
-      const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
-      const { error } = await supabase.storage.from('auction-photos').upload(fname, file)
-      if (error) {
-        alert('Erro ao enviar foto: ' + error.message)
-      } else {
-        const { data: u } = supabase.storage.from('auction-photos').getPublicUrl(fname)
-        uploaded.push(u.publicUrl)
+      try {
+        const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+        const res = await fetch('/api/upload-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: fname, fileType: file.type, fileData: base64 })
+        })
+        const data = await res.json()
+        if (!res.ok || data.error) {
+          alert('Erro ao enviar foto: ' + (data.error || res.statusText))
+        } else {
+          uploaded.push(data.url)
+        }
+      } catch (err) {
+        alert('Erro ao enviar foto: ' + err.message)
       }
     }
     setPhotos(p => [...p, ...uploaded])
@@ -86,19 +97,15 @@ function NovoLeilao() {
     if (!startingBid || parseFloat(startingBid) <= 0) { alert('Informe um lance inicial válido!'); return }
     if (!endsAt) { alert('Informe a data de encerramento!'); return }
     if (!city.trim()) { alert('Informe a cidade!'); return }
-
-    // FOTO OBRIGATORIA
     if (photos.length === 0) {
       setPhotoError(true)
       const el = document.getElementById('foto-upload-section')
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
-
     setSubmitting(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { navigate('/'); return }
-
     const { error } = await supabase.from('auctions').insert({
       title: title.trim(),
       description: description.trim(),
@@ -116,30 +123,12 @@ function NovoLeilao() {
       longitude: -50.1668
     })
     setSubmitting(false)
-    if (error) {
-      alert('Erro ao criar leilão: ' + error.message)
-    } else {
-      alert('Leilão criado com sucesso!')
-      navigate('/home')
-    }
+    if (error) { alert('Erro ao criar leilão: ' + error.message) }
+    else { alert('Leilão criado com sucesso!'); navigate('/home') }
   }
 
-  const inp = {
-    width: '100%',
-    padding: '14px 16px',
-    border: '2px solid #e2e8f0',
-    borderRadius: '12px',
-    fontSize: '16px',
-    boxSizing: 'border-box',
-    fontFamily: 'inherit'
-  }
-  const lbl = {
-    display: 'block',
-    marginBottom: '6px',
-    fontWeight: '600',
-    color: '#374151',
-    fontSize: '14px'
-  }
+  const inp = { width: '100%', padding: '14px 16px', border: '2px solid #e2e8f0', borderRadius: '12px', fontSize: '16px', boxSizing: 'border-box', fontFamily: 'inherit' }
+  const lbl = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#374151', fontSize: '14px' }
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px' }}>
@@ -162,14 +151,11 @@ function NovoLeilao() {
           {/* DESCRICAO */}
           <div>
             <label style={lbl}>Descrição</label>
-            <textarea
-              style={{ ...inp, height: '100px', resize: 'vertical' }}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+            <textarea style={{ ...inp, height: '100px', resize: 'vertical' }} value={description} onChange={e => setDescription(e.target.value)}
               placeholder={
-                category === 'servicos' ? 'Ex: 20m² de grama para cortar | 3 cômodos para pintar...'
-                : category === 'eletronicos' ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Máquina de lavar 10kg...'
-                : 'Descreva o item...'
+                category === 'servicos' ? 'Ex: 20m² de grama para cortar | 3 cômodos para pintar...' :
+                category === 'eletronicos' ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Máquina de lavar 10kg...' :
+                'Descreva o item...'
               }
             />
             {category === 'servicos' && (
@@ -227,14 +213,7 @@ function NovoLeilao() {
           <div>
             <label style={lbl}>Cidade *</label>
             <div style={{ position: 'relative' }}>
-              <input
-                style={inp}
-                value={city}
-                onChange={e => handleCityInput(e.target.value)}
-                onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)}
-                placeholder="Digite sua cidade..."
-                required
-              />
+              <input style={inp} value={city} onChange={e => handleCityInput(e.target.value)} onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)} placeholder="Digite sua cidade..." required />
               {cityState && <div style={{ marginTop: '4px', fontSize: '12px', color: '#667eea', fontWeight: '600' }}>Estado: {cityState}</div>}
               {showCityDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '2px solid #e2e8f0', borderRadius: '12px', zIndex: 999, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', maxHeight: '200px', overflowY: 'auto' }}>
@@ -257,72 +236,37 @@ function NovoLeilao() {
             <input style={inp} type="datetime-local" value={endsAt} onChange={e => setEndsAt(e.target.value)} required />
           </div>
 
-          {/* FOTOS — OBRIGATÓRIA */}
+          {/* FOTOS */}
           <div id="foto-upload-section">
             <label style={{ ...lbl, color: photoError ? '#ef4444' : '#374151' }}>
               📸 Fotos * <span style={{ fontWeight: '400', color: '#888', fontSize: '13px' }}>(máximo 5 — obrigatório ao menos 1)</span>
             </label>
-
-            {/* Área de upload com destaque se erro */}
-            <div style={{
-              border: photoError ? '2px dashed #ef4444' : '2px dashed #c4b5fd',
-              borderRadius: '14px',
-              padding: '20px',
-              background: photoError ? '#fef2f2' : '#f5f3ff',
-              textAlign: 'center',
-              transition: 'all 0.3s'
-            }}>
+            <div style={{ border: photoError ? '2px dashed #ef4444' : '2px dashed #c4b5fd', borderRadius: '14px', padding: '20px', background: photoError ? '#fef2f2' : '#f5f3ff', textAlign: 'center', transition: 'all 0.3s' }}>
               {photos.length === 0 && (
                 <div style={{ marginBottom: '12px' }}>
                   <div style={{ fontSize: '40px', marginBottom: '8px' }}>📷</div>
                   <p style={{ margin: 0, color: photoError ? '#ef4444' : '#7c3aed', fontWeight: '600', fontSize: '15px' }}>
                     {photoError ? '⚠️ Adicione pelo menos 1 foto para continuar!' : 'Adicione fotos do item'}
                   </p>
-                  <p style={{ margin: '4px 0 0 0', color: '#888', fontSize: '13px' }}>
-                    Leilões com foto vendem muito mais rápido
-                  </p>
+                  <p style={{ margin: '4px 0 0 0', color: '#888', fontSize: '13px' }}>Leilões com foto vendem muito mais rápido</p>
                 </div>
               )}
-              <label style={{
-                display: 'inline-block',
-                padding: '12px 24px',
-                background: photoError ? '#ef4444' : 'linear-gradient(135deg, #667eea, #764ba2)',
-                color: 'white',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '15px',
-                boxShadow: '0 4px 12px rgba(102,126,234,0.35)'
-              }}>
+              <label style={{ display: 'inline-block', padding: '12px 24px', background: photoError ? '#ef4444' : 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '15px', boxShadow: '0 4px 12px rgba(102,126,234,0.35)' }}>
                 {photos.length > 0 ? '+ Adicionar mais fotos' : '📷 Escolher fotos'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoUpload}
-                  style={{ display: 'none' }}
-                />
+                <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} style={{ display: 'none' }} />
               </label>
               {uploading && <p style={{ color: '#667eea', fontSize: '14px', marginTop: '10px' }}>⏳ Enviando fotos...</p>}
             </div>
-
-            {/* Preview das fotos */}
             {photos.length > 0 && (
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
                 {photos.map((p, i) => (
                   <div key={i} style={{ position: 'relative' }}>
                     <img src={p} alt="foto" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #667eea' }} />
-                    <button
-                      type="button"
-                      onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))}
-                      style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
-                    >✕</button>
+                    <button type="button" onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))} style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>✕</button>
                   </div>
                 ))}
               </div>
             )}
-
-            {/* Contador */}
             {photos.length > 0 && (
               <p style={{ margin: '8px 0 0 0', fontSize: '13px', color: '#667eea', fontWeight: '600' }}>
                 ✅ {photos.length} foto{photos.length > 1 ? 's' : ''} adicionada{photos.length > 1 ? 's' : ''}
@@ -331,25 +275,8 @@ function NovoLeilao() {
           </div>
 
           {/* BOTAO SUBMIT */}
-          <button
-            type="submit"
-            disabled={uploading || submitting}
-            style={{
-              padding: '18px',
-              background: (uploading || submitting) ? '#aaa' : photos.length === 0 ? '#94a3b8' : 'linear-gradient(135deg, #667eea, #764ba2)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '14px',
-              fontSize: '18px',
-              fontWeight: '800',
-              cursor: (uploading || submitting) ? 'not-allowed' : 'pointer',
-              position: 'relative'
-            }}
-          >
-            {uploading ? '⏳ Enviando fotos...'
-              : submitting ? '⏳ Criando leilão...'
-              : photos.length === 0 ? '📷 Adicione fotos para continuar'
-              : '🚀 CRIAR LEILÃO'}
+          <button type="submit" disabled={uploading || submitting} style={{ padding: '18px', background: (uploading || submitting) ? '#aaa' : photos.length === 0 ? '#94a3b8' : 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '14px', fontSize: '18px', fontWeight: '800', cursor: (uploading || submitting) ? 'not-allowed' : 'pointer', position: 'relative' }}>
+            {uploading ? '⏳ Enviando fotos...' : submitting ? '⏳ Criando leilão...' : photos.length === 0 ? '📷 Adicione fotos para continuar' : '🚀 CRIAR LEILÃO'}
           </button>
         </form>
       </div>
