@@ -4,22 +4,32 @@ import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
 
 const blinkStyle = `
-  50% { opacity: 0.15; } }
-  50% { transform: translateY(8px); } }
-  .lj-nav { padding: 10px 16px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); gap: 10px; }
-  .lj-nav-logo { display: flex; justify-content: center; }
-  .lj-nav-left, .lj-nav-right { display: flex; align-items: center; gap: 8px; }
-  .lj-nav-right { justify-content: flex-end; }
-  @media (max-width: 599px) {
-    .lj-nav { grid-template-columns: 1fr; grid-template-rows: auto auto; }
-    .lj-nav-logo { grid-column: 1; grid-row: 1; }
-    .lj-nav-left { display: none; }
-    .lj-nav-right { display: none; }
-    .lj-nav-mobile-btns { grid-column: 1; grid-row: 2; display: flex !important; justify-content: center; gap: 8px; }
-  }
-  @media (min-width: 600px) {
-    .lj-nav-mobile-btns { display: none !important; }
-  }
+  50% { opacity: 0.15; }
+}
+  50% { transform: translateY(8px); }
+}
+.lj-nav {
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  gap: 10px;
+}
+.lj-nav-logo { display: flex; justify-content: center; }
+.lj-nav-left, .lj-nav-right { display: flex; align-items: center; gap: 8px; }
+.lj-nav-right { justify-content: flex-end; }
+@media (max-width: 599px) {
+  .lj-nav { grid-template-columns: 1fr; grid-template-rows: auto auto; }
+  .lj-nav-logo { grid-column: 1; grid-row: 1; }
+  .lj-nav-left { display: none; }
+  .lj-nav-right { display: none; }
+  .lj-nav-mobile-btns { grid-column: 1; grid-row: 2; display: flex !important; justify-content: center; gap: 8px; }
+}
+@media (min-width: 600px) {
+  .lj-nav-mobile-btns { display: none !important; }
+}
 `
 
 function getTimeLeft(endsAt) {
@@ -156,6 +166,7 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
+
       <nav className="lj-nav">
         <div className="lj-nav-left">
           <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>Meus Leilões</button>
@@ -262,32 +273,112 @@ function Home() {
               const isAnuncio = auction.tipo === 'anuncio' || !auction.ends_at
               const isSameN = userNeighborhood && auction.neighborhood &&
                 auction.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
-              const bairroLabel = (auction.neighborhood && auction.neighborhood.trim() !== '') ? auction.neighborhood : auction.city
+              const bairroLabel = (auction.neighborhood && auction.neighborhood.trim() !== '')
+                ? auction.neighborhood : auction.city
+
               return (
-                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)}
-                  style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: isSameN ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)' : '0 4px 12px rgba(0,0,0,0.1)' }}
+                <div key={auction.id}
+                  onClick={() => navigate('/leilao/' + auction.id)}
+                  style={{
+                    background: 'white',
+                    borderRadius: '15px',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    boxShadow: isSameN
+                      ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)'
+                      : '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                  <div style={{ position: 'relative', height: '190px', overflow: 'hidden' }}>
-                    <img src={auction.images?.[0] || 'https://via.placeholder.com/300x200'} alt={auction.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  {/* AREA DA IMAGEM - overflow hidden e fontSize 0 para esconder alt text */}
+                  <div style={{
+                    position: 'relative',
+                    height: '190px',
+                    overflow: 'hidden',
+                    backgroundColor: '#f1f5f9',
+                    fontSize: 0,
+                    lineHeight: 0
+                  }}>
+                    <img
+                      src={auction.images?.[0] || ''}
+                      alt=""
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                        fontSize: 0
+                      }}
+                      onError={e => { e.target.style.display = 'none' }}
+                    />
 
                     {/* TEMPO — TOPO ESQUERDO */}
                     {timeLeft && (
-                      <div translate="no" style={{ position: 'absolute', top: '8px', left: '8px', background: timeLeft.urgent ? 'rgba(220,38,38,0.95)' : 'rgba(30,58,138,0.92)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(4px)', boxShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', zIndex: 2 }}>
+                      <div translate="no" style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        background: timeLeft.urgent ? 'rgba(220,38,38,0.95)' : 'rgba(30,58,138,0.92)',
+                        color: 'white',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                        whiteSpace: 'nowrap',
+                        zIndex: 2,
+                        lineHeight: '1.4'
+                      }}>
                         {timeLeft.urgent ? '🔥' : '⏳'} {timeLeft.label}
                       </div>
                     )}
 
                     {/* BADGE ANUNCIO — TOPO DIREITO */}
                     {isAnuncio && (
-                      <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(249,115,22,0.95)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2, backdropFilter: 'blur(4px)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>📢 ANÚNCIO</div>
+                      <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        background: 'rgba(249,115,22,0.95)',
+                        color: 'white',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        zIndex: 2,
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                        lineHeight: '1.4'
+                      }}>📢 ANÚNCIO</div>
                     )}
 
                     {/* BAIRRO — FUNDO VERDE SÓLIDO NA BASE */}
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: '#16a34a', color: 'white', padding: '5px 10px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 2 }}>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      right: '0',
+                      background: '#16a34a',
+                      color: 'white',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      fontWeight: '800',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      zIndex: 2,
+                      lineHeight: '1.4'
+                    }}>
                       📍 {bairroLabel}
-                      {isSameN && <span style={{ marginLeft: 'auto', background: '#f97316', color: 'white', fontSize: '10px', fontWeight: 'bold', padding: '1px 8px', borderRadius: '10px' }}>Perto de você ⭐</span>}
+                      {isSameN && (
+                        <span style={{ marginLeft: 'auto', background: '#f97316', color: 'white', fontSize: '10px', fontWeight: 'bold', padding: '1px 8px', borderRadius: '10px' }}>Perto de você ⭐</span>
+                      )}
                     </div>
                   </div>
 
