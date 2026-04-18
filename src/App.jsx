@@ -7,6 +7,7 @@ import NovoLeilao from './NovoLeilao'
 import DetalhesLeilao from './DetalhesLeilao'
 import MeusLeiloes from './MeusLeiloes'
 import VendedorPerfil from './VendedorPerfil'
+import Vitrine from './Vitrine'
 
 function LoadingScreen() {
   return React.createElement('div', {
@@ -50,6 +51,7 @@ function App() {
   return React.createElement(Router, null,
     React.createElement(Routes, null,
       React.createElement(Route, { path: '/', element: React.createElement(Login) }),
+      React.createElement(Route, { path: '/vitrine', element: React.createElement(Vitrine) }),
       React.createElement(Route, { path: '/home', element: React.createElement(PrivateRoute, null, React.createElement(Home)) }),
       React.createElement(Route, { path: '/novo', element: React.createElement(PrivateRoute, null, React.createElement(NovoLeilao)) }),
       React.createElement(Route, { path: '/leilao/:id', element: React.createElement(PrivateRoute, null, React.createElement(DetalhesLeilao)) }),
