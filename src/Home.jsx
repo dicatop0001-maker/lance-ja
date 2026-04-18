@@ -4,25 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
 
 const blinkStyle = `
-@keyframes blink {
-  0%, 100% { opacity: 1; }
+
   50% { opacity: 0.15; }
 }
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
+
   50% { transform: translateY(8px); }
 }
-.aviso-lance {
-  animation: blink 1.2s ease-in-out infinite;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.mao-bounce {
-  display: inline-block;
-  animation: bounce 0.8s ease-in-out infinite;
-  font-size: 2em;
-}
+
+
 .lj-nav {
   padding: 10px 16px;
   display: grid;
@@ -263,16 +252,7 @@ function Home() {
           <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>
             + CRIAR NOVO LEILÃO
           </button>
-          <div style={{ fontSize: '14px', color: 'white', marginTop: '8px', textAlign: 'center' }}>clique e venda!</div>
         </div>
-
-        {/* AVISO PISCANDO */}
-        <div style={{ textAlign: 'center', marginBottom: '20px', padding: '14px', background: 'rgba(255,255,255,0.15)', borderRadius: '14px' }}>
-          <span className="aviso-lance" style={{ color: 'white', fontSize: 'clamp(16px, 2.5vw, 22px)', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-            <span className="mao-bounce">👇</span> escolha e dê um lance! <span className="mao-bounce">👇</span>
-          </span>
-        </div>
-
         {/* TITULO LEILOES ATIVOS */}
         <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '16px' }}>
           Leilões Ativos
