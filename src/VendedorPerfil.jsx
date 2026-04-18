@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 import { useParams, useNavigate } from 'react-router-dom'
 
@@ -53,7 +53,7 @@ function VendedorPerfil() {
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '40px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ background: 'white', borderRadius: '20px', padding: '40px', marginBottom: '30px', textAlign: 'center' }}>
-          <h1 style={{ margin: '0 0 10px 0', fontSize: '48px', color: '#667eea' }}>LEILÃO DO BAIRRO</h1>
+          <h1 style={{ margin: '0 0 10px 0', fontSize: '48px', color: '#667eea' }}>Zap Bairro</h1>
           <p style={{ fontSize: '20px', color: '#666', margin: '0 0 20px 0' }}>Leilões de {sellerName}</p>
           <p style={{ fontSize: '16px', color: '#999' }}>{auctions.length} {auctions.length === 1 ? 'leilão disponível' : 'leilões disponíveis'}</p>
         </div>
