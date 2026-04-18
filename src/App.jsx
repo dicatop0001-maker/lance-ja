@@ -4,6 +4,7 @@ import { supabase } from './supabaseClient'
 import Login from './Login'
 import Home from './Home'
 import NovoLeilao from './NovoLeilao'
+import NovoAnuncio from './NovoAnuncio'
 import DetalhesLeilao from './DetalhesLeilao'
 import MeusLeiloes from './MeusLeiloes'
 import VendedorPerfil from './VendedorPerfil'
@@ -54,6 +55,7 @@ function App() {
       React.createElement(Route, { path: '/vitrine', element: React.createElement(Vitrine) }),
       React.createElement(Route, { path: '/home', element: React.createElement(PrivateRoute, null, React.createElement(Home)) }),
       React.createElement(Route, { path: '/novo', element: React.createElement(PrivateRoute, null, React.createElement(NovoLeilao)) }),
+    React.createElement(Route, { path: '/anuncio', element: React.createElement(PrivateRoute, null, React.createElement(NovoAnuncio)) }),
       React.createElement(Route, { path: '/leilao/:id', element: React.createElement(PrivateRoute, null, React.createElement(DetalhesLeilao)) }),
       React.createElement(Route, { path: '/meus-leiloes', element: React.createElement(PrivateRoute, null, React.createElement(MeusLeiloes)) }),
       React.createElement(Route, { path: '/vendedor/:sellerId', element: React.createElement(PrivateRoute, null, React.createElement(VendedorPerfil)) }),
