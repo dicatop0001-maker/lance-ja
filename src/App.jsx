@@ -8,12 +8,40 @@ import DetalhesLeilao from './DetalhesLeilao'
 import MeusLeiloes from './MeusLeiloes'
 import VendedorPerfil from './VendedorPerfil'
 
+function LoadingScreen() {
+  return React.createElement('div', {
+    style: {
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    }
+  },
+    React.createElement('div', {
+      style: {
+        width: '48px',
+        height: '48px',
+        border: '5px solid rgba(255,255,255,0.3)',
+        borderTop: '5px solid white',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite'
+      }
+    }),
+    React.createElement('style', null, '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }'),
+    React.createElement('p', {
+      style: { color: 'white', marginTop: '20px', fontSize: '16px', fontWeight: 'bold' }
+    }, 'Carregando...')
+  )
+}
+
 function PrivateRoute({ children }) {
   const [session, setSession] = useState(undefined)
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
   }, [])
-  if (session === undefined) return null
+  if (session === undefined) return React.createElement(LoadingScreen)
   if (!session) return React.createElement(Navigate, { to: '/', replace: true })
   return children
 }
