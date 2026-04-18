@@ -4,75 +4,96 @@ import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
 
 const blinkStyle = `
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.15; }
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(8px); }
-  }
-  .aviso-lance {
-    animation: blink 1.2s ease-in-out infinite;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .mao-bounce {
-    display: inline-block;
-    animation: bounce 0.8s ease-in-out infinite;
-    font-size: 2em;
-  }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.aviso-lance {
+  animation: blink 1.2s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.mao-bounce {
+  display: inline-block;
+  animation: bounce 0.8s ease-in-out infinite;
+  font-size: 2em;
+}
+.lj-nav {
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  gap: 10px;
+}
+.lj-nav-logo {
+  display: flex;
+  justify-content: center;
+}
+.lj-nav-left, .lj-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lj-nav-right {
+  justify-content: flex-end;
+}
+@media (max-width: 599px) {
   .lj-nav {
-    padding: 10px 16px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(8px);
-    gap: 10px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
   }
   .lj-nav-logo {
-    display: flex;
-    justify-content: center;
+    grid-column: 1;
+    grid-row: 1;
   }
-  .lj-nav-left, .lj-nav-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .lj-nav-left {
+    display: none;
   }
   .lj-nav-right {
-    justify-content: flex-end;
+    display: none;
   }
-  @media (max-width: 599px) {
-    .lj-nav {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-    }
-    .lj-nav-logo {
-      grid-column: 1;
-      grid-row: 1;
-    }
-    .lj-nav-left {
-      display: none;
-    }
-    .lj-nav-right {
-      display: none;
-    }
-    .lj-nav-mobile-btns {
-      grid-column: 1;
-      grid-row: 2;
-      display: flex !important;
-      justify-content: center;
-      gap: 8px;
-    }
+  .lj-nav-mobile-btns {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex !important;
+    justify-content: center;
+    gap: 8px;
   }
-  @media (min-width: 600px) {
-    .lj-nav-mobile-btns {
-      display: none !important;
-    }
+}
+@media (min-width: 600px) {
+  .lj-nav-mobile-btns {
+    display: none !important;
   }
+}
 `
+
+function getTimeLeft(endsAt) {
+  const now = new Date()
+  const end = new Date(endsAt)
+  const diffMs = end - now
+  if (diffMs <= 0) return null
+
+  const diffMin = Math.floor(diffMs / 1000 / 60)
+  const diffH   = Math.floor(diffMs / 1000 / 60 / 60)
+  const diffD   = Math.floor(diffMs / 1000 / 60 / 60 / 24)
+
+  if (diffMin < 60) {
+    return { label: diffMin + ' min para dar lance', urgent: true }
+  } else if (diffH < 24) {
+    return { label: diffH + (diffH === 1 ? ' hora para dar lance' : ' horas para dar lance'), urgent: true }
+  } else if (diffD === 1) {
+    return { label: '1 dia para dar lance', urgent: false }
+  } else {
+    return { label: diffD + ' dias para dar lance', urgent: false }
+  }
+}
 
 function Home() {
   const [user, setUser] = useState(null)
@@ -87,10 +108,14 @@ function Home() {
   const [allCities, setAllCities] = useState([])
   const [filteredCities, setFilteredCities] = useState([])
   const [loading, setLoading] = useState(true)
+  const [now, setNow] = useState(new Date())
   const navigate = useNavigate()
 
   useEffect(() => {
     checkUser(); detectLocation(); loadBrazilianCities()
+    // atualiza o tempo restante a cada 30 segundos
+    const timer = setInterval(() => setNow(new Date()), 30000)
+    return () => clearInterval(timer)
   }, [])
 
   useEffect(() => {
@@ -98,13 +123,15 @@ function Home() {
   }, [user, userCity])
 
   useEffect(() => {
-    const now = new Date()
-    setActiveAuctions(auctions.filter(a => (a.status === 'active' || !a.status) && new Date(a.ends_at) > now))
+    const n = new Date()
+    setActiveAuctions(auctions.filter(a => (a.status === 'active' || !a.status) && new Date(a.ends_at) > n))
   }, [auctions])
 
   useEffect(() => {
     if (searchCity.length >= 2) {
-      const filtered = allCities.filter(city => city.nome.toLowerCase().includes(searchCity.toLowerCase())).slice(0, 50)
+      const filtered = allCities.filter(city =>
+        city.nome.toLowerCase().includes(searchCity.toLowerCase())
+      ).slice(0, 50)
       setFilteredCities(filtered)
     } else {
       setFilteredCities([])
@@ -178,19 +205,15 @@ function Home() {
             Meus Leilões
           </button>
         </div>
-
-        {/* LOGO */}
         <div className="lj-nav-logo">
           <img src="/logo-leilao.png" alt="Leilão do Bairro" style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: 'clamp(320px, 95vw, 900px)', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
         </div>
-
         <div className="lj-nav-right">
           <Notifications user={user} />
           <button onClick={handleLogout} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>
             Sair
           </button>
         </div>
-
         <div className="lj-nav-mobile-btns" style={{ display: 'none' }}>
           <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>
             Meus Leilões
@@ -213,7 +236,6 @@ function Home() {
         <button onClick={() => setShowCitySearch(!showCitySearch)} style={{ padding: '14px 28px', background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white', borderRadius: '15px', fontSize: 'clamp(14px, 2vw, 18px)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '16px' }}>
           Buscar em outra cidade
         </button>
-
         {showCitySearch && (
           <div style={{ marginTop: '10px', background: 'white', borderRadius: '15px', padding: '20px', maxWidth: '600px', margin: '10px auto 0' }}>
             <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="Digite o nome da cidade (mínimo 2 letras)..." style={{ width: '100%', padding: '15px', border: '2px solid #ddd', borderRadius: '10px', fontSize: '16px', marginBottom: '15px', boxSizing: 'border-box' }} />
@@ -236,7 +258,6 @@ function Home() {
 
       {/* CONTEUDO PRINCIPAL */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
-
         {/* BOTAO CRIAR NOVO LEILAO */}
         <div style={{ marginBottom: '20px' }}>
           <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>
@@ -288,19 +309,56 @@ function Home() {
           <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>Carregando leilões...</div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-            {displayedAuctions.map(auction => (
-              <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                <img src={auction.images?.[0] || 'https://via.placeholder.com/300x200'} alt={auction.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-                <div style={{ padding: '16px' }}>
-                  <h3 style={{ margin: '0 0 8px 0', fontSize: 'clamp(16px, 2vw, 20px)' }}>{auction.title}</h3>
-                  <p style={{ color: '#666', marginBottom: '12px', fontSize: '14px' }}>{auction.city}</p>
-                  <div style={{ fontSize: '13px', color: '#999' }}>Lance atual</div>
-                  <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: '#667eea' }}>
-                    R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            {displayedAuctions.map(auction => {
+              const timeLeft = getTimeLeft(auction.ends_at)
+              return (
+                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)}
+                  style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s', position: 'relative' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  {/* IMAGEM COM BADGE DE TEMPO */}
+                  <div style={{ position: 'relative' }}>
+                    <img
+                      src={auction.images?.[0] || 'https://via.placeholder.com/300x200'}
+                      alt={auction.title}
+                      style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
+                    />
+                    {timeLeft && (
+                      <div translate="no" style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        left: '10px',
+                        background: timeLeft.urgent ? 'rgba(239,68,68,0.92)' : 'rgba(0,0,0,0.62)',
+                        color: 'white',
+                        padding: '5px 11px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {timeLeft.urgent ? '🔥' : '⏳'} {timeLeft.label}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CORPO DO CARD */}
+                  <div style={{ padding: '16px' }}>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: 'clamp(16px, 2vw, 20px)' }}>{auction.title}</h3>
+                    <p style={{ color: '#666', marginBottom: '12px', fontSize: '14px' }}>{auction.city}</p>
+                    <div style={{ fontSize: '13px', color: '#999' }}>Lance atual</div>
+                    <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: '#667eea' }}>
+                      R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
@@ -316,5 +374,3 @@ function Home() {
 }
 
 export default Home
-
-// updated
