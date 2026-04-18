@@ -74,7 +74,7 @@ function Vitrine() {
       }}>
         <img
           src="/logo-leilao.png"
-          alt="Leilão do Bairro"
+          alt="Zap Bairro"
           style={{ height: '52px', objectFit: 'contain', borderRadius: '8px', cursor: 'pointer' }}
           onClick={() => navigate('/vitrine')}
         />
