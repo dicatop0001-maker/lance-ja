@@ -166,7 +166,7 @@ function Vitrine() {
             {[
               { val: '', label: 'Todos' },
               { val: 'veiculos', label: 'Veículos' },
-              { val: 'eletronicos', label: 'Eletrônicos' },
+              { val: 'eletronicos', label: 'Eletrônicos, Máquinas, Celulares' },
               { val: 'objetos', label: 'Objetos' },
               { val: 'moveis', label: 'Móveis' },
               { val: 'imoveis', label: 'Imóveis' },
@@ -174,6 +174,7 @@ function Vitrine() {
               { val: 'servicos', label: 'Serviços' }
             ].map(cat => (
               <button
+                translate="no"
                 key={cat.val}
                 onClick={() => setSelectedCategory(cat.val)}
                 style={{
