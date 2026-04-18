@@ -10,25 +10,26 @@ const blinkStyle = `
 }
 .lj-nav {
   padding: 10px 16px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(8px);
+  gap: 0px;
+}
+.lj-nav-logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.lj-nav-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
-}
-.lj-nav-logo { display: flex; justify-content: center; }
-.lj-nav-left, .lj-nav-right { display: flex; align-items: center; gap: 8px; }
-.lj-nav-right { justify-content: flex-end; }
-@media (max-width: 599px) {
-  .lj-nav { grid-template-columns: 1fr; grid-template-rows: auto auto; }
-  .lj-nav-logo { grid-column: 1; grid-row: 1; }
-  .lj-nav-left { display: none; }
-  .lj-nav-right { display: none; }
-  .lj-nav-mobile-btns { grid-column: 1; grid-row: 2; display: flex !important; justify-content: center; gap: 8px; }
-}
-@media (min-width: 600px) {
-  .lj-nav-mobile-btns { display: none !important; }
+  flex-wrap: wrap;
+  padding: 10px 0 6px 0;
+  width: 100%;
 }
 `
 
@@ -161,38 +162,78 @@ function Home() {
     return matchSearch && matchCat
   })
 
+  const btnNavStyle = {
+    padding: 'clamp(8px,1.5vw,12px) clamp(14px,2vw,24px)',
+    background: '#1e3a8a',
+    color: 'white',
+    border: '3px solid #4a90d9',
+    borderRadius: '50px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontSize: 'clamp(12px,1.8vw,15px)',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 4px 15px rgba(30,58,138,0.5)'
+  }
+
   if (!user) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
 
+      {/* NAV — logo em cima, botões abaixo */}
       <nav className="lj-nav">
-        <div className="lj-nav-left">
-          <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>Meus Leilões</button>
-        </div>
+        {/* LOGO */}
         <div className="lj-nav-logo">
-          <img src="/logo-leilao.png" alt="Zap Bairro" style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: 'clamp(320px, 95vw, 900px)', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
+          <img
+            src="/logo-leilao.png"
+            alt="Zap Bairro"
+            style={{
+              height: 'clamp(130px, 36vw, 400px)',
+              maxWidth: 'clamp(320px, 95vw, 900px)',
+              width: '100%',
+              objectFit: 'contain',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))'
+            }}
+            onClick={() => navigate('/home')}
+          />
         </div>
-        <div className="lj-nav-right">
+        {/* BOTÕES ABAIXO DO LOGO */}
+        <div className="lj-nav-btns">
+          <button onClick={() => navigate('/meus-leiloes')} style={btnNavStyle}>Meus Leilões</button>
           <Notifications user={user} />
-          <button onClick={handleLogout} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>Sair</button>
-        </div>
-        <div className="lj-nav-mobile-btns" style={{ display: 'none' }}>
-          <button onClick={() => navigate('/meus-leiloes')} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>Meus Leilões</button>
-          <Notifications user={user} />
-          <button onClick={handleLogout} style={{ padding: 'clamp(8px,1.5vw,14px) clamp(10px,2vw,28px)', background: '#1e3a8a', color: 'white', border: '3px solid #4a90d9', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold', fontSize: 'clamp(11px,2vw,16px)', whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(30,58,138,0.5)' }}>Sair</button>
+          <button onClick={handleLogout} style={btnNavStyle}>Sair</button>
         </div>
       </nav>
 
-      <div style={{ padding: '30px 20px 10px', textAlign: 'center' }}>
-        <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>{userCity} - {userState}</h3>
+      {/* HERO — cidade e busca */}
+      <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
+        <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
+          {userCity} - {userState}
+        </h3>
         {userNeighborhood && (
-          <div style={{ color: '#fbbf24', fontSize: 'clamp(14px,2.5vw,20px)', fontWeight: '700', marginBottom: '4px' }}>📍 Bairro: {userNeighborhood}</div>
+          <div style={{ color: '#fbbf24', fontSize: 'clamp(14px,2.5vw,20px)', fontWeight: '700', marginBottom: '4px' }}>
+            📍 Bairro: {userNeighborhood}
+          </div>
         )}
-        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 'clamp(13px, 2vw, 17px)', margin: '0 0 14px 0' }}>veículos, objetos, móveis e imóveis</p>
 
-        <button onClick={() => setShowBuscaPanel(!showBuscaPanel)} style={{ padding: '14px 36px', background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)', color: 'white', border: '2px solid rgba(255,255,255,0.8)', borderRadius: '15px', fontSize: 'clamp(15px, 2vw, 19px)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '14px' }}>
+        <button
+          onClick={() => setShowBuscaPanel(!showBuscaPanel)}
+          style={{
+            padding: '14px 36px',
+            background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)',
+            color: 'white',
+            border: '2px solid rgba(255,255,255,0.8)',
+            borderRadius: '15px',
+            fontSize: 'clamp(15px, 2vw, 19px)',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            marginBottom: '14px',
+            marginTop: '8px'
+          }}
+        >
           🔍 Busca por bairro
         </button>
 
@@ -241,6 +282,7 @@ function Home() {
         )}
       </div>
 
+      {/* CONTEÚDO PRINCIPAL */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
         <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={() => navigate('/anuncio')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#f97316', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>📢 + CRIAR SEU ANÚNCIO</button>
@@ -277,7 +319,8 @@ function Home() {
                 ? auction.neighborhood : auction.city
 
               return (
-                <div key={auction.id}
+                <div
+                  key={auction.id}
                   onClick={() => navigate('/leilao/' + auction.id)}
                   style={{
                     background: 'white',
@@ -292,7 +335,7 @@ function Home() {
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                  {/* AREA DA IMAGEM - overflow hidden e fontSize 0 para esconder alt text */}
+                  {/* ÁREA DA IMAGEM */}
                   <div style={{
                     position: 'relative',
                     height: '190px',
@@ -304,36 +347,20 @@ function Home() {
                     <img
                       src={auction.images?.[0] || ''}
                       alt=""
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block',
-                        fontSize: 0
-                      }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', fontSize: 0 }}
                       onError={e => { e.target.style.display = 'none' }}
                     />
 
                     {/* TEMPO — TOPO ESQUERDO */}
                     {timeLeft && (
                       <div translate="no" style={{
-                        position: 'absolute',
-                        top: '8px',
-                        left: '8px',
+                        position: 'absolute', top: '8px', left: '8px',
                         background: timeLeft.urgent ? 'rgba(220,38,38,0.95)' : 'rgba(30,58,138,0.92)',
-                        color: 'white',
-                        padding: '4px 10px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        backdropFilter: 'blur(4px)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                        whiteSpace: 'nowrap',
-                        zIndex: 2,
-                        lineHeight: '1.4'
+                        color: 'white', padding: '4px 10px', borderRadius: '20px',
+                        fontSize: '11px', fontWeight: 'bold', display: 'flex',
+                        alignItems: 'center', gap: '4px', backdropFilter: 'blur(4px)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap',
+                        zIndex: 2, lineHeight: '1.4'
                       }}>
                         {timeLeft.urgent ? '🔥' : '⏳'} {timeLeft.label}
                       </div>
@@ -342,53 +369,53 @@ function Home() {
                     {/* BADGE ANUNCIO — TOPO DIREITO */}
                     {isAnuncio && (
                       <div style={{
-                        position: 'absolute',
-                        top: '8px',
-                        right: '8px',
-                        background: 'rgba(249,115,22,0.95)',
-                        color: 'white',
-                        padding: '4px 10px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        zIndex: 2,
-                        backdropFilter: 'blur(4px)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                        lineHeight: '1.4'
+                        position: 'absolute', top: '8px', right: '8px',
+                        background: 'rgba(249,115,22,0.95)', color: 'white',
+                        padding: '4px 10px', borderRadius: '20px', fontSize: '11px',
+                        fontWeight: 'bold', zIndex: 2, backdropFilter: 'blur(4px)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)', lineHeight: '1.4'
                       }}>📢 ANÚNCIO</div>
                     )}
-
-                    {/* BAIRRO — FUNDO VERDE SÓLIDO NA BASE */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '0',
-                      left: '0',
-                      right: '0',
-                      background: '#16a34a',
-                      color: 'white',
-                      padding: '5px 10px',
-                      fontSize: '12px',
-                      fontWeight: '800',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      zIndex: 2,
-                      lineHeight: '1.4'
-                    }}>
-                      📍 {bairroLabel}
-                      {isSameN && (
-                        <span style={{ marginLeft: 'auto', background: '#f97316', color: 'white', fontSize: '10px', fontWeight: 'bold', padding: '1px 8px', borderRadius: '10px' }}>Perto de você ⭐</span>
-                      )}
-                    </div>
                   </div>
 
-                  {/* CORPO — separado da imagem, sem sobreposição */}
+                  {/* CORPO DO CARD */}
                   <div style={{ padding: '14px 16px' }}>
                     <h3 style={{ margin: '0 0 4px 0', fontSize: 'clamp(15px, 2vw, 18px)', lineHeight: '1.3', color: '#1a202c' }}>{auction.title}</h3>
-                    <p style={{ color: '#888', fontSize: '13px', margin: '0 0 10px 0' }}>{auction.city}</p>
                     <div style={{ fontSize: '12px', color: '#aaa', marginBottom: '2px' }}>{isAnuncio ? 'Preço' : 'Lance atual'}</div>
                     <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 'bold', color: isAnuncio ? '#f97316' : '#667eea' }}>
                       R$ {parseFloat(auction.current_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </div>
+                    {/* BAIRRO — abaixo do preço */}
+                    <div style={{
+                      marginTop: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      flexWrap: 'wrap'
+                    }}>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        background: '#16a34a',
+                        color: 'white',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '700'
+                      }}>
+                        📍 {bairroLabel}
+                      </span>
+                      {isSameN && (
+                        <span style={{
+                          background: '#f97316',
+                          color: 'white',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          padding: '3px 10px',
+                          borderRadius: '20px'
+                        }}>Perto de você ⭐</span>
+                      )}
                     </div>
                   </div>
                 </div>
