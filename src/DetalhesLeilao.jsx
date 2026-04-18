@@ -43,6 +43,11 @@ function DetalhesLeilao() {
   const [otherUser, setOtherUser] = useState(null)
   const [showChat, setShowChat] = useState(false)
   const [showUnlockAllModal, setShowUnlockAllModal] = useState(false)
+  const [toast, setToast] = useState(null)
+  const showToast = (msg, tipo = 'erro') => {
+    setToast({ msg, tipo })
+    setTimeout(() => setToast(null), 4000)
+  }
   const userRef = useRef(null)
   const auctionRef = useRef(null)
   const bidsRef = useRef([])
@@ -198,17 +203,21 @@ function DetalhesLeilao() {
     e.preventDefault()
     if (!user) { alert('Você precisa estar logado para dar um lance!'); return }
     if (!auction) return
+    if (!bidValue || !String(bidValue).trim()) {
+      showToast('Digite o valor do lance!', 'erro')
+      return
+    }
     const rawValue = String(bidValue).trim().replace(',', '.')
     const amount = parseFloat(rawValue)
     if (isServico) {
-      if (isNaN(amount) || amount <= 0) { alert('Digite um valor válido!'); return }
+      if (isNaN(amount) || amount <= 0) { showToast('Digite um valor válido!', 'erro'); return }
       if (amount >= auction.current_price) {
-        alert('Para serviços o MENOR lance vence! Seu lance deve ser MENOR que R$ ' + formatBRL(auction.current_price))
+        showToast('Lance deve ser MENOR que R$ ' + formatBRL(auction.current_price) + ' (serviço: menor vence)', 'erro')
         return
       }
     } else {
       if (isNaN(amount) || amount <= auction.current_price) {
-        alert('Lance deve ser MAIOR que R$ ' + formatBRL(auction.current_price))
+        showToast('Lance deve ser MAIOR que R$ ' + formatBRL(auction.current_price), 'erro')
         return
       }
     }
@@ -217,7 +226,7 @@ function DetalhesLeilao() {
       .from('bids')
       .insert([{ auction_id: auctionId, user_id: user.id, amount }])
     if (bidError) {
-      alert('Erro ao registrar lance: ' + bidError.message)
+      showToast('Erro: ' + bidError.message, 'erro')
       setBidLoading(false)
       return
     }
@@ -232,7 +241,7 @@ function DetalhesLeilao() {
     )
     setBidLoading(false)
     setBidValue('')
-    alert('Lance enviado com sucesso!')
+    showToast('✅ Lance enviado com sucesso!', 'sucesso')
     loadAuction()
     loadBids()
   }
@@ -429,6 +438,29 @@ function DetalhesLeilao() {
           onClose={() => setShowUnlockAllModal(false)}
           onSuccess={handleUnlockAllSuccess}
         />
+      )}
+
+      {/* TOAST MOBILE */}
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: toast.tipo === 'sucesso' ? '#22c55e' : '#ef4444',
+          color: 'white',
+          padding: '16px 28px',
+          borderRadius: '14px',
+          fontSize: 'clamp(15px,4vw,18px)',
+          fontWeight: 'bold',
+          zIndex: 9999,
+          boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+          maxWidth: '90vw',
+          textAlign: 'center',
+          lineHeight: '1.4'
+        }}>
+          {toast.msg}
+        </div>
       )}
     </div>
   )
