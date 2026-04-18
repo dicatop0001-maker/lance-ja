@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 import logo from './assets/logo.png'
@@ -80,7 +80,7 @@ function Login() {
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <img 
             src={logo} 
-            alt="LEILÃO DO BAIRRO" 
+            alt="Zap Bairro" 
             style={{ 
               width: '100%', 
               maxWidth: '500px', 
