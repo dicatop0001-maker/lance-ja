@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 
 function getTimeLeft(endsAt) {
   const diffMs = new Date(endsAt) - new Date()
-  const diffMin = Math.floor(diffMs / 60000)
   const diffH   = Math.floor(diffMs / 3600000)
   const diffD   = Math.floor(diffMs / 86400000)
   if (diffMin < 60)  return { label: diffMin + ' min para dar lance', urgent: true }
