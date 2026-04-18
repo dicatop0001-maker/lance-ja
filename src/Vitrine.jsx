@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 function getTimeLeft(endsAt) {
   const diffMs = new Date(endsAt) - new Date()
+  const diffMin = Math.floor(diffMs / 60000)
   const diffH   = Math.floor(diffMs / 3600000)
   const diffD   = Math.floor(diffMs / 86400000)
   if (diffMin < 60)  return { label: diffMin + ' min para dar lance', urgent: true }
@@ -16,7 +17,6 @@ function Vitrine() {
   const [auctions, setAuctions] = useState([])
   const [loading, setLoading] = useState(true)
   const [city, setCity] = useState('')
-  const [cityState, setCityState] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const navigate = useNavigate()
@@ -27,14 +27,12 @@ function Vitrine() {
 
   const detectAndLoad = async () => {
     let detectedCity = 'Ponta Grossa'
-    let detectedState = 'PR'
     try {
       const res = await fetch('https://ipapi.co/json/')
       const data = await res.json()
-      if (data.city) { detectedCity = data.city; detectedState = data.region_code || 'BR' }
+      if (data.city) { detectedCity = data.city }
     } catch (e) {}
     setCity(detectedCity)
-    setCityState(detectedState)
     await loadAuctions(detectedCity)
   }
 
@@ -117,8 +115,8 @@ function Vitrine() {
 
       {/* HERO */}
       <div style={{ padding: '28px 20px 16px', textAlign: 'center' }}>
-        <h1 style={{ color: 'white', fontSize: 'clamp(26px, 6vw, 48px)', fontWeight: 'bold', margin: '0 0 6px 0' }}>
-          {city ? city + ' — ' + cityState : 'Leilões perto de você'}
+        <h1 translate="no" style={{ color: 'white', fontSize: 'clamp(26px, 6vw, 48px)', fontWeight: 'bold', margin: '0 0 6px 0' }}>
+          {city || 'Leilões perto de você'}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 'clamp(14px, 2.5vw, 18px)', margin: '0 0 18px 0' }}>
           Dê um lance e compre perto de você 👇
@@ -239,7 +237,6 @@ function Vitrine() {
                         {timeLeft.urgent ? '🔥' : '⏳'} {timeLeft.label}
                       </div>
                     )}
-                    {/* OVERLAY BLOQUEADO */}
                     <div style={{
                       position: 'absolute', inset: 0,
                       background: 'rgba(102,126,234,0.18)',
