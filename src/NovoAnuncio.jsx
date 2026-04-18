@@ -63,12 +63,27 @@ function NovoAnuncio() {
     setPhotoError(false)
     const uploaded = []
     for (const file of files) {
-      const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
-      const { error } = await supabase.storage.from('auction-photos').upload(fname, file)
-      if (error) { alert('Erro ao enviar foto: ' + error.message) }
-      else {
-        const { data: u } = supabase.storage.from('auction-photos').getPublicUrl(fname)
-        uploaded.push(u.publicUrl)
+      try {
+        const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+        const res = await fetch('/api/upload-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: fname, fileType: file.type, fileData: base64 })
+        })
+        const data = await res.json()
+        if (!res.ok || data.error) {
+          alert('Erro ao enviar foto: ' + (data.error || res.statusText))
+        } else {
+          uploaded.push(data.url)
+        }
+      } catch (err) {
+        alert('Erro ao enviar foto: ' + err.message)
       }
     }
     setPhotos(p => [...p, ...uploaded])
