@@ -206,7 +206,7 @@ function Home() {
           </button>
         </div>
         <div className="lj-nav-logo">
-          <img src="/logo-leilao.png" alt="Leilão do Bairro" style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: 'clamp(320px, 95vw, 900px)', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
+          <img src="/logo-leilao.png" alt="Zap Bairro" style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: 'clamp(320px, 95vw, 900px)', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
         </div>
         <div className="lj-nav-right">
           <Notifications user={user} />
