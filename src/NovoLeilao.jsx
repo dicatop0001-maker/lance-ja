@@ -17,6 +17,7 @@ function NovoLeilao() {
   const [allCities, setAllCities] = useState([])
   const [filteredCities, setFilteredCities] = useState([])
   const [showCityDropdown, setShowCityDropdown] = useState(false)
+  const [photoError, setPhotoError] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -28,10 +29,7 @@ function NovoLeilao() {
     try {
       const res = await fetch('https://ipapi.co/json/')
       const data = await res.json()
-      if (data.city) {
-        setCity(data.city)
-        setCityState(data.region_code || 'BR')
-      }
+      if (data.city) { setCity(data.city); setCityState(data.region_code || 'BR') }
     } catch (e) {}
   }
 
@@ -47,9 +45,7 @@ function NovoLeilao() {
     setCity(val)
     setCityState('')
     if (val.length >= 2) {
-      const f = allCities
-        .filter(c => c.nome.toLowerCase().startsWith(val.toLowerCase()))
-        .slice(0, 8)
+      const f = allCities.filter(c => c.nome.toLowerCase().startsWith(val.toLowerCase())).slice(0, 8)
       setFilteredCities(f)
       setShowCityDropdown(f.length > 0)
     } else {
@@ -58,9 +54,7 @@ function NovoLeilao() {
   }
 
   const selectCity = (c) => {
-    const uf = c.microrregiao?.mesorregiao?.UF?.sigla
-      || c['regiao-imediata']?.['regiao-intermediaria']?.UF?.sigla
-      || 'BR'
+    const uf = c.microrregiao?.mesorregiao?.UF?.sigla || c['regiao-imediata']?.['regiao-intermediaria']?.UF?.sigla || 'BR'
     setCity(c.nome)
     setCityState(uf)
     setShowCityDropdown(false)
@@ -68,16 +62,14 @@ function NovoLeilao() {
 
   const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files)
-    if (files.length + photos.length > 5) {
-      alert('Máximo 5 fotos!'); return
-    }
+    if (files.length + photos.length > 5) { alert('Máximo 5 fotos!'); return }
     setUploading(true)
+    setPhotoError(false)
     const uploaded = []
     for (const file of files) {
       const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
       const { error } = await supabase.storage.from('auction-photos').upload(fname, file)
       if (error) {
-        console.error('Erro ao enviar foto:', error.message)
         alert('Erro ao enviar foto: ' + error.message)
       } else {
         const { data: u } = supabase.storage.from('auction-photos').getPublicUrl(fname)
@@ -94,6 +86,14 @@ function NovoLeilao() {
     if (!startingBid || parseFloat(startingBid) <= 0) { alert('Informe um lance inicial válido!'); return }
     if (!endsAt) { alert('Informe a data de encerramento!'); return }
     if (!city.trim()) { alert('Informe a cidade!'); return }
+
+    // FOTO OBRIGATORIA
+    if (photos.length === 0) {
+      setPhotoError(true)
+      const el = document.getElementById('foto-upload-section')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
 
     setSubmitting(true)
     const { data: { user } } = await supabase.auth.getUser()
@@ -115,9 +115,7 @@ function NovoLeilao() {
       latitude: -25.0916,
       longitude: -50.1668
     })
-
     setSubmitting(false)
-
     if (error) {
       alert('Erro ao criar leilão: ' + error.message)
     } else {
@@ -146,7 +144,6 @@ function NovoLeilao() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto', background: 'white', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
           <button onClick={() => navigate('/home')} style={{ background: 'none', border: '2px solid #e2e8f0', borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', fontSize: '16px' }}>
             Voltar
@@ -159,13 +156,7 @@ function NovoLeilao() {
           {/* TITULO */}
           <div>
             <label style={lbl}>Título *</label>
-            <input
-              style={inp}
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Ex: Sofá em ótimo estado"
-              required
-            />
+            <input style={inp} value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex: Sofá em ótimo estado" required />
           </div>
 
           {/* DESCRICAO */}
@@ -176,25 +167,18 @@ function NovoLeilao() {
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder={
-                category === 'servicos'
-                  ? 'Ex: 20m² de grama para cortar | 3 cômodos para pintar...'
-                  : category === 'eletronicos'
-                  ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Máquina de lavar 10kg...'
-                  : 'Descreva o item...'
+                category === 'servicos' ? 'Ex: 20m² de grama para cortar | 3 cômodos para pintar...'
+                : category === 'eletronicos' ? 'Ex: iPhone 13 128GB | Notebook Dell i5 | Máquina de lavar 10kg...'
+                : 'Descreva o item...'
               }
             />
             {category === 'servicos' && (
               <div style={{ marginTop: '10px', padding: '14px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: '14px', color: '#1e3a8a' }}>
-                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  🔧 SERVIÇOS — O MENOR LANCE VENCE!
-                </div>
-                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
-                  Descreva exatamente o serviço com medidas ou quantidade:
-                </p>
+                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px' }}>🔧 SERVIÇOS — O MENOR LANCE VENCE!</div>
+                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>Descreva exatamente o serviço com medidas ou quantidade:</p>
                 <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
                   <li>20 metros quadrados de grama para cortar</li>
                   <li>20 metros quadrados de parede para pintar</li>
-                  <li>20 metros quadrados de cerâmica para instalar</li>
                   <li>Limpeza de 3 cômodos + banheiro</li>
                   <li>Instalação de 2 ar condicionado split</li>
                 </ul>
@@ -202,18 +186,12 @@ function NovoLeilao() {
             )}
             {category === 'eletronicos' && (
               <div style={{ marginTop: '10px', padding: '14px 16px', background: '#f0fdf4', border: '2px solid #15803d', borderRadius: '12px', fontSize: '14px', color: '#15803d' }}>
-                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  📱 ELETRÔNICOS, MÁQUINAS E CELULARES
-                </div>
-                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>
-                  Descreva o item com modelo, estado de conservação e acessórios inclusos:
-                </p>
+                <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '8px' }}>📱 ELETRÔNICOS, MÁQUINAS E CELULARES</div>
+                <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#374151' }}>Descreva o item com modelo, estado de conservação e acessórios inclusos:</p>
                 <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.8', color: '#374151' }}>
                   <li>Celular: modelo, armazenamento, cor e estado</li>
                   <li>Notebook: processador, RAM, HD/SSD e tela</li>
                   <li>Máquina de lavar: capacidade e marca</li>
-                  <li>TV: tamanho, resolução e Smart ou não</li>
-                  <li>Outros eletrônicos: marca, modelo e funcionando</li>
                 </ul>
               </div>
             )}
@@ -236,27 +214,13 @@ function NovoLeilao() {
           {/* LANCE INICIAL */}
           <div>
             <label style={lbl}>Lance Inicial (R$) *</label>
-            <input
-              style={inp}
-              type="number"
-              min="1"
-              step="0.01"
-              value={startingBid}
-              onChange={e => setStartingBid(e.target.value)}
-              placeholder="0.00"
-              required
-            />
+            <input style={inp} type="number" min="1" step="0.01" value={startingBid} onChange={e => setStartingBid(e.target.value)} placeholder="0.00" required />
           </div>
 
           {/* BAIRRO */}
           <div>
             <label style={lbl}>Bairro</label>
-            <input
-              style={inp}
-              value={neighborhood}
-              onChange={e => setNeighborhood(e.target.value)}
-              placeholder="Ex: Centro"
-            />
+            <input style={inp} value={neighborhood} onChange={e => setNeighborhood(e.target.value)} placeholder="Ex: Centro" />
           </div>
 
           {/* CIDADE */}
@@ -271,21 +235,13 @@ function NovoLeilao() {
                 placeholder="Digite sua cidade..."
                 required
               />
-              {cityState && (
-                <div style={{ marginTop: '4px', fontSize: '12px', color: '#667eea', fontWeight: '600' }}>
-                  Estado: {cityState}
-                </div>
-              )}
+              {cityState && <div style={{ marginTop: '4px', fontSize: '12px', color: '#667eea', fontWeight: '600' }}>Estado: {cityState}</div>}
               {showCityDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '2px solid #e2e8f0', borderRadius: '12px', zIndex: 999, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', maxHeight: '200px', overflowY: 'auto' }}>
                   {filteredCities.map((c, i) => {
                     const uf = c.microrregiao?.mesorregiao?.UF?.sigla || ''
                     return (
-                      <div
-                        key={i}
-                        onMouseDown={() => selectCity(c)}
-                        style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', fontSize: '14px' }}
-                      >
+                      <div key={i} onMouseDown={() => selectCity(c)} style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', fontSize: '14px' }}>
                         {c.nome} - {uf}
                       </div>
                     )
@@ -295,45 +251,83 @@ function NovoLeilao() {
             </div>
           </div>
 
-          {/* DATA DE ENCERRAMENTO */}
+          {/* DATA */}
           <div>
             <label style={lbl}>Data de Encerramento *</label>
-            <input
-              style={inp}
-              type="datetime-local"
-              value={endsAt}
-              onChange={e => setEndsAt(e.target.value)}
-              required
-            />
+            <input style={inp} type="datetime-local" value={endsAt} onChange={e => setEndsAt(e.target.value)} required />
           </div>
 
-          {/* FOTOS */}
-          <div>
-            <label style={lbl}>Fotos (máximo 5)</label>
-            <div>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handlePhotoUpload}
-                style={{ ...inp, padding: '10px', cursor: 'pointer' }}
-              />
-              {uploading && <p style={{ color: '#667eea', fontSize: '14px', marginTop: '8px' }}>Enviando fotos...</p>}
-              {photos.length > 0 && (
-                <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
-                  {photos.map((p, i) => (
-                    <div key={i} style={{ position: 'relative' }}>
-                      <img src={p} alt="foto" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px' }} />
-                      <button
-                        type="button"
-                        onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))}
-                        style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '11px' }}
-                      >x</button>
-                    </div>
-                  ))}
+          {/* FOTOS — OBRIGATÓRIA */}
+          <div id="foto-upload-section">
+            <label style={{ ...lbl, color: photoError ? '#ef4444' : '#374151' }}>
+              📸 Fotos * <span style={{ fontWeight: '400', color: '#888', fontSize: '13px' }}>(máximo 5 — obrigatório ao menos 1)</span>
+            </label>
+
+            {/* Área de upload com destaque se erro */}
+            <div style={{
+              border: photoError ? '2px dashed #ef4444' : '2px dashed #c4b5fd',
+              borderRadius: '14px',
+              padding: '20px',
+              background: photoError ? '#fef2f2' : '#f5f3ff',
+              textAlign: 'center',
+              transition: 'all 0.3s'
+            }}>
+              {photos.length === 0 && (
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '8px' }}>📷</div>
+                  <p style={{ margin: 0, color: photoError ? '#ef4444' : '#7c3aed', fontWeight: '600', fontSize: '15px' }}>
+                    {photoError ? '⚠️ Adicione pelo menos 1 foto para continuar!' : 'Adicione fotos do item'}
+                  </p>
+                  <p style={{ margin: '4px 0 0 0', color: '#888', fontSize: '13px' }}>
+                    Leilões com foto vendem muito mais rápido
+                  </p>
                 </div>
               )}
+              <label style={{
+                display: 'inline-block',
+                padding: '12px 24px',
+                background: photoError ? '#ef4444' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                color: 'white',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                fontWeight: '700',
+                fontSize: '15px',
+                boxShadow: '0 4px 12px rgba(102,126,234,0.35)'
+              }}>
+                {photos.length > 0 ? '+ Adicionar mais fotos' : '📷 Escolher fotos'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotoUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+              {uploading && <p style={{ color: '#667eea', fontSize: '14px', marginTop: '10px' }}>⏳ Enviando fotos...</p>}
             </div>
+
+            {/* Preview das fotos */}
+            {photos.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap' }}>
+                {photos.map((p, i) => (
+                  <div key={i} style={{ position: 'relative' }}>
+                    <img src={p} alt="foto" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #667eea' }} />
+                    <button
+                      type="button"
+                      onClick={() => setPhotos(prev => prev.filter((_, x) => x !== i))}
+                      style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                    >✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Contador */}
+            {photos.length > 0 && (
+              <p style={{ margin: '8px 0 0 0', fontSize: '13px', color: '#667eea', fontWeight: '600' }}>
+                ✅ {photos.length} foto{photos.length > 1 ? 's' : ''} adicionada{photos.length > 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
           {/* BOTAO SUBMIT */}
@@ -341,19 +335,22 @@ function NovoLeilao() {
             type="submit"
             disabled={uploading || submitting}
             style={{
-              padding: '16px',
-              background: (uploading || submitting) ? '#aaa' : 'linear-gradient(135deg, #667eea, #764ba2)',
+              padding: '18px',
+              background: (uploading || submitting) ? '#aaa' : photos.length === 0 ? '#94a3b8' : 'linear-gradient(135deg, #667eea, #764ba2)',
               color: 'white',
               border: 'none',
               borderRadius: '14px',
               fontSize: '18px',
               fontWeight: '800',
-              cursor: (uploading || submitting) ? 'not-allowed' : 'pointer'
+              cursor: (uploading || submitting) ? 'not-allowed' : 'pointer',
+              position: 'relative'
             }}
           >
-            {uploading ? 'ENVIANDO FOTOS...' : submitting ? 'CRIANDO LEILÃO...' : 'CRIAR LEILÃO'}
+            {uploading ? '⏳ Enviando fotos...'
+              : submitting ? '⏳ Criando leilão...'
+              : photos.length === 0 ? '📷 Adicione fotos para continuar'
+              : '🚀 CRIAR LEILÃO'}
           </button>
-
         </form>
       </div>
     </div>
