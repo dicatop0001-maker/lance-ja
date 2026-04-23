@@ -56,16 +56,14 @@ function DetalhesLeilao() {
     const channelRef = useRef(null)
 
   useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
-                setUser(user)
-                userRef.current = user
+        supabase.auth.getUser().then(({ data: { user: u } }) => {
+                setUser(u)
+                userRef.current = u
         })
         loadData()
         channelRef.current = subscribeToNewBids()
         return () => {
-                if (channelRef.current) {
-                          supabase.removeChannel(channelRef.current)
-                }
+                if (channelRef.current) supabase.removeChannel(channelRef.current)
         }
   }, [])
 
@@ -87,45 +85,29 @@ function DetalhesLeilao() {
   }, [auction, bids])
 
   const loadAuction = async () => {
-        const { data, error } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
-        if (error) console.error('Erro ao carregar leilao:', error.message)
+        const { data } = await supabase.from('auctions').select('*').eq('id', auctionId).single()
         if (data) setAuction(data)
         setLoading(false)
   }
 
   const loadBids = async () => {
-        const { data, error } = await supabase
-          .from('bids')
-          .select('*')
-          .eq('auction_id', auctionId)
-          .order('created_at', { ascending: false })
-        if (error) { setBids([]); return }
+        const { data } = await supabase.from('bids').select('*').eq('auction_id', auctionId).order('created_at', { ascending: false })
         if (!data || data.length === 0) { setBids([]); return }
         const userIds = [...new Set(data.map(b => b.user_id))]
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, name, email')
-          .in('id', userIds)
+        const { data: profiles } = await supabase.from('profiles').select('id, name, email').in('id', userIds)
         const profileMap = {}
               if (profiles) profiles.forEach(p => { profileMap[p.id] = p })
-        const enriched = data.map(bid => ({ ...bid, users: profileMap[bid.user_id] || null }))
-        setBids(enriched)
+        setBids(data.map(bid => ({ ...bid, users: profileMap[bid.user_id] || null })))
   }
 
   const checkAllBiddersChatUnlock = async (currentAuction) => {
         const auc = currentAuction || auctionRef.current
         if (!auc) return
-        const { data } = await supabase
-          .from('contact_unlocks')
-          .select('*')
-          .eq('auction_id', auc.id)
-          .eq('unlock_type', 'all_bidders')
-          .eq('payment_status', 'paid')
-          .maybeSingle()
+        const { data } = await supabase.from('contact_unlocks').select('*').eq('auction_id', auc.id).eq('unlock_type', 'all_bidders').eq('payment_status', 'paid').maybeSingle()
         if (data) setChatUnlockedForAll(true)
   }
 
-  const handleUnlockAllSuccess = async () => {
+  const handleUnlockAllSuccess = () => {
         setChatUnlockedForAll(true)
         setShowUnlockAllModal(false)
         alert('Chat liberado para todos os participantes!')
@@ -138,9 +120,7 @@ function DetalhesLeilao() {
         const u = userRef.current
         if (!auc || !u) return
         if (auc.seller_id === u.id) {
-                if (b.length > 0) {
-                          setOtherUser({ id: b[0].user_id, email: b[0].users?.email || 'Vencedor' })
-                }
+                if (b.length > 0) setOtherUser({ id: b[0].user_id, email: b[0].users?.email || 'Vencedor' })
         } else {
                 setOtherUser({ id: auc.seller_id, email: 'Vendedor' })
         }
@@ -149,65 +129,37 @@ function DetalhesLeilao() {
   const checkChatAccess = async (currentUser) => {
         const u = currentUser || userRef.current
         if (!u) return
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('*')
-          .eq('user_id', u.id)
-          .eq('status', 'active')
-          .gte('ends_at', new Date().toISOString())
-          .maybeSingle()
+        const { data: subscription } = await supabase.from('subscriptions').select('*').eq('user_id', u.id).eq('status', 'active').gte('ends_at', new Date().toISOString()).maybeSingle()
         if (subscription) { setCanChat(true); return }
-        const { data: unlock } = await supabase
-          .from('contact_unlocks')
-          .select('*')
-          .eq('user_id', u.id)
-          .eq('auction_id', auctionId)
-          .eq('payment_status', 'paid')
-          .maybeSingle()
+        const { data: unlock } = await supabase.from('contact_unlocks').select('*').eq('user_id', u.id).eq('auction_id', auctionId).eq('payment_status', 'paid').maybeSingle()
         if (unlock) setCanChat(true)
   }
 
   const subscribeToNewBids = () => {
-        const channel = supabase
-          .channel('bids-' + auctionId)
-          .on('postgres_changes', {
-                    event: 'INSERT', schema: 'public', table: 'bids',
-                    filter: 'auction_id=eq.' + auctionId
-          }, () => { loadAuction(); loadBids() })
+        return supabase.channel('bids-' + auctionId)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bids', filter: 'auction_id=eq.' + auctionId }, () => { loadAuction(); loadBids() })
           .subscribe()
-        return channel
   }
 
   const createNotification = async (sellerId, message) => {
         await supabase.from('notifications').insert([{ user_id: sellerId, message, read: false }])
   }
 
-  const isServico = auction?.category === 'servicos'
-
   const handleBid = async (e) => {
         e.preventDefault()
-        if (!user) { alert('Voce precisa estar logado!'); return }
-        if (!auction) return
-        if (!bidValue || !String(bidValue).trim()) { showToast('Digite o valor do lance!', 'erro'); return }
-        const rawValue = String(bidValue).trim().replace(',', '.')
-        const amount = parseFloat(rawValue)
+        if (!user || !auction) return
+        if (!bidValue || !String(bidValue).trim()) { showToast('Digite o valor do lance!'); return }
+        const amount = parseFloat(String(bidValue).trim().replace(',', '.'))
+        const isServico = auction.category === 'servicos'
         if (isServico) {
-                if (isNaN(amount) || amount <= 0) { showToast('Digite um valor valido!', 'erro'); return }
-                if (amount >= auction.current_price) {
-                          showToast('Lance deve ser MENOR que R$ ' + formatBRL(auction.current_price) + ' (servico: menor vence)', 'erro')
-                          return
-                }
+                if (isNaN(amount) || amount <= 0) { showToast('Digite um valor valido!'); return }
+                if (amount >= auction.current_price) { showToast('Lance deve ser MENOR que R$ ' + formatBRL(auction.current_price)); return }
         } else {
-                if (isNaN(amount) || amount <= auction.current_price) {
-                          showToast('Lance deve ser MAIOR que R$ ' + formatBRL(auction.current_price), 'erro')
-                          return
-                }
+                if (isNaN(amount) || amount <= auction.current_price) { showToast('Lance deve ser MAIOR que R$ ' + formatBRL(auction.current_price)); return }
         }
         setBidLoading(true)
-        const { error: bidError } = await supabase
-          .from('bids')
-          .insert([{ auction_id: auctionId, user_id: user.id, amount }])
-        if (bidError) { showToast('Erro: ' + bidError.message, 'erro'); setBidLoading(false); return }
+        const { error: bidError } = await supabase.from('bids').insert([{ auction_id: auctionId, user_id: user.id, amount }])
+        if (bidError) { showToast('Erro: ' + bidError.message); setBidLoading(false); return }
         await supabase.from('auctions').update({ current_price: amount }).eq('id', auctionId)
         await createNotification(auction.seller_id, 'Novo lance de R$ ' + formatBRL(amount) + ' no leilao: ' + auction.title)
         setBidLoading(false)
@@ -217,25 +169,14 @@ function DetalhesLeilao() {
         loadBids()
   }
 
-  if (loading) return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
-                <div style={{ fontSize: '18px', color: '#667eea' }}>Carregando...</div>div>
-        </div>div>
-      )
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#667eea' }}>Carregando...</div>div></div>div>
+      if (!auction) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div>div></div>div>
 
-  if (!auction) return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
-                <div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div>div>
-        </div>div>
-      )
-
-  const hasImages = auction.images && auction.images.length > 0
+      const hasImages = auction.images && auction.images.length > 0
     const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
     const isSeller = user && auction.seller_id === user.id
     const isAnuncio = auction.tipo === 'anuncio' || !auction.ends_at
-    const bidPlaceholder = isServico
-      ? 'Lance maximo: R$ ' + formatBRL(auction.current_price - 0.01)
-          : 'Minimo: R$ ' + formatBRL(auction.current_price + 0.01)
+    const isServico = auction.category === 'servicos'
     const userBids = bids.filter(b => b.user_id === user?.id)
     const isWinner = bids.length > 0 && bids[0].user_id === user?.id
     const isNonWinnerBidder = userBids.length > 0 && !isWinner
@@ -244,9 +185,8 @@ function DetalhesLeilao() {
         <div style={{ minHeight: '100vh', background: '#f5f5f5', overflowX: 'hidden' }}>
                 <style>{detalhesStyle}</style>style>
         
-          {/* HEADER */}
               <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '16px 20px', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                      <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                      <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
                                 Voltar
                       </button>button>
                       <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>
@@ -262,10 +202,7 @@ function DetalhesLeilao() {
                       )}
               </div>div>
         
-          {/* GRID */}
               <div className="detalhes-grid">
-              
-                {/* COLUNA ESQUERDA */}
                       <div>
                         {hasImages ? (
                       <div>
@@ -285,7 +222,7 @@ function DetalhesLeilao() {
                       </div>div>
                     ) : (
                       <div style={{ background: '#f0f0f0', borderRadius: '16px', height: 'clamp(220px, 55vw, 400px)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '80px', marginBottom: '12px' }}>
-                        {isAnuncio ? '' : ''}
+                                    <span>{isAnuncio ? 'Anuncio' : 'Leilao'}</span>span>
                       </div>div>
                                 )}
                       
@@ -300,10 +237,8 @@ function DetalhesLeilao() {
                                 </div>div>
                       </div>div>
               
-                {/* COLUNA DIREITA */}
                       <div>
                                 <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
-                                
                                   {isServico && (
                         <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
                                         SERVICO - O MENOR LANCE VENCE!
@@ -318,14 +253,14 @@ function DetalhesLeilao() {
                                             </div>div>
                                 
                                   {!isAnuncio && (
-                        <>
+                        <div style={{ marginBottom: '24px' }}>
                                         <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>div>
-                                        <div style={{ fontSize: 'clamp(16px, 4vw, 24px)', fontWeight: 'bold', marginBottom: '24px', color: isEnded ? '#f44336' : '#333' }}>
+                                        <div style={{ fontSize: 'clamp(16px, 4vw, 24px)', fontWeight: 'bold', color: isEnded ? '#f44336' : '#333' }}>
                                           {new Date(auction.ends_at).toLocaleString('pt-BR')}
                                           {isEnded && <span style={{ fontSize: 'clamp(13px, 3.5vw, 16px)', color: '#f44336', marginLeft: '8px' }}>ENCERRADO</span>span>}
                                         </div>div>
-                        </>>
-                      )}
+                        </div>div>
+                                            )}
                                 
                                   {isAnuncio && isSeller && (
                         <div style={{ background: '#fff7ed', padding: '14px', borderRadius: '10px', textAlign: 'center', color: '#f97316', fontSize: 'clamp(13px,3.5vw,15px)', marginBottom: '12px' }}>
@@ -340,7 +275,7 @@ function DetalhesLeilao() {
                                                             inputMode="decimal"
                                                             value={bidValue}
                                                             onChange={(e) => setBidValue(e.target.value)}
-                                                            placeholder={bidPlaceholder}
+                                                            placeholder={isServico ? 'Lance maximo: R$ ' + formatBRL(auction.current_price - 0.01) : 'Minimo: R$ ' + formatBRL(auction.current_price + 0.01)}
                                                             disabled={bidLoading}
                                                             style={{ width: '100%', padding: 'clamp(12px, 3vw, 15px)', border: '2px solid #e0e0e0', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', boxSizing: 'border-box', marginBottom: '12px' }}
                                                           />
@@ -363,30 +298,27 @@ function DetalhesLeilao() {
                         </div>div>
                                             )}
                                 
-                                  {/* BOTAO LIBERAR CHAT PARA TODOS */}
                                   {!isAnuncio && isEnded && isSeller && bids.length > 0 && (
                         <div style={{ marginTop: '16px' }}>
                           {chatUnlockedForAll ? (
-                                            <div style={{ background: '#e8f5e9', padding: '16px', borderRadius: '12px', textAlign: 'center', color: '#2e7d32', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', border: '2px solid #4CAF50' }}>
-                                                                Chat liberado para todos os participantes!
+                                            <div style={{ background: '#e8f5e9', padding: '16px', borderRadius: '12px', textAlign: 'center', color: '#2e7d32', fontWeight: 'bold', border: '2px solid #4CAF50' }}>
+                                                                Chat liberado para todos!
                                             </div>div>
                                           ) : (
                                             <button onClick={() => setShowUnlockAllModal(true)}
                                                                   style={{ width: '100%', padding: 'clamp(14px, 4vw, 18px)', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: 'clamp(14px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}>
-                                                                Liberar Chat para Todos os Participantes
-                                                                <br /><span style={{ fontSize: 'clamp(11px, 3vw, 13px)', opacity: 0.9 }}>Pague R$ 1,00 via PIX e converse com todos que deram lance</span>span>
+                                                                Liberar Chat para Todos - R$ 1,00 via PIX
                                             </button>button>
                                         )}
                         </div>div>
                                             )}
                                 </div>div>
                       
-                        {/* HISTORICO DE LANCES */}
                         {!isAnuncio && (
                       <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
                                     <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>h3>
                         {bids.length === 0 ? (
-                                        <div style={{ textAlign: 'center', color: '#999', padding: '20px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>Nenhum lance ainda. Seja o primeiro!</div>div>
+                                        <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda. Seja o primeiro!</div>div>
                                       ) : (
                                         <div>
                                           {bids.map((bid, i) => (
@@ -409,15 +341,13 @@ function DetalhesLeilao() {
                       </div>div>
                                 )}
                       
-                        {/* CHAT NORMAL (vencedor ou vendedor) */}
                         {showChat && isEnded && otherUser && (
                       <Chat auction={auction} user={user} otherUser={otherUser} canChat={canChat} />
                     )}
                       
-                        {/* CHAT PARA NAO-VENCEDORES quando vendedor liberou para todos */}
                         {isEnded && chatUnlockedForAll && isNonWinnerBidder && user && (
                       <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)', marginTop: '16px' }}>
-                                    <div style={{ background: '#e8f5e9', padding: '12px 16px', borderRadius: '10px', marginBottom: '16px', fontSize: 'clamp(13px, 3.5vw, 15px)', color: '#2e7d32', fontWeight: 'bold' }}>
+                                    <div style={{ background: '#e8f5e9', padding: '12px 16px', borderRadius: '10px', marginBottom: '16px', color: '#2e7d32', fontWeight: 'bold' }}>
                                                     O vendedor liberou o chat para todos os participantes!
                                     </div>div>
                                     <Chat auction={auction} user={user} otherUser={{ id: auction.seller_id, email: 'Vendedor' }} canChat={true} />
@@ -426,21 +356,12 @@ function DetalhesLeilao() {
                       </div>div>
               </div>div>
         
-          {/* MODAL PAGAMENTO PIX */}
           {showUnlockAllModal && (
-                  <PaymentModal
-                              user={user}
-                              auction={auction}
-                              amount={1.00}
-                              plan="all_bidders"
-                              onClose={() => setShowUnlockAllModal(false)}
-                              onSuccess={handleUnlockAllSuccess}
-                            />
+                  <PaymentModal user={user} auction={auction} amount={1.00} plan="all_bidders" onClose={() => setShowUnlockAllModal(false)} onSuccess={handleUnlockAllSuccess} />
                 )}
         
-          {/* TOAST */}
           {toast && (
-                  <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: toast.tipo === 'sucesso' ? '#22c55e' : '#ef4444', color: 'white', padding: '16px 28px', borderRadius: '14px', fontSize: 'clamp(15px,4vw,18px)', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 8px 30px rgba(0,0,0,0.3)', maxWidth: '90vw', textAlign: 'center', lineHeight: '1.4' }}>
+                  <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: toast.tipo === 'sucesso' ? '#22c55e' : '#ef4444', color: 'white', padding: '16px 28px', borderRadius: '14px', fontSize: 'clamp(15px,4vw,18px)', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 8px 30px rgba(0,0,0,0.3)', maxWidth: '90vw', textAlign: 'center' }}>
                     {toast.msg}
                   </div>div>
               )}
@@ -448,4 +369,4 @@ function DetalhesLeilao() {
       )
 }
 
-export default DetalhesLeilao</></style>
+export default DetalhesLeilao</style>
