@@ -169,8 +169,8 @@ function DetalhesLeilao() {
         loadBids()
   }
 
-  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#667eea' }}>Carregando...</div>div></div>div>
-      if (!auction) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div>div></div>div>
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#667eea' }}>Carregando...</div></div>
+      if (!auction) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontSize: '18px', color: '#666' }}>Leilao nao encontrado</div></div>
 
       const hasImages = auction.images && auction.images.length > 0
     const isEnded = auction.status === 'ended' || new Date(auction.ends_at) < new Date()
