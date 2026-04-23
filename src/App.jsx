@@ -1,1 +1,32 @@
-fazer opção de excluir e editar anuncio ou leilão para cada anunciante , essa opção aparece apenas para o dono do anuncio  e fazer local reservado para patrocinador ao lado do baner central , reservar 3 espaços iguais um em cima do outro que somados vão ter o mesmo tamanho em comprimento do baner central serão 3 espaços  de cada lado  do baner central com borda preta e fundo branco , no momento pode deixar escrito nos 6 espaços : quer patrocinar? clic aqui !  ao clicar o patrocinador sera levado ao pagamento por pix  de um plano mensal de 90 reais ou anual de 700,00 e após isso  ele podera inserir  um link direto para pagina dele  ou site ou ter acesso para ele poder inserir ofertas se alguem clicar na area do patrocinador, então ao aceitar o plano o patrocinador coloca dados de contato para que antes de terminar o plano ele receba um aviso para fazer o pagamento e continuar com a area de patrocinador , caso ele não de continuidade no plano o site zap bairro deixa vago o espaço com a mesma frase quer patrocinar? clic aqui!
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './Login'
+import Home from './Home'
+import NovoLeilao from './NovoLeilao'
+import NovoAnuncio from './NovoAnuncio'
+import DetalhesLeilao from './DetalhesLeilao'
+import MeusLeiloes from './MeusLeiloes'
+import VendedorPerfil from './VendedorPerfil'
+import Vitrine from './Vitrine'
+import EditarLeilao from './EditarLeilao'
+import EditarAnuncio from './EditarAnuncio'
+
+function App() {
+    return (
+          <BrowserRouter>
+                <Routes>
+                        <Route path="/" element={<Login />} />
+                        <Route path="/home" element={<Home />} />
+                        <Route path="/novo" element={<NovoLeilao />} />
+                        <Route path="/anuncio" element={<NovoAnuncio />} />
+                        <Route path="/leilao/:id" element={<DetalhesLeilao />} />
+                        <Route path="/meus-leiloes" element={<MeusLeiloes />} />
+                        <Route path="/vendedor/:sellerId" element={<VendedorPerfil />} />
+                        <Route path="/vitrine" element={<Vitrine />} />
+                        <Route path="/editar-leilao/:id" element={<EditarLeilao />} />
+                        <Route path="/editar-anuncio/:id" element={<EditarAnuncio />} />
+                </Routes>Routes>
+          </BrowserRouter>BrowserRouter>
+        )
+}
+
+export default App</BrowserRouter>
