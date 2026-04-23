@@ -10,6 +10,7 @@ import Vitrine from './Vitrine'
 import EditarLeilao from './EditarLeilao'
 import EditarAnuncio from './EditarAnuncio'
 
+
 function App() {
     return (
           <BrowserRouter>
@@ -24,9 +25,11 @@ function App() {
                         <Route path="/vitrine" element={<Vitrine />} />
                         <Route path="/editar-leilao/:id" element={<EditarLeilao />} />
                         <Route path="/editar-anuncio/:id" element={<EditarAnuncio />} />
-                </Routes>Routes>
-          </BrowserRouter>BrowserRouter>
+                </Routes>
+          </BrowserRouter>
         )
 }
 
+
 export default App</BrowserRouter>
+
