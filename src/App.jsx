@@ -31,5 +31,5 @@ function App() {
 }
 
 
-export default App</BrowserRouter>
+export default App
 
