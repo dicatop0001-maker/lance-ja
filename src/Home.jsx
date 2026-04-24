@@ -56,12 +56,16 @@ function Home() {
     const [filteredCities, setFilteredCities] = useState([])
     const [loading, setLoading] = useState(true)
     const [sponsors, setSponsors] = useState({})
+    // Coordenadas GPS reais do usuario (para raio de 2km dos patrocinadores)
+  const [userLat, setUserLat] = useState(null)
+    const [userLng, setUserLng] = useState(null)
     const navigate = useNavigate()
 
   useEffect(() => {
         checkUser()
         detectLocation()
         loadBrazilianCities()
+        requestUserGPS()
         const timer = setInterval(() => {}, 30000)
         return () => clearInterval(timer)
   }, [])
@@ -92,6 +96,22 @@ function Home() {
                 setFilteredCities([])
         }
   }, [searchCity, allCities])
+
+  // Solicita localizacao GPS precisa do usuario (para calcular raio dos patrocinadores)
+  const requestUserGPS = () => {
+        if (!navigator.geolocation) return
+        navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                          setUserLat(pos.coords.latitude)
+                          setUserLng(pos.coords.longitude)
+                },
+                () => {
+                          // Permissao negada ou erro: userLat/userLng ficam null
+                  // SponsorSlot mostrara patrocinador para todos sem filtro de raio
+                },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+              )
+  }
 
   const loadBrazilianCities = async () => {
         try {
@@ -168,7 +188,6 @@ function Home() {
 
   if (!user) return <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>div>
 
-      // Slots de patrocinador: 3 esquerda (L1,L2,L3) e 3 direita (R1,R2,R3)
       const leftSlots = ['L1', 'L2', 'L3']
     const rightSlots = ['R1', 'R2', 'R3']
 
@@ -176,7 +195,7 @@ function Home() {
         <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                 <style>{blinkStyle}</style>style>
         
-          {/* NAV — banner com slots de patrocinador */}
+          {/* NAV — banner com 3 slots de patrocinador de cada lado */}
               <nav className="lj-nav">
                       <div style={{
                     display: 'flex',
@@ -194,8 +213,7 @@ function Home() {
                       gap: '6px',
                       width: '110px',
                       minWidth: '80px',
-                      flexShrink: 0,
-                      justifyContent: 'stretch'
+                      flexShrink: 0
         }}>
                                   {leftSlots.map(slot => (
                         <SponsorSlot
@@ -204,7 +222,9 @@ function Home() {
                                           city={userCity}
                                           sponsorData={sponsors[slot] || null}
                                           onRefresh={loadSponsors}
-                                          userId={user?.id}
+                                          userId={user.id}
+                                          userLat={userLat}
+                                          userLng={userLng}
                                         />
                       ))}
                                 </div>div>
@@ -234,8 +254,7 @@ function Home() {
                       gap: '6px',
                       width: '110px',
                       minWidth: '80px',
-                      flexShrink: 0,
-                      justifyContent: 'stretch'
+                      flexShrink: 0
         }}>
                                   {rightSlots.map(slot => (
                         <SponsorSlot
@@ -244,14 +263,23 @@ function Home() {
                                           city={userCity}
                                           sponsorData={sponsors[slot] || null}
                                           onRefresh={loadSponsors}
-                                          userId={user?.id}
+                                          userId={user.id}
+                                          userLat={userLat}
+                                          userLng={userLng}
                                         />
                       ))}
                                 </div>div>
                       </div>div>
+              
+                {/* Aviso de GPS se permissao nao concedida */}
+                {!userLat && (
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginTop: '6px', textAlign: 'center' }}>
+                                📍 Permita a localização para ver patrocinadores próximos a você
+                    </div>div>
+                      )}
               </nav>nav>
         
-          {/* HERO — cidade e busca */}
+          {/* HERO */}
               <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
                       <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
                         {userCity} - {userState}
@@ -304,7 +332,7 @@ function Home() {
                       )}
               </div>div>
         
-          {/* CONTEÚDO PRINCIPAL */}
+          {/* CONTEUDO PRINCIPAL */}
               <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
                       <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <button onClick={() => navigate('/anuncio')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#f97316', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>📢 + CRIAR SEU ANÚNCIO</button>button>
