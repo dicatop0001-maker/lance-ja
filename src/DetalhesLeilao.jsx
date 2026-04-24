@@ -369,4 +369,4 @@ function DetalhesLeilao() {
       )
 }
 
-export default DetalhesLeilao</style>
+export default DetalhesLeilao
