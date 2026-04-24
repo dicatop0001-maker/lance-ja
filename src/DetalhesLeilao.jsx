@@ -183,24 +183,24 @@ function DetalhesLeilao() {
 
   return (
         <div style={{ minHeight: '100vh', background: '#f5f5f5', overflowX: 'hidden' }}>
-                <style>{detalhesStyle}</style>style>
+                <style>{detalhesStyle}</style>
         
               <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '16px 20px', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                       <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
                                 Voltar
-                      </button>button>
+                      </button>
                       <span style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold' }}>
                         {isAnuncio ? 'Detalhes do Anuncio' : 'Detalhes do Leilao'}
-                      </span>span>
+                      </span>
                 {isSeller && (
                     <button
                                   onClick={() => navigate(isAnuncio ? '/editar-anuncio/' + auction.id : '/editar-leilao/' + auction.id)}
                                   style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.6)', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold' }}
                                 >
                                 Editar / Excluir
-                    </button>button>
+                    </button>
                       )}
-              </div>div>
+              </div>
         
               <div className="detalhes-grid">
                       <div>
@@ -208,64 +208,64 @@ function DetalhesLeilao() {
                       <div>
                                     <div style={{ background: '#f0f0f0', borderRadius: '16px', height: 'clamp(220px, 55vw, 400px)', marginBottom: '12px', overflow: 'hidden' }}>
                                                     <img src={auction.images[currentImageIndex]} alt={auction.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    </div>div>
+                                    </div>
                         {auction.images.length > 1 && (
                                         <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                                           {auction.images.map((img, i) => (
                                                               <div key={i} onClick={() => setCurrentImageIndex(i)}
                                                                                       style={{ minWidth: '70px', height: '70px', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', border: i === currentImageIndex ? '3px solid #667eea' : '3px solid transparent', flexShrink: 0 }}>
                                                                                     <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                              </div>div>
+                                                              </div>
                                                             ))}
-                                        </div>div>
+                                        </div>
                                     )}
-                      </div>div>
+                      </div>
                     ) : (
                       <div style={{ background: '#f0f0f0', borderRadius: '16px', height: 'clamp(220px, 55vw, 400px)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '80px', marginBottom: '12px' }}>
-                                    <span>{isAnuncio ? 'Anuncio' : 'Leilao'}</span>span>
-                      </div>div>
+                                    <span>{isAnuncio ? 'Anuncio' : 'Leilao'}</span>
+                      </div>
                                 )}
                       
                                 <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginTop: '16px' }}>
-                                            <h1 style={{ margin: '0 0 16px 0', fontSize: 'clamp(20px, 5vw, 32px)', wordBreak: 'break-word' }}>{auction.title}</h1>h1>
-                                            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descricao'}</p>p>
+                                            <h1 style={{ margin: '0 0 16px 0', fontSize: 'clamp(20px, 5vw, 32px)', wordBreak: 'break-word' }}>{auction.title}</h1>
+                                            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descricao'}</p>
                                             <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '16px' }}>
-                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Categoria:</strong>strong> {auction.category}</div>div>
-                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Localizacao:</strong>strong> {auction.neighborhood ? auction.neighborhood + ', ' : ''}{auction.city} - {auction.state}</div>div>
-                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Criado em:</strong>strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>div>
-                                            </div>div>
-                                </div>div>
-                      </div>div>
+                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Categoria:</strong> {auction.category}</div>
+                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Localizacao:</strong> {auction.neighborhood ? auction.neighborhood + ', ' : ''}{auction.city} - {auction.state}</div>
+                                                          <div style={{ marginBottom: '8px', fontSize: 'clamp(13px, 3.5vw, 15px)' }}><strong>Criado em:</strong> {new Date(auction.created_at).toLocaleDateString('pt-BR')}</div>
+                                            </div>
+                                </div>
+                      </div>
               
                       <div>
                                 <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
                                   {isServico && (
                         <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
                                         SERVICO - O MENOR LANCE VENCE!
-                        </div>div>
+                        </div>
                                             )}
                                 
                                             <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>
                                               {isAnuncio ? 'Preco' : (isServico ? 'Menor lance atual' : 'Lance atual')}
-                                            </div>div>
+                                            </div>
                                             <div style={{ fontSize: 'clamp(36px, 9vw, 48px)', fontWeight: 'bold', color: isAnuncio ? '#f97316' : (isServico ? '#16a34a' : '#667eea'), marginBottom: '16px' }}>
                                                           R$ {formatBRL(auction.current_price)}
-                                            </div>div>
+                                            </div>
                                 
                                   {!isAnuncio && (
                         <div style={{ marginBottom: '24px' }}>
-                                        <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>div>
+                                        <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>{isEnded ? 'Encerrado em' : 'Encerra em'}</div>
                                         <div style={{ fontSize: 'clamp(16px, 4vw, 24px)', fontWeight: 'bold', color: isEnded ? '#f44336' : '#333' }}>
                                           {new Date(auction.ends_at).toLocaleString('pt-BR')}
-                                          {isEnded && <span style={{ fontSize: 'clamp(13px, 3.5vw, 16px)', color: '#f44336', marginLeft: '8px' }}>ENCERRADO</span>span>}
-                                        </div>div>
-                        </div>div>
+                                          {isEnded && <span style={{ fontSize: 'clamp(13px, 3.5vw, 16px)', color: '#f44336', marginLeft: '8px' }}>ENCERRADO</span>}
+                                        </div>
+                        </div>
                                             )}
                                 
                                   {isAnuncio && isSeller && (
                         <div style={{ background: '#fff7ed', padding: '14px', borderRadius: '10px', textAlign: 'center', color: '#f97316', fontSize: 'clamp(13px,3.5vw,15px)', marginBottom: '12px' }}>
                                         Voce e o dono deste anuncio
-                        </div>div>
+                        </div>
                                             )}
                                 
                                   {!isAnuncio && !isEnded && user && !isSeller && (
@@ -282,20 +282,20 @@ function DetalhesLeilao() {
                                         <button type="submit" disabled={bidLoading}
                                                             style={{ width: '100%', padding: 'clamp(14px, 4vw, 20px)', background: bidLoading ? '#aaa' : (isServico ? '#16a34a' : '#667eea'), color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', fontWeight: 'bold', cursor: bidLoading ? 'not-allowed' : 'pointer' }}>
                                           {bidLoading ? 'ENVIANDO...' : (isServico ? 'DAR LANCE (MENOR VENCE)' : 'DAR LANCE')}
-                                        </button>button>
-                        </form>form>
+                                        </button>
+                        </form>
                                             )}
                                 
                                   {!isAnuncio && !isEnded && isSeller && (
                         <div style={{ background: '#fff3e0', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f57c00', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
                                         Voce e o vendedor deste leilao
-                        </div>div>
+                        </div>
                                             )}
                                 
                                   {!isAnuncio && isEnded && (
                         <div style={{ background: '#ffeaea', padding: '16px', borderRadius: '10px', textAlign: 'center', color: '#f44336', fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)' }}>
                                         Este leilao foi encerrado
-                        </div>div>
+                        </div>
                                             )}
                                 
                                   {!isAnuncio && isEnded && isSeller && bids.length > 0 && (
@@ -303,22 +303,22 @@ function DetalhesLeilao() {
                           {chatUnlockedForAll ? (
                                             <div style={{ background: '#e8f5e9', padding: '16px', borderRadius: '12px', textAlign: 'center', color: '#2e7d32', fontWeight: 'bold', border: '2px solid #4CAF50' }}>
                                                                 Chat liberado para todos!
-                                            </div>div>
+                                            </div>
                                           ) : (
                                             <button onClick={() => setShowUnlockAllModal(true)}
                                                                   style={{ width: '100%', padding: 'clamp(14px, 4vw, 18px)', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: 'clamp(14px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}>
                                                                 Liberar Chat para Todos - R$ 1,00 via PIX
-                                            </button>button>
+                                            </button>
                                         )}
-                        </div>div>
+                        </div>
                                             )}
-                                </div>div>
+                                </div>
                       
                         {!isAnuncio && (
                       <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
-                                    <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>h3>
+                                    <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>
                         {bids.length === 0 ? (
-                                        <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda. Seja o primeiro!</div>div>
+                                        <div style={{ textAlign: 'center', color: '#999', padding: '20px' }}>Nenhum lance ainda. Seja o primeiro!</div>
                                       ) : (
                                         <div>
                                           {bids.map((bid, i) => (
@@ -326,19 +326,19 @@ function DetalhesLeilao() {
                                                                                     <div style={{ minWidth: 0 }}>
                                                                                                             <div style={{ fontWeight: 'bold', fontSize: 'clamp(13px, 3.5vw, 15px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                                                               {bid.users?.name || bid.users?.email || 'Anonimo'}
-                                                                                                              </div>div>
+                                                                                                              </div>
                                                                                                             <div style={{ fontSize: 'clamp(11px, 3vw, 12px)', color: '#999' }}>
                                                                                                               {new Date(bid.created_at).toLocaleString('pt-BR')}
-                                                                                                              </div>div>
-                                                                                      </div>div>
+                                                                                                              </div>
+                                                                                      </div>
                                                                                     <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', fontWeight: 'bold', color: i === 0 ? (isServico ? '#16a34a' : '#667eea') : '#333', whiteSpace: 'nowrap' }}>
                                                                                                             R$ {formatBRL(bid.amount)}
-                                                                                      </div>div>
-                                                              </div>div>
+                                                                                      </div>
+                                                              </div>
                                                             ))}
-                                        </div>div>
+                                        </div>
                                     )}
-                      </div>div>
+                      </div>
                                 )}
                       
                         {showChat && isEnded && otherUser && (
@@ -349,12 +349,12 @@ function DetalhesLeilao() {
                       <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)', marginTop: '16px' }}>
                                     <div style={{ background: '#e8f5e9', padding: '12px 16px', borderRadius: '10px', marginBottom: '16px', color: '#2e7d32', fontWeight: 'bold' }}>
                                                     O vendedor liberou o chat para todos os participantes!
-                                    </div>div>
+                                    </div>
                                     <Chat auction={auction} user={user} otherUser={{ id: auction.seller_id, email: 'Vendedor' }} canChat={true} />
-                      </div>div>
+                      </div>
                                 )}
-                      </div>div>
-              </div>div>
+                      </div>
+              </div>
         
           {showUnlockAllModal && (
                   <PaymentModal user={user} auction={auction} amount={1.00} plan="all_bidders" onClose={() => setShowUnlockAllModal(false)} onSuccess={handleUnlockAllSuccess} />
@@ -363,9 +363,9 @@ function DetalhesLeilao() {
           {toast && (
                   <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: toast.tipo === 'sucesso' ? '#22c55e' : '#ef4444', color: 'white', padding: '16px 28px', borderRadius: '14px', fontSize: 'clamp(15px,4vw,18px)', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 8px 30px rgba(0,0,0,0.3)', maxWidth: '90vw', textAlign: 'center' }}>
                     {toast.msg}
-                  </div>div>
+                  </div>
               )}
-        </div>div>
+        </div>
       )
 }
 
