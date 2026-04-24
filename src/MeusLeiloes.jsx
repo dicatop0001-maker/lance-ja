@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 import QRCode from 'qrcode'
+import BottomBar from './BottomBar'
 
 const meusLeiloesStyle = `
 .ml-grid-topo {
@@ -79,6 +80,11 @@ function MeusLeiloes() {
       const qrUrl = await QRCode.toDataURL(link, { width: 300, margin: 2, color: { dark: '#667eea', light: '#ffffff' } })
       setQrCodeUrl(qrUrl)
     } catch (error) { console.error('Erro ao gerar QR Code:', error) }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/')
   }
 
   const loadViews = async () => {
@@ -401,6 +407,7 @@ function MeusLeiloes() {
           </div>
         </div>
       )}
+          <BottomBar user={user} onLogout={handleLogout} />
     </div>
   )
 }

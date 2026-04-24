@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 import Notifications from './Notifications'
+import BottomBar from './BottomBar'
 
 const blinkStyle = `
   50% { opacity: 0.15; }
@@ -22,15 +23,7 @@ const blinkStyle = `
   justify-content: center;
   width: 100%;
 }
-.lj-nav-btns {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding: 10px 0 6px 0;
-  width: 100%;
-}
+
 `
 
 function getTimeLeft(endsAt) {
@@ -200,13 +193,7 @@ function Home() {
             onClick={() => navigate('/home')}
           />
         </div>
-        {/* BOTÕES ABAIXO DO LOGO */}
-        <div className="lj-nav-btns">
-          <button onClick={() => navigate('/meus-leiloes')} style={btnNavStyle}>Meus Leilões</button>
-          <Notifications user={user} />
-          <button onClick={handleLogout} style={btnNavStyle}>Sair</button>
-        </div>
-      </nav>
+              </nav>
 
       {/* HERO — cidade e busca */}
       <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
@@ -429,6 +416,7 @@ function Home() {
           </div>
         )}
       </div>
+      <BottomBar user={user} onLogout={handleLogout} />
     </div>
   )
 }
