@@ -10,7 +10,7 @@ const blinkStyle = `
   50% { transform: translateY(8px); }
 }
 .lj-nav {
-  padding: 10px 16px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,33 +210,72 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
-      <nav className="lj-nav">
-        <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', width: '100%', maxWidth: '1100px', gap: '8px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '110px', minWidth: '80px', flexShrink: 0 }}>
-            {leftSlots.map(slot => (
-              <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
-            ))}
-          </div>
-          <div className="lj-nav-logo" style={{ flex: 1 }}>
-            <img
-              src="/logo-leilao.png"
-              alt="Zap Bairro"
-              style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: '100%', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}
-              onClick={() => navigate('/home')}
-            />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '110px', minWidth: '80px', flexShrink: 0 }}>
-            {rightSlots.map(slot => (
-              <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
-            ))}
-          </div>
+
+      {/* PLACA TOPO - largura total com logo Conecty */}
+      <div style={{
+        width: '100%',
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%)',
+        padding: '0',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+        borderBottom: '4px solid #3b82f6'
+      }}>
+        <div
+          onClick={() => navigate('/home')}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 'clamp(8px, 2vw, 20px) clamp(10px, 3vw, 30px)',
+            cursor: 'pointer',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        >
+          <img
+            src="/logo-conecty.png"
+            alt="Conecty"
+            style={{
+              height: 'clamp(70px, 18vw, 160px)',
+              maxWidth: '100%',
+              width: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.5)) brightness(1.05)'
+            }}
+          />
         </div>
+
+        {/* 6 botoes de patrocinador logo abaixo da placa */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'stretch',
+          width: '100%',
+          padding: '8px 8px 12px',
+          gap: '6px',
+          boxSizing: 'border-box',
+          flexWrap: 'wrap'
+        }}>
+          {[...leftSlots, ...rightSlots].map(slot => (
+            <div key={slot} style={{ flex: '1 1 calc(16.66% - 6px)', minWidth: '60px', maxWidth: '130px' }}>
+              <SponsorSlot
+                slot={slot}
+                city={userCity}
+                sponsorData={sponsors[slot] || null}
+                onRefresh={loadSponsors}
+                userId={user.id}
+                userLat={userLat}
+                userLng={userLng}
+              />
+            </div>
+          ))}
+        </div>
+
         {!userLat && (
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginTop: '6px', textAlign: 'center' }}>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', paddingBottom: '8px', textAlign: 'center' }}>
             Permita a localizacao para ver patrocinadores proximos a voce
           </div>
         )}
-      </nav>
+      </div>
 
       <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
         <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
@@ -316,11 +355,8 @@ function Home() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {activeSponsorAds.map(sp => (
-              <div
-                key={'sp-' + sp.id}
-                onClick={() => sp.url ? window.open(sp.url, '_blank') : null}
-                style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}
-              >
+              <div key={'sp-' + sp.id} onClick={() => sp.url ? window.open(sp.url, '_blank') : null}
+                style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#f97316', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>PATROCINADOR</div>
                 {sp.logo_url && (
                   <div style={{ height: '140px', overflow: 'hidden', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -348,7 +384,10 @@ function Home() {
               const isSameN = userNeighborhood && auction.neighborhood && auction.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
               const bairroLabel = (auction.neighborhood && auction.neighborhood.trim() !== '') ? auction.neighborhood : auction.city
               return (
-                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: isSameN ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)' : '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }} onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
+                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)}
+                  style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: isSameN ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)' : '0 4px 12px rgba(0,0,0,0.1)' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
                   <div style={{ position: 'relative', height: '190px', overflow: 'hidden', backgroundColor: '#f1f5f9' }}>
                     <img src={auction.images && auction.images[0] ? auction.images[0] : ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display = 'none' }} />
                     {timeLeft && (
