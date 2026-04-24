@@ -2,34 +2,34 @@ name: CI - Lance Ja
 
 on:
   push:
-      branches: [ main ]
-        pull_request:
-            branches: [ main ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-            jobs:
-              build-and-lint:
-                  name: Build and Lint
-                      runs-on: ubuntu-latest
+jobs:
+  build-and-lint:
+    name: Build and Lint
+    runs-on: ubuntu-latest
 
-                          steps:
-                                - name: Checkout codigo
-                                        uses: actions/checkout@v4
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
 
-                                              - name: Configurar Node.js
-                                                      uses: actions/setup-node@v4
-                                                              with:
-                                                                        node-version: '20'
-                                                                                  cache: 'npm'
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-                                                                                        - name: Instalar dependencias
-                                                                                                run: npm ci
+      - name: Instalar dependencias
+        run: npm ci
 
-                                                                                                      - name: Rodar Lint ESLint
-                                                                                                              run: npm run lint -- --max-warnings=9999
-                                                                                                                      continue-on-error: true
-                                                                                                                      
-                                                                                                                            - name: Build do projeto
-                                                                                                                                    run: npm run build
-                                                                                                                                            env:
-                                                                                                                                                      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-                                                                                                                                                                VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - name: Rodar Lint ESLint
+        run: npm run lint -- --max-warnings=9999
+        continue-on-error: true
+
+      - name: Build do projeto
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
