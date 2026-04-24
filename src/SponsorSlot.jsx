@@ -191,6 +191,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 <div style={{ background: '#eef2ff', border: '2px solid #667eea', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#374151' }}>
                   Visibilidade por localizacao: Somente usuarios a ate {RAIO_KM}km verao seu anuncio. Fora desse raio, o espaco fica disponivel para outro patrocinador da regiao.
                 </div>
+                        <div style={{ background: '#fff7ed', border: '2px solid #f97316', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#7c2d12' }}>
+                                    Beneficios do patrocinador: Um anuncio criado pelo patrocinador ficara sempre entre os 6 primeiros no feed de anuncios. Cada patrocinador tera o direito de fazer um anuncio para ficar no topo do feed.
+                        </div>
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                   {[{ type: 'monthly', label: 'Mensal', price: 'R$ 50,00', sub: 'por mes' }, { type: 'yearly', label: 'Anual', price: 'R$ 400,00', sub: 'por ano - economize R$ 200!' }].map(p => (
                     <div key={p.type} onClick={() => setPlanType(p.type)} style={{ flex: 1, padding: '14px 10px', border: planType === p.type ? '3px solid #667eea' : '2px solid #e2e8f0', borderRadius: '14px', cursor: 'pointer', textAlign: 'center', background: planType === p.type ? '#eef2ff' : 'white' }}>
