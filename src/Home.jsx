@@ -58,6 +58,7 @@ function Home() {
   const [sponsors, setSponsors] = useState({})
   const [userLat, setUserLat] = useState(null)
   const [userLng, setUserLng] = useState(null)
+  const [activeSponsorAds, setActiveSponsorAds] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -80,10 +81,12 @@ function Home() {
       (a.tipo === 'anuncio' || !a.ends_at || new Date(a.ends_at) > n)
     )
     const sameN = filtered.filter(a =>
-      userNeighborhood && a.neighborhood && a.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
+      userNeighborhood && a.neighborhood &&
+      a.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
     )
     const otherN = filtered.filter(a =>
-      !(userNeighborhood && a.neighborhood && a.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim())
+      !(userNeighborhood && a.neighborhood &&
+        a.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim())
     )
     setActiveAuctions([...sameN, ...otherN])
   }, [auctions, userNeighborhood])
@@ -112,12 +115,29 @@ function Home() {
     } catch (e) {}
   }
 
+  function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371
+    const dLat = (lat2 - lat1) * Math.PI / 180
+    const dLng = (lng2 - lng1) * Math.PI / 180
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  }
+
   const loadSponsors = async () => {
     const { data } = await supabase.from('sponsors').select('*').eq('city', userCity)
     if (data) {
       const map = {}
-      data.forEach(s => { map[s.slot] = s })
+      const ads = []
+      data.forEach(s => {
+        map[s.slot] = s
+        if (s.status === 'active') {
+          if (!userLat || !s.lat || haversineKm(userLat, userLng, s.lat, s.lng) <= 2) {
+            ads.push(s)
+          }
+        }
+      })
       setSponsors(map)
+      setActiveSponsorAds(ads)
     }
   }
 
@@ -190,7 +210,6 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
-
       <nav className="lj-nav">
         <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', width: '100%', maxWidth: '1100px', gap: '8px', margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '110px', minWidth: '80px', flexShrink: 0 }}>
@@ -198,18 +217,20 @@ function Home() {
               <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
             ))}
           </div>
-
           <div className="lj-nav-logo" style={{ flex: 1 }}>
-            <img src="/logo-leilao.png" alt="Zap Bairro" style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: '100%', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }} onClick={() => navigate('/home')} />
+            <img
+              src="/logo-leilao.png"
+              alt="Zap Bairro"
+              style={{ height: 'clamp(130px, 36vw, 400px)', maxWidth: '100%', width: '100%', objectFit: 'contain', borderRadius: '10px', cursor: 'pointer', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}
+              onClick={() => navigate('/home')}
+            />
           </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '110px', minWidth: '80px', flexShrink: 0 }}>
             {rightSlots.map(slot => (
               <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
             ))}
           </div>
         </div>
-
         {!userLat && (
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginTop: '6px', textAlign: 'center' }}>
             Permita a localizacao para ver patrocinadores proximos a voce
@@ -276,7 +297,7 @@ function Home() {
         </div>
 
         <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '16px' }}>
-          Leiloes e itens Ativos{userNeighborhood && <span style={{ fontSize: '16px', fontWeight: '400', opacity: 0.85, marginLeft: '10px' }}>bairro {userNeighborhood} primeiro</span>}
+          Busque itens para venda e leiloes ativos no seu bairro{userNeighborhood && <span style={{ fontSize: '16px', fontWeight: '400', opacity: 0.85, marginLeft: '10px' }}>bairro {userNeighborhood} primeiro</span>}
         </h2>
 
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '16px', padding: '14px 16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -294,6 +315,33 @@ function Home() {
           <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>Carregando...</div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            {activeSponsorAds.map(sp => (
+              <div
+                key={'sp-' + sp.id}
+                onClick={() => sp.url ? window.open(sp.url, '_blank') : null}
+                style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}
+              >
+                <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#f97316', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>PATROCINADOR</div>
+                {sp.logo_url && (
+                  <div style={{ height: '140px', overflow: 'hidden', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src={sp.logo_url} alt="logo" style={{ maxHeight: '130px', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                )}
+                <div style={{ padding: '14px 16px' }}>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#92400e', fontWeight: 'bold' }}>{sp.name || 'Patrocinador'}</h3>
+                  {sp.offers && sp.offers.length > 0 && (
+                    <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px', color: '#78350f' }}>
+                      {sp.offers.slice(0, 5).map((o, i) => (
+                        <li key={i} style={{ fontSize: '13px', marginBottom: '2px' }}>{o}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#f97316', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700' }}>Patrocinador Local</span>
+                  </div>
+                </div>
+              </div>
+            ))}
             {displayedAuctions.map(auction => {
               const timeLeft = getTimeLeft(auction.ends_at)
               const isAnuncio = auction.tipo === 'anuncio' || !auction.ends_at
@@ -332,15 +380,13 @@ function Home() {
             })}
           </div>
         )}
-
-        {!loading && displayedAuctions.length === 0 && (
+        {!loading && displayedAuctions.length === 0 && activeSponsorAds.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.1)', borderRadius: '15px' }}>
             <p style={{ color: 'white', fontSize: '22px' }}>Nenhum leilao ativo em {userCity}{userNeighborhood ? ' ' + userNeighborhood : ''}</p>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginTop: '10px' }}>Seja o primeiro a criar um leilao na sua cidade!</p>
           </div>
         )}
       </div>
-
       <BottomBar user={user} onLogout={handleLogout} />
     </div>
   )
