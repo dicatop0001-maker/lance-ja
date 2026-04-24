@@ -9,19 +9,56 @@ const blinkStyle = `
 }
   50% { transform: translateY(8px); }
 }
-.lj-nav {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
-  gap: 0px;
-}
-.lj-nav-logo {
-  display: flex;
-  justify-content: center;
+
+.lj-placa {
   width: 100%;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  border-bottom: 4px solid #3b82f6;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.lj-logo-wrap {
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  line-height: 0;
+  /* altura fixa — mostra só a faixa colorida da imagem */
+  height: clamp(55px, 13vw, 130px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lj-logo-img {
+  width: 100%;
+  /* a imagem original 3:2 tem ~30% branco em cima e ~30% em baixo */
+  /* scale(1.8) corta essas margens e exibe apenas a logo colorida */
+  transform: scale(1.8);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+}
+
+/* Grid dos 6 slots */
+.lj-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 6px 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .lj-logo-wrap {
+    height: clamp(45px, 16vw, 90px);
+  }
+  .lj-slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 5px 6px 10px;
+  }
 }
 `
 
@@ -204,72 +241,30 @@ function Home() {
     )
   }
 
-  const leftSlots = ['L1', 'L2', 'L3']
-  const rightSlots = ['R1', 'R2', 'R3']
+  const allSlots = ['L1', 'L2', 'L3', 'R1', 'R2', 'R3']
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
 
-      {/* PLACA TOPO - largura total com logo Conecty */}
-      <div style={{
-        width: '100%',
-        background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%)',
-        padding: '0',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-        borderBottom: '4px solid #3b82f6'
-      }}>
-        <div
-          onClick={() => navigate('/home')}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 'clamp(8px, 2vw, 20px) clamp(10px, 3vw, 30px)',
-            cursor: 'pointer',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}
-        >
-          <img
-            src="/logo-conecty.png"
-            alt="Conecty"
-            style={{
-              height: 'clamp(70px, 18vw, 160px)',
-              maxWidth: '100%',
-              width: '100%',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.5)) brightness(1.05)'
-            }}
-          />
+      <div className="lj-placa">
+        <div className="lj-logo-wrap" onClick={() => navigate('/home')}>
+          <img src="/logo-conecty.png" alt="Conecty" className="lj-logo-img" />
         </div>
-
-        {/* 6 botoes de patrocinador logo abaixo da placa */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'stretch',
-          width: '100%',
-          padding: '8px 8px 12px',
-          gap: '6px',
-          boxSizing: 'border-box',
-          flexWrap: 'wrap'
-        }}>
-          {[...leftSlots, ...rightSlots].map(slot => (
-            <div key={slot} style={{ flex: '1 1 calc(16.66% - 6px)', minWidth: '60px', maxWidth: '130px' }}>
-              <SponsorSlot
-                slot={slot}
-                city={userCity}
-                sponsorData={sponsors[slot] || null}
-                onRefresh={loadSponsors}
-                userId={user.id}
-                userLat={userLat}
-                userLng={userLng}
-              />
-            </div>
+        <div className="lj-slots-grid">
+          {allSlots.map(slot => (
+            <SponsorSlot
+              key={slot}
+              slot={slot}
+              city={userCity}
+              sponsorData={sponsors[slot] || null}
+              onRefresh={loadSponsors}
+              userId={user.id}
+              userLat={userLat}
+              userLng={userLng}
+            />
           ))}
         </div>
-
         {!userLat && (
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', paddingBottom: '8px', textAlign: 'center' }}>
             Permita a localizacao para ver patrocinadores proximos a voce
@@ -334,11 +329,9 @@ function Home() {
           <button onClick={() => navigate('/anuncio')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#f97316', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>CRIAR SEU ANUNCIO</button>
           <button onClick={() => navigate('/novo')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>CRIAR SEU LEILAO</button>
         </div>
-
         <h2 style={{ color: 'white', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 'bold', marginBottom: '16px' }}>
           Busque itens para venda e leiloes ativos no seu bairro{userNeighborhood && <span style={{ fontSize: '16px', fontWeight: '400', opacity: 0.85, marginLeft: '10px' }}>bairro {userNeighborhood} primeiro</span>}
         </h2>
-
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '16px', padding: '14px 16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={() => setShowBuscaPanel(!showBuscaPanel)} style={{ width: '100%', padding: '12px 24px', background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)', color: 'white', border: '2px solid rgba(255,255,255,0.8)', borderRadius: '30px', fontSize: 'clamp(15px, 2vw, 19px)', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             Busca por bairro
@@ -349,7 +342,6 @@ function Home() {
             ))}
           </div>
         </div>
-
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: 'white', fontSize: '20px' }}>Carregando...</div>
         ) : (
