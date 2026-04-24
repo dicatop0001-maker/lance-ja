@@ -219,23 +219,6 @@ function Home() {
           </div>
         )}
 
-        <button
-          onClick={() => setShowBuscaPanel(!showBuscaPanel)}
-          style={{
-            padding: '14px 36px',
-            background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)',
-            color: 'white',
-            border: '2px solid rgba(255,255,255,0.8)',
-            borderRadius: '15px',
-            fontSize: 'clamp(15px, 2vw, 19px)',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            marginBottom: '14px',
-            marginTop: '8px'
-          }}
-        >
-          🔍 Busca por bairro
-        </button>
 
         {showBuscaPanel && (
           <div style={{ background: 'white', borderRadius: '18px', padding: '20px', maxWidth: '560px', margin: '0 auto 10px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
@@ -294,11 +277,26 @@ function Home() {
         </h2>
 
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '16px', padding: '14px 16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '30px', padding: '8px 16px', gap: '10px' }}>
-            <span style={{ fontSize: '20px' }}>🔍</span>
-            <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Buscar leilões e itens..." style={{ border: 'none', outline: 'none', fontSize: '15px', width: '100%', background: 'transparent', color: '#333' }} />
-            {searchTerm && <button onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#999', padding: '0' }}>✕</button>}
-          </div>
+          <button
+            onClick={() => setShowBuscaPanel(!showBuscaPanel)}
+            style={{
+              width: '100%',
+              padding: '12px 24px',
+              background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.8)',
+              borderRadius: '30px',
+              fontSize: 'clamp(15px, 2vw, 19px)',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            🔍 Busca por bairro
+          </button>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {[{val:'',label:'Todos'},{val:'veiculos',label:'Veículos'},{val:'eletronicos',label:'Eletrônicos'},{val:'objetos',label:'Objetos'},{val:'moveis',label:'Móveis'},{val:'imoveis',label:'Imóveis'},{val:'outros',label:'Outros'},{val:'servicos',label:'Serviços'}].map(cat => (
               <button key={cat.val} onClick={() => setSelectedCategory(cat.val)} style={{ padding: '7px 16px', borderRadius: '20px', border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)', background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)', color: 'white', fontWeight: selectedCategory === cat.val ? 'bold' : 'normal', fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{cat.label}</button>
