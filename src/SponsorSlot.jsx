@@ -197,6 +197,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                     </div>
                   ))}
                 </div>
+                <div style={{ background: '#fff7ed', border: '2px solid #f97316', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#7c2d12' }}>
+                  Beneficios do patrocinador: Um anuncio criado pelo patrocinador ficara sempre entre os 6 primeiros no feed de anuncios. Cada patrocinador tera o direito de fazer um anuncio para ficar no topo do feed.
+                </div>
                 <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#374151' }}>
                   <div style={{ fontWeight: '700', marginBottom: '5px' }}>O que voce recebe:</div>
                   <div>Logo/foto do estabelecimento no espaco</div>
