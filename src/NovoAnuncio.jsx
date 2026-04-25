@@ -215,6 +215,11 @@ function NovoAnuncio() {
 
           {/* FOTOS */}
           <div id="foto-upload-section">
+            {category === 'servicos' && (
+              <div style={{ marginBottom: '12px', padding: '12px 16px', background: '#fef9c3', border: '2px solid #eab308', borderRadius: '12px', fontSize: '14px', color: '#713f12' }}>
+                <strong>📸 Atenção Prestador de Serviços!</strong> Adicione fotos do seu trabalho — clientes confiam muito mais em prestadores que mostram seus serviços com imagens reais!
+              </div>
+            )}
             <label style={{ ...lbl, color: photoError ? '#ef4444' : '#374151' }}>
               📸 Fotos * <span style={{ fontWeight: '400', color: '#888', fontSize: '13px' }}>(máximo 5 — obrigatório ao menos 1)</span>
             </label>
