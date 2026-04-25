@@ -241,12 +241,12 @@ function DetalhesLeilao() {
                                 <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
                                   {isServico && (
                         <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
-                                        SERVICO - O MENOR LANCE VENCE!
+                                        PRESTADOR DE SERVIÇOS - MENOR ORÇAMENTO VENCE!
                         </div>
                                             )}
                                 
                                             <div style={{ fontSize: 'clamp(12px, 3vw, 14px)', color: '#999', marginBottom: '4px' }}>
-                                              {isAnuncio ? 'Preco' : (isServico ? 'Menor lance atual' : 'Lance atual')}
+                                              {isAnuncio ? 'Preco' : (isServico ? 'Menor orçamento atual' : 'Lance atual')}
                                             </div>
                                             <div style={{ fontSize: 'clamp(36px, 9vw, 48px)', fontWeight: 'bold', color: isAnuncio ? '#f97316' : (isServico ? '#16a34a' : '#667eea'), marginBottom: '16px' }}>
                                                           R$ {formatBRL(auction.current_price)}
@@ -281,7 +281,7 @@ function DetalhesLeilao() {
                                                           />
                                         <button type="submit" disabled={bidLoading}
                                                             style={{ width: '100%', padding: 'clamp(14px, 4vw, 20px)', background: bidLoading ? '#aaa' : (isServico ? '#16a34a' : '#667eea'), color: 'white', border: 'none', borderRadius: '10px', fontSize: 'clamp(16px, 4vw, 18px)', fontWeight: 'bold', cursor: bidLoading ? 'not-allowed' : 'pointer' }}>
-                                          {bidLoading ? 'ENVIANDO...' : (isServico ? 'DAR LANCE (MENOR VENCE)' : 'DAR LANCE')}
+                                          {bidLoading ? 'ENVIANDO...' : (isServico ? 'ENVIAR ORÇAMENTO (MENOR VENCE)' : 'DAR LANCE')}
                                         </button>
                         </form>
                                             )}
