@@ -30,7 +30,7 @@ const blinkStyle = `
     width: 100%;
     max-width: 720px;
     display: block;
-        margin: -18% auto -14%;
+            margin: -10% auto -14%;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
   }
@@ -47,7 +47,7 @@ const blinkStyle = `
   @media (max-width: 600px) {
     .lj-logo-img {
       max-width: 100%;
-            margin: -18% auto -14%;
+                  margin: -10% auto -14%;
     }
     .lj-slots-grid {
       grid-template-columns: repeat(3, 1fr);
