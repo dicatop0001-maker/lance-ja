@@ -169,11 +169,16 @@ function NovoAnuncio() {
               <option value="eletronicos">Eletrônicos, Máquinas, Celulares</option>
               <option value="moveis">Móveis</option>
               <option value="imoveis">Imóveis</option>
-              <option value="servicos">Serviços</option>
+              <option value="servicos">Prestador de Serviços</option>
               <option value="objetos">Objetos</option>
               <option value="outros">Outros</option>
             </select>
           </div>
+          {category === 'servicos' && (
+            <div style={{ padding: '12px 16px', background: '#eff6ff', border: '2px solid #3b82f6', borderRadius: '12px', fontSize: '14px', color: '#1e40af' }}>
+              <strong>📞 Dica para Prestadores de Serviços:</strong> Inclua seu nome, telefone/WhatsApp e horário de atendimento na descrição para que os clientes possam entrar em contato facilmente!
+            </div>
+          )}
 
           {/* PRECO */}
           <div>
