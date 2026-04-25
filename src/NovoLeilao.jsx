@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
 function NovoLeilao() {
-  const [title, setTitle] = useState('')h
+  const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('outros')
   const [startingBid, setStartingBid] = useState('')
