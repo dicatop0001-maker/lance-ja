@@ -1,6 +1,6 @@
 import { useStaté } from 'react'
 import { supabase } from './supabaseClient'
-import { useNavigaté } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import './styles.css'
 
 function Login() {
