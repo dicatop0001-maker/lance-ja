@@ -20,9 +20,12 @@ input, textarea, select, button { max-width: 100%; }
   h2 { font-size: clamp(18px, 5vw, 26px) !important; }
   h3 { font-size: clamp(15px, 4vw, 20px) !important; }
 }
-/* Localização no Home - fonte maior no mobile */
+/* Localização no Home - fonte dinâmica, sem quebra de linha no mobile */
 @media (max-width: 768px) {
-    h3.location-title {
-          font-size: clamp(42px, 10vw, 60px) !important;
-    }
+  h3.location-title {
+    font-size: 8vw !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
 }
