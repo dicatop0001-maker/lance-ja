@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
 function NovoLeilao() {
-  const [title, setTitle] = useState('')
+  const [title, setTitle] = useState('')h
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('outros')
   const [startingBid, setStartingBid] = useState('')
@@ -104,7 +104,8 @@ function NovoLeilao() {
       return
     }
     setSubmitting(true)
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user
     if (!user) { navigate('/'); return }
     const { error } = await supabase.from('auctions').insert({
       title: title.trim(),
