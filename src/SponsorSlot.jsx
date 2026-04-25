@@ -101,7 +101,14 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
     expires.setMonth(expires.getMonth() + expiresMonths)
     const payload = { city, slot, status: isOwner && isActive ? 'active' : 'pending', plan_type: planType === 'monthly' ? 'monthly' : 'yearly', plan_price: planPrice, sponsor_name: form.name, contact_email: form.email, contact_phone: form.phone, link_url: form.link_url, offers: form.offers.filter(o => o.trim() !== ''), logo_url: form.logo_url, address: form.address, lat: lat, lng: lng, paid_at: isOwner ? sponsorData.paid_at : now.toISOString(), expires_at: expires.toISOString() }
     if (!isOwner) payload.owner_user_id = userId
-    const { error } = await supabase.from('sponsors').upsert(payload, { onConflict: 'city,slot' })
+    let error
+    if (isOwner && sponsorData?.id) {
+      const result = await supabase.from('sponsors').update(payload).eq('id', sponsorData.id)
+      error = result.error
+    } else {
+      const result = await supabase.from('sponsors').insert({ ...payload, owner_user_id: userId })
+      error = result.error
+    }
     setSaving(false)
     if (error) { alert('Erro ao salvar: ' + error.message) } else { setStep('success'); if (onRefresh) onRefresh() }
   }
@@ -228,9 +235,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 <div style={{ background: '#fffbeb', border: '1px solid #fbbf24', borderRadius: '10px', padding: '10px', fontSize: '12px', color: '#92400e', marginBottom: '14px' }}>
                   Apos o pagamento, clique em "Ja paguei" e preencha seus dados. Ativamos em ate 24h.
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => setStep('plan')} style={{ flex: 1, padding: '11px', background: '#f1f5f9', color: '#374151', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Voltar</button>
-                  <button onClick={() => setStep('form')} style={{ flex: 2, padding: '11px', background: 'linear-gradient(135deg, #16a34a, #15803d)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '800', fontSize: '14px' }}>Ja paguei</button>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+                  <button onClick={() => setStep('plan')} style={{ flex: 1, padding: '14px', background: 'white', color: '#374151', border: '2px solid #64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>← Voltar</button>
+                  <button onClick={() => setStep('form')} style={{ flex: 2, padding: '14px', background: 'linear-gradient(135deg, #16a34a, #15803d)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '800', fontSize: '16px', boxShadow: '0 4px 14px rgba(22,163,74,0.35)' }}>✅ Já paguei</button>
                 </div>
               </div>
             )}
@@ -283,10 +290,10 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-                  {!isOwner && <button onClick={() => setStep('pix')} style={{ flex: 1, padding: '11px', background: '#f1f5f9', color: '#374151', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Voltar</button>}
-                  <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: '11px', background: saving ? '#aaa' : 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '10px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: '800', fontSize: '14px' }}>
-                    {saving ? 'Salvando...' : isOwner ? 'Salvar alteracoes' : 'Enviar cadastro'}
+                <div style={{ display: 'flex', gap: '12px', marginTop: '20px', paddingTop: '16px', borderTop: '2px solid #e2e8f0' }}>
+                  {!isOwner && <button onClick={() => setStep('pix')} style={{ flex: 1, padding: '14px', background: 'white', color: '#374151', border: '2px solid #64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>← Voltar</button>}
+                  <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: '15px', background: saving ? '#94a3b8' : 'linear-gradient(135deg, #f97316, #ea580c)', color: 'white', border: 'none', borderRadius: '12px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: '800', fontSize: '17px', boxShadow: saving ? 'none' : '0 4px 16px rgba(249,115,22,0.45)', letterSpacing: '0.3px' }}>
+                    {saving ? '⏳ Salvando...' : isOwner ? '💾 Salvar alterações' : '📤 Enviar cadastro'}
                   </button>
                 </div>
               </div>
