@@ -19,6 +19,7 @@ function EditarLeilao() {
   const [endsAt, setEndsAt] = useState('')
   const [photos, setPhotos] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [sellerId, setSellerId] = useState('')
   const [allCities, setAllCities] = useState([])
   const [filteredCities, setFilteredCities] = useState([])
   const [showCityDropdown, setShowCityDropdown] = useState(false)
