@@ -21,7 +21,7 @@ const blinkStyle = `
     width: 100%;
     cursor: pointer;
     overflow: visible;
-    line-height: 0;
+    line-height: normal;
     padding: 8px 16px;
     box-sizing: border-box;
   }
@@ -45,9 +45,15 @@ const blinkStyle = `
   }
 
   @media (max-width: 600px) {
+    .lj-logo-wrap {
+      overflow: visible;
+      padding: 6px 10px;
+      line-height: normal;
+    }
     .lj-logo-img {
       max-width: 100%;
       margin: 0 auto;
+      display: block;
     }
     .lj-slots-grid {
       grid-template-columns: repeat(3, 1fr);
