@@ -255,11 +255,7 @@ function Home() {
             <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
           ))}
         </div>
-        {!userLat && (
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', paddingBottom: '8px', textAlign: 'center' }}>
-            Permita a localizacao para ver patrocinadores proximos a voce
-          </div>
-        )}
+        
       </div>
       <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
         <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
