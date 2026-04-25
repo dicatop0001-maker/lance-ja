@@ -221,16 +221,7 @@ function Home() {
   }
 
   const handleHorarioOnibus = () => {
-    if (userLat && userLng) {
-      // Use GPS coordinates for precise transit directions
-      const url = `https://www.google.com/maps/search/pontos+de+onibus/@${userLat},${userLng},15z/data=!3m1!4b1`;
-      window.open(url, '_blank');
-    } else {
-      // Fallback: search by neighborhood and city name
-      const local = userNeighborhood ? `${userNeighborhood} ${userCity}` : userCity;
-      const url = `https://www.google.com/maps/search/onibus+${encodeURIComponent(local)}`;
-      window.open(url, '_blank');
-    }
+    window.open('https://conectapg.com/horarios/', '_blank');
   }
 
   const bairrosDisponiveis = [...new Set(
