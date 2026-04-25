@@ -364,7 +364,7 @@ function Home() {
                   onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
                   <div style={{ position: 'relative', height: '190px', overflow: 'hidden', backgroundColor: '#f1f5f9' }}>
                     <img src={auction.images && auction.images[0] ? auction.images[0] : ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display = 'none' }} />
-                    {timeLeft && (
+                    {timeLeft && !isAnuncio && (
                       <div style={{ position: 'absolute', top: '8px', left: '8px', background: timeLeft.urgent ? 'rgba(220,38,38,0.95)' : 'rgba(30,58,138,0.92)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>
                         {timeLeft.label}
                       </div>
