@@ -80,26 +80,17 @@ function Login() {
                   position: 'relative',
                   zIndex: 1
         }}>
-                          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                                      <div style={{
-                      background: 'linear-gradient(180deg, #1565C0 0%, #1976D2 100%)',
-                      borderRadius: '10px 10px 0 0',
-                      padding: '14px 20px 10px'
-        }}>
-                                                    <div style={{ fontSize: 'clamp(22px,5vw,30px)', fontWeight: '900', color: 'white', letterSpacing: '1px', lineHeight: '1.1' }}>Compra e venda</div>
-                                                    <div style={{ fontSize: 'clamp(14px,3vw,18px)', fontWeight: '700', color: '#FFD600', fontStyle: 'italic', marginTop: '2px' }}>Perto de voce</div>
-                                      </div>
-                                      <div style={{
-                      background: 'white',
-                      borderRadius: '0 0 10px 10px',
-                      border: '2px solid #e2e8f0',
-                      borderTop: 'none',
-                      overflow: 'hidden',
-                      lineHeight: 0
-        }}>
-                                                    <img src="/logo-conecty.png" alt="Conecty" style={{ display: 'block', width: '100%' }} />
-                                      </div>
-                          </div>
+                          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{
+              overflow: 'hidden',
+              borderRadius: '16px',
+              border: '2px solid #e2e8f0',
+              lineHeight: 0,
+              maxWidth: '100%'
+            }}>
+              <img src="/logo-conecty.png" alt="Conecty" style={{ display: 'block', width: '100%' }} />
+            </div>
+          </div>
 
                           <h2 style={{
                     fontFamily: 'var(--font-display)',
