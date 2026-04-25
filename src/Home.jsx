@@ -328,7 +328,7 @@ function Home() {
             🚌 Horário de Ônibus
           </button>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {[{val:'',label:'Todos'},{val:'veiculos',label:'Veiculos'},{val:'eletronicos',label:'Eletronicos'},{val:'objetos',label:'Objetos'},{val:'moveis',label:'Moveis'},{val:'imoveis',label:'Imoveis'},{val:'outros',label:'Outros'},{val:'servicos',label:'Servicos'}].map(cat => (
+            {[{val:'',label:'Todos'},{val:'veiculos',label:'Veiculos'},{val:'eletronicos',label:'Eletronicos'},{val:'objetos',label:'Objetos'},{val:'moveis',label:'Moveis'},{val:'imoveis',label:'Imoveis'},{val:'outros',label:'Outros'},{val:'servicos',label:'Prestador de Serviços'}].map(cat => (
               <button key={cat.val} onClick={() => setSelectedCategory(cat.val)} style={{ padding: '5px 11px', borderRadius: '20px', border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)', background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)', color: 'white', fontWeight: selectedCategory === cat.val ? 'bold' : 'normal', fontSize: '11px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{cat.label}</button>
             ))}
           </div>
