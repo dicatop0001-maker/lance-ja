@@ -102,7 +102,8 @@ function NovoAnuncio() {
       return
     }
     setSubmitting(true)
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user
     if (!user) { navigate('/'); return }
     const { error } = await supabase.from('auctions').insert({
       title: title.trim(),
