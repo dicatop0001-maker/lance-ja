@@ -20,9 +20,9 @@ const blinkStyle = `
   .lj-logo-wrap {
     width: 100%;
     cursor: pointer;
-    overflow: hidden;
+    overflow: visible;
     line-height: 0;
-    padding: 0 16px;
+    padding: 8px 16px;
     box-sizing: border-box;
   }
 
@@ -30,7 +30,7 @@ const blinkStyle = `
     width: 100%;
     max-width: 720px;
     display: block;
-            margin: -10% auto -14%;
+    margin: 0 auto;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
   }
@@ -47,7 +47,7 @@ const blinkStyle = `
   @media (max-width: 600px) {
     .lj-logo-img {
       max-width: 100%;
-                  margin: -10% auto -14%;
+      margin: 0 auto;
     }
     .lj-slots-grid {
       grid-template-columns: repeat(3, 1fr);
