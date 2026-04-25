@@ -114,7 +114,7 @@ function NovoAnuncio() {
       neighborhood: neighborhood.trim(),
       city: city.trim(),
       state: cityState || 'BR',
-      ends_at: null,
+      ends_at: '2099-12-31T23:59:59Z',
       images: photos,
       seller_id: user.id,
       status: 'active',
