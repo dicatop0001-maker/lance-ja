@@ -258,7 +258,7 @@ function Home() {
         
       </div>
       <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
-        <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
+        <h3 className="location-title" style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
           {userCity} - {userState}
         </h3>
         {userNeighborhood && (
