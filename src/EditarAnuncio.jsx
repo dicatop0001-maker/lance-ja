@@ -186,6 +186,11 @@ function EditarAnuncio() {
 
           {/* FOTOS */}
           <div>
+            {category === 'servicos' && (
+              <div style={{ marginBottom: '12px', padding: '12px 16px', background: '#fef9c3', border: '2px solid #eab308', borderRadius: '12px', fontSize: '14px', color: '#713f12' }}>
+                <strong>📸 Atenção Prestador de Serviços!</strong> Adicione fotos do seu trabalho — clientes confiam muito mais em prestadores que mostram seus serviços com imagens reais!
+              </div>
+            )}
             <label style={lbl}>Fotos (máximo 5)</label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
               {photos.map((p, i) => (
