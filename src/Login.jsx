@@ -110,7 +110,7 @@ function Login() {
                     marginBottom: '6px'
         }}>
                                       Bem vindo ao seu bairro!
-                          </h2>h2>
+                          </h2>
                           <p style={{
                     textAlign: 'center',
                     fontSize: '14px',
@@ -124,7 +124,7 @@ function Login() {
 
                           <form onSubmit={handleAuth} style={{ marginBottom: '20px' }}>
                                       <div style={{ marginBottom: '20px' }}>
-                                                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--gray-700)', marginBottom: '8px' }}>Email</label>label>
+                                                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--gray-700)', marginBottom: '8px' }}>Email</label>
                                                     <input
                                                                     type="email"
                                                                     placeholder="seu@email.com"
@@ -137,7 +137,7 @@ function Login() {
                                                                   />
                                       </div>
                                       <div style={{ marginBottom: '24px' }}>
-                                                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--gray-700)', marginBottom: '8px' }}>Senha</label>label>
+                                                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--gray-700)', marginBottom: '8px' }}>Senha</label>
                                                     <input
                                                                     type="password"
                                                                     placeholder="••••••••"
@@ -165,11 +165,11 @@ function Login() {
                                                     onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 16px rgba(255,107,53,0.3)')}>
                                         {loading ? 'Aguarde...' : (isLogin ? 'ENTRAR' : 'CRIAR CONTA')}
                                       </button>
-                          </form>form>
+                          </form>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '20px 0' }}>
                                       <div style={{ flex: 1, height: '1px', background: 'var(--gray-300)' }} />
-                                      <span style={{ color: 'var(--gray-500)', fontSize: '14px', fontWeight: '500' }}>ou entre com</span>span>
+                                      <span style={{ color: 'var(--gray-500)', fontSize: '14px', fontWeight: '500' }}>ou entre com</span>
                                       <div style={{ flex: 1, height: '1px', background: 'var(--gray-300)' }} />
                           </div>
 
@@ -195,7 +195,7 @@ function Login() {
                                                                   <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
                                                                   <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                                                     </svg>
-                                                  <span style={{ color: '#444' }}>Google</span>span>
+                                                  <span style={{ color: '#444' }}>Google</span>
                                       </button>
                           
                                     <button
@@ -216,13 +216,13 @@ function Login() {
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                                                               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                                                 </svg>
-                                                <span style={{ color: 'white' }}>Facebook</span>span>
+                                                <span style={{ color: 'white' }}>Facebook</span>
                                     </button>
                           </div>
                 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '20px 0' }}>
                                   <div style={{ flex: 1, height: '1px', background: 'var(--gray-300)' }} />
-                                  <span style={{ color: 'var(--gray-500)', fontSize: '14px', fontWeight: '500' }}>ou</span>span>
+                                  <span style={{ color: 'var(--gray-500)', fontSize: '14px', fontWeight: '500' }}>ou</span>
                                   <div style={{ flex: 1, height: '1px', background: 'var(--gray-300)' }} />
                         </div>
                 
@@ -242,8 +242,8 @@ function Login() {
                 
                         <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--gray-600)', marginTop: '32px', lineHeight: '1.6' }}>
                                   Ao continuar, voce concorda com nossos<br/>
-                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Termos de Uso</span>span> e{' '}
-                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Politica de Privacidade</span>span>
+                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Termos de Uso</span> e{' '}
+                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Politica de Privacidade</span>
                         </p>
                 </div>
         </div>
