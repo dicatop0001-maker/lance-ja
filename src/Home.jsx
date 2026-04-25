@@ -402,8 +402,45 @@ function Home() {
         )}
         {!loading && displayedAuctions.length === 0 && activeSponsorAds.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.1)', borderRadius: '15px' }}>
-            <p style={{ color: 'white', fontSize: '22px' }}>Nenhum leilao ativo em {userCity}{userNeighborhood ? ' ' + userNeighborhood : ''}</p>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginTop: '10px' }}>Seja o primeiro a criar um leilao na sua cidade!</p>
+            {selectedCategory === 'servicos' ? (
+              <>
+                <div style={{ fontSize: '56px', marginBottom: '12px' }}>🔧</div>
+                <p style={{ color: 'white', fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  Nenhum prestador de serviço em {userCity}{userNeighborhood ? ' — ' + userNeighborhood : ''}
+                </p>
+                <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '16px', marginTop: '8px' }}>
+                  Seja o primeiro a anunciar seus serviços nessa cidade!
+                </p>
+                <div style={{ margin: '18px auto 0', maxWidth: '480px', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', padding: '16px 20px', textAlign: 'left' }}>
+                  <p style={{ color: '#fbbf24', fontWeight: 'bold', fontSize: '15px', margin: '0 0 8px 0' }}>📸 Dica importante para prestadores:</p>
+                  <p style={{ color: 'white', fontSize: '14px', margin: '0 0 6px 0' }}>• Adicione <strong>fotos do seu trabalho</strong> — anúncios com fotos atraem muito mais clientes!</p>
+                  <p style={{ color: 'white', fontSize: '14px', margin: '0 0 6px 0' }}>• Coloque seu <strong>nome, telefone/WhatsApp</strong> e horário de atendimento na descrição.</p>
+                  <p style={{ color: 'white', fontSize: '14px', margin: '0' }}>• Descreva bem o serviço que você oferece.</p>
+                </div>
+                <button onClick={() => navigate('/anuncio')} style={{ marginTop: '22px', padding: '14px 32px', background: '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  📢 Anunciar meu Serviço
+                </button>
+              </>
+            ) : selectedCategory !== '' ? (
+              <>
+                <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
+                <p style={{ color: 'white', fontSize: '22px', fontWeight: 'bold' }}>
+                  Nenhum anúncio nessa categoria em {userCity}{userNeighborhood ? ' — ' + userNeighborhood : ''}
+                </p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginTop: '10px' }}>
+                  Seja o primeiro a criar um anúncio nesta categoria!
+                </p>
+                <button onClick={() => navigate('/anuncio')} style={{ marginTop: '18px', padding: '14px 32px', background: '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  📢 Criar Anúncio
+                </button>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: '48px', marginBottom: '12px' }}>🏙️</div>
+                <p style={{ color: 'white', fontSize: '22px', fontWeight: 'bold' }}>Nenhum anúncio ativo em {userCity}{userNeighborhood ? ' — ' + userNeighborhood : ''}</p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', marginTop: '10px' }}>Seja o primeiro a criar um anúncio na sua cidade!</p>
+              </>
+            )}
           </div>
         )}
       </div>
