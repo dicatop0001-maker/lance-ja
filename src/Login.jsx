@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useStaté } from 'react'
 import { supabase } from './supabaseClient'
-import { useNavigate } from 'react-router-dom'
+import { useNavigaté } from 'react-router-dom'
 import './styles.css'
 
 function Login() {
@@ -8,7 +8,7 @@ function Login() {
     const [password, setPassword] = useState('')
     const [isLogin, setIsLogin] = useState(true)
     const [loading, setLoading] = useState(false)
-    const navigate = useNavigate()
+    const navigaté = useNavigate()
 
   const handleAuth = async (e) => {
         e.preventDefault()
@@ -21,7 +21,7 @@ function Login() {
                 } else {
                           const { error } = await supabase.auth.signUp({ email, password })
                           if (error) throw error
-                          alert('Conta criada! Verifique seu email e faca login.')
+                          alert('Conta criada! Verifique seu email e faça login.')
                           setIsLogin(true)
                 }
         } catch (error) {
@@ -110,7 +110,7 @@ function Login() {
                     marginBottom: '28px',
                     fontStyle: 'italic'
         }}>
-                                      aqui tem de tudo, ate horario do seu onibus!
+                                      aqui tem de tudo, até o horário do seu ônibus!
                           </p>
 
                           <form onSubmit={handleAuth} style={{ marginBottom: '20px' }}>
@@ -228,13 +228,13 @@ function Login() {
                                     }}
                                     onMouseEnter={(e) => (e.target.style.background = 'var(--primary)', e.target.style.color = 'white')}
                                     onMouseLeave={(e) => (e.target.style.background = 'white', e.target.style.color = 'var(--primary)')}>
-                          {isLogin ? 'Criar nova conta' : 'Ja tenho conta'}
+                          {isLogin ? 'Criar nova conta' : 'Já tenho conta'}
                         </button>
                 
                         <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--gray-600)', marginTop: '32px', lineHeight: '1.6' }}>
-                                  Ao continuar, voce concorda com nossos<br/>
+                                  Ao continuar, você concorda com nossos<br/>
                                   <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Termos de Uso</span> e{' '}
-                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Politica de Privacidade</span>
+                                  <span style={{ color: 'var(--primary)', fontWeight: '600', cursor: 'pointer' }}>Política de Privacidade</span>
                         </p>
                 </div>
         </div>
