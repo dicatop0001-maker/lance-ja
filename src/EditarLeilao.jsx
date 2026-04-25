@@ -114,6 +114,10 @@ function EditarLeilao() {
 
   const handleDelete = async () => {
     setDeleting(true)
+    // Primeiro deletar os lances vinculados ao leilão
+    const { error: bidsError } = await supabase.from('bids').delete().eq('auction_id', id)
+    if (bidsError) { setDeleting(false); alert('Erro ao excluir lances: ' + bidsError.message); return }
+    // Depois deletar o leilão
     const { error } = await supabase.from('auctions').delete().eq('id', id)
     setDeleting(false)
     if (error) alert('Erro ao excluir: ' + error.message)
