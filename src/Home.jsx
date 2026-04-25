@@ -7,6 +7,7 @@ import SponsorSlot from './SponsorSlot'
 const blinkStyle = `
   @keyframes blink-text { 50% { opacity: 0.15; } }
   @keyframes bounce-arrow { 50% { transform: translateY(8px); } }
+
   .lj-placa {
     width: 100%;
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
@@ -15,24 +16,25 @@ const blinkStyle = `
     padding: 0;
     box-sizing: border-box;
   }
+
   .lj-logo-wrap {
     width: 100%;
     cursor: pointer;
+    overflow: hidden;
     line-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px 6px;
+    padding: 0 16px;
     box-sizing: border-box;
   }
+
   .lj-logo-img {
     width: 100%;
     max-width: 720px;
-    height: auto;
     display: block;
+    margin: -22% auto -20%;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
   }
+
   .lj-slots-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -41,9 +43,12 @@ const blinkStyle = `
     width: 100%;
     box-sizing: border-box;
   }
+
   @media (max-width: 600px) {
-    .lj-logo-wrap { padding: 8px 12px 4px; }
-    .lj-logo-img { max-width: 100%; }
+    .lj-logo-img {
+      max-width: 100%;
+      margin: -22% auto -20%;
+    }
     .lj-slots-grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 5px;
