@@ -220,6 +220,19 @@ function Home() {
     navigate('/')
   }
 
+  const handleHorarioOnibus = () => {
+    if (userLat && userLng) {
+      // Use GPS coordinates for precise transit directions
+      const url = `https://www.google.com/maps/search/pontos+de+onibus/@${userLat},${userLng},15z/data=!3m1!4b1`;
+      window.open(url, '_blank');
+    } else {
+      // Fallback: search by neighborhood and city name
+      const local = userNeighborhood ? `${userNeighborhood} ${userCity}` : userCity;
+      const url = `https://www.google.com/maps/search/onibus+${encodeURIComponent(local)}`;
+      window.open(url, '_blank');
+    }
+  }
+
   const bairrosDisponiveis = [...new Set(
     auctions.map(a => a.neighborhood).filter(b => b && b.trim() !== '')
   )].sort()
@@ -317,12 +330,15 @@ function Home() {
           Busque itens para venda e leiloes ativos no seu bairro{userNeighborhood && <span style={{ fontSize: '16px', fontWeight: '400', opacity: 0.85, marginLeft: '10px' }}>bairro {userNeighborhood} primeiro</span>}
         </h2>
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '16px', padding: '14px 16px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button onClick={() => setShowBuscaPanel(!showBuscaPanel)} style={{ width: '100%', padding: '12px 24px', background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)', color: 'white', border: '2px solid rgba(255,255,255,0.8)', borderRadius: '30px', fontSize: 'clamp(15px, 2vw, 19px)', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <button onClick={() => setShowBuscaPanel(!showBuscaPanel)} style={{ width: '100%', padding: '10px 24px', background: showBuscaPanel ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.25)', color: 'white', border: '2px solid rgba(255,255,255,0.8)', borderRadius: '30px', fontSize: 'clamp(13px, 2vw, 17px)', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             Busca por bairro
           </button>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button onClick={handleHorarioOnibus} style={{ width: '100%', padding: '10px 24px', background: 'rgba(59,130,246,0.7)', color: 'white', border: '2px solid rgba(147,197,253,0.8)', borderRadius: '30px', fontSize: 'clamp(13px, 2vw, 17px)', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            🚌 Horário de Ônibus
+          </button>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {[{val:'',label:'Todos'},{val:'veiculos',label:'Veiculos'},{val:'eletronicos',label:'Eletronicos'},{val:'objetos',label:'Objetos'},{val:'moveis',label:'Moveis'},{val:'imoveis',label:'Imoveis'},{val:'outros',label:'Outros'},{val:'servicos',label:'Servicos'}].map(cat => (
-              <button key={cat.val} onClick={() => setSelectedCategory(cat.val)} style={{ padding: '7px 16px', borderRadius: '20px', border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)', background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)', color: 'white', fontWeight: selectedCategory === cat.val ? 'bold' : 'normal', fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{cat.label}</button>
+              <button key={cat.val} onClick={() => setSelectedCategory(cat.val)} style={{ padding: '5px 11px', borderRadius: '20px', border: selectedCategory === cat.val ? '2px solid white' : '2px solid rgba(255,255,255,0.4)', background: selectedCategory === cat.val ? '#1e3a8a' : 'rgba(255,255,255,0.15)', color: 'white', fontWeight: selectedCategory === cat.val ? 'bold' : 'normal', fontSize: '11px', cursor: 'pointer', whiteSpace: 'nowrap' }}>{cat.label}</button>
             ))}
           </div>
         </div>
