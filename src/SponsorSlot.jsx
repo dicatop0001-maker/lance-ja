@@ -160,8 +160,8 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
   }
 
   const successMsg = isOwner
-    ? 'Seu espaco foi atualizado! Aparece para visitantes num raio de ' + RAIO_KM + 'km.'
-    : 'Recebemos seus dados. Apos confirmarmos o pagamento, seu espaco sera ativado num raio de ' + RAIO_KM + 'km do seu estabelecimento.'
+    ? 'Seu espaco foi atualizado com sucesso!'
+    : 'Recebemos seus dados. Apos confirmarmos o pagamento, seu espaco sera ativado.'
 
   const slotBg = isActive ? (isOwner || dentroDoRaio() ? '#fffbeb' : 'rgba(255,255,255,0.08)') : isPending ? '#fef3c7' : 'rgba(255,255,255,0.12)'
   const slotBorder = isActive ? (isOwner || dentroDoRaio() ? '2px solid #fbbf24' : '2px dashed #94a3b8') : isPending ? '2px dashed #d97706' : '2px dashed #94a3b8'
@@ -185,15 +185,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
             {step === 'plan' && (
               <div>
                 <h2 style={{ margin: '0 0 4px', fontSize: '22px', color: '#1a202c' }}>Seja Patrocinador</h2>
-                <p style={{ color: '#666', fontSize: '13px', marginBottom: '8px' }}>
-                  Seu anuncio aparece para visitantes num raio de <strong>{RAIO_KM}km</strong> do seu estabelecimento em <strong>{city}</strong>!
-                </p>
-                <div style={{ background: '#eef2ff', border: '2px solid #667eea', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#374151' }}>
-                  Visibilidade por localizacao: Somente usuarios a ate {RAIO_KM}km verao seu anuncio. Fora desse raio, o espaco fica disponivel para outro patrocinador da regiao.
-                </div>
-                        <div style={{ background: '#fff7ed', border: '2px solid #f97316', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#7c2d12' }}>
-                                    Beneficios do patrocinador: Um anuncio criado pelo patrocinador ficara sempre entre os 6 primeiros no feed de anuncios. Cada patrocinador tera o direito de fazer um anuncio para ficar no topo do feed.
-                        </div>
+                
+                
+                        
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                   {[{ type: 'monthly', label: 'Mensal', price: 'R$ 50,00', sub: 'por mes' }, { type: 'yearly', label: 'Anual', price: 'R$ 400,00', sub: 'por ano - economize R$ 200!' }].map(p => (
                     <div key={p.type} onClick={() => setPlanType(p.type)} style={{ flex: 1, padding: '14px 10px', border: planType === p.type ? '3px solid #667eea' : '2px solid #e2e8f0', borderRadius: '14px', cursor: 'pointer', textAlign: 'center', background: planType === p.type ? '#eef2ff' : 'white' }}>
@@ -206,9 +200,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#374151' }}>
                   <div style={{ fontWeight: '700', marginBottom: '5px' }}>O que voce recebe:</div>
                   <div>Logo/foto do estabelecimento no espaco</div>
-                  <div>Ate 5 super ofertas visiveis no raio de {RAIO_KM}km</div>
+                  <div>Ate 5 super ofertas exclusivas</div>
                   <div>Link clicavel para seu site ou rede social</div>
-                  <div>Visibilidade exclusiva para quem esta perto de voce</div>
+                  <div>Visibilidade exclusiva para clientes proximos</div>
                   <div>Edite seu espaco quando quiser</div>
                 </div>
                 <button onClick={() => setStep('pix')} style={{ width: '100%', padding: '13px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}>
@@ -241,7 +235,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
             {step === 'form' && (
               <div>
                 <h2 style={{ margin: '0 0 4px', fontSize: '20px', color: '#1a202c' }}>{isOwner ? 'Editar espaco' : 'Seus dados'}</h2>
-                <p style={{ color: '#666', fontSize: '12px', marginBottom: '14px' }}>{isOwner ? 'Atualize as informacoes do seu espaco.' : 'Preencha para ativarmos seu espaco no raio de ' + RAIO_KM + 'km.'}</p>
+                <p style={{ color: '#666', fontSize: '12px', marginBottom: '14px' }}>{isOwner ? 'Atualize as informacoes do seu espaco.' : 'Preencha seus dados para ativarmos seu espaco.'}</p>
 
                 <div style={{ marginBottom: '14px', textAlign: 'center' }}>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Logo / Foto do estabelecimento</label>
@@ -260,18 +254,18 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 ))}
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#1e3a8a', marginBottom: '3px' }}>Endereco do estabelecimento * (para o raio de {RAIO_KM}km)</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#1e3a8a', marginBottom: '3px' }}>Endereco do estabelecimento *</label>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <input value={form.address} onChange={e => { setForm(prev => ({ ...prev, address: e.target.value })); setGeoStatus(''); setSponsorLat(null); setSponsorLng(null) }} placeholder="Ex: Rua das Flores, 123, Centro" style={{ flex: 1, padding: '9px 11px', border: '2px solid #a5b4fc', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box' }} />
                     <button onClick={() => geocodeAddress(form.address)} style={{ padding: '9px 12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', whiteSpace: 'nowrap' }}>Localizar</button>
                   </div>
                   {geoStatus && <div style={{ fontSize: '11px', marginTop: '5px', color: sponsorLat ? '#15803d' : '#dc2626', fontWeight: '600' }}>{geoStatus}</div>}
-                  {sponsorLat && sponsorLng && <div style={{ fontSize: '11px', marginTop: '4px', color: '#15803d', background: '#f0fdf4', padding: '6px 10px', borderRadius: '6px' }}>Coordenadas registradas - anuncio aparece num raio de {RAIO_KM}km</div>}
-                  {!sponsorLat && !geoStatus && <div style={{ fontSize: '11px', marginTop: '4px', color: '#d97706' }}>Clique em Localizar apos digitar o endereco</div>}
+                  {sponsorLat && sponsorLng && <div style={{ fontSize: '11px', marginTop: '4px', color: '#15803d', background: '#f0fdf4', padding: '6px 10px', borderRadius: '6px' }}>Localizacao registrada com sucesso!</div>}
+                  
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#dc2626', marginBottom: '6px' }}>Ate 5 Super Ofertas (visiveis no raio de {RAIO_KM}km)</label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#dc2626', marginBottom: '6px' }}>Ate 5 Super Ofertas</label>
                   {form.offers.map((offer, i) => (
                     <div key={i} style={{ marginBottom: '7px' }}>
                       <input value={offer} onChange={e => { const newOffers = [...form.offers]; newOffers[i] = e.target.value; setForm(prev => ({ ...prev, offers: newOffers })) }} placeholder={'Oferta ' + (i + 1) + ': Ex: 10% OFF na primeira compra!'} style={{ width: '100%', padding: '8px 11px', border: '2px solid #fca5a5', borderRadius: '8px', fontSize: '12px', boxSizing: 'border-box' }} />
@@ -282,7 +276,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 {isPending && (
                   <div style={{ background: '#fef3c7', border: '2px solid #fbbf24', borderRadius: '10px', padding: '10px', marginBottom: '14px', textAlign: 'center' }}>
                     <div style={{ fontSize: '13px', fontWeight: '800', color: '#d97706' }}>Pague o plano para publicar...</div>
-                    <div style={{ fontSize: '11px', color: '#92400e', marginTop: '3px' }}>Apos confirmacao do pagamento seu espaco sera ativado no raio de {RAIO_KM}km.</div>
+                    <div style={{ fontSize: '11px', color: '#92400e', marginTop: '3px' }}>Apos confirmacao do pagamento seu espaco sera ativado.</div>
                   </div>
                 )}
 
