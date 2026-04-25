@@ -8,7 +8,7 @@ function Login() {
     const [password, setPassword] = useState('')
     const [isLogin, setIsLogin] = useState(true)
     const [loading, setLoading] = useState(false)
-    const navigaté = useNavigate()
+    const navigate = useNavigate()
 
   const handleAuth = async (e) => {
         e.preventDefault()
