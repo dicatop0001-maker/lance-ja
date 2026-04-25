@@ -5,61 +5,51 @@ import BottomBar from './BottomBar'
 import SponsorSlot from './SponsorSlot'
 
 const blinkStyle = `
-  50% { opacity: 0.15; }
-}
-  50% { transform: translateY(8px); }
-}
-
-.lj-placa {
-  width: 100%;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  border-bottom: 4px solid #3b82f6;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.lj-logo-wrap {
-  width: 100%;
-  overflow: hidden;
-  cursor: pointer;
-  line-height: 0;
-  /* altura fixa — mostra só a faixa colorida da imagem */
-  height: clamp(55px, 13vw, 130px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lj-logo-img {
-  width: 100%;
-  /* a imagem original 3:2 tem ~30% branco em cima e ~30% em baixo */
-  /* scale(1.8) corta essas margens e exibe apenas a logo colorida */
-  transform: scale(1.8);
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-}
-
-/* Grid dos 6 slots */
-.lj-slots-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-  padding: 6px 8px 12px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
+  @keyframes blink-text { 50% { opacity: 0.15; } }
+  @keyframes bounce-arrow { 50% { transform: translateY(8px); } }
+  .lj-placa {
+    width: 100%;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border-bottom: 4px solid #3b82f6;
+    padding: 0;
+    box-sizing: border-box;
+  }
   .lj-logo-wrap {
-    height: clamp(45px, 16vw, 90px);
+    width: 100%;
+    cursor: pointer;
+    line-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px 6px;
+    box-sizing: border-box;
+  }
+  .lj-logo-img {
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
   }
   .lj-slots-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    padding: 5px 6px 10px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    padding: 4px 8px 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
-}
+  @media (max-width: 600px) {
+    .lj-logo-wrap { padding: 8px 12px 4px; }
+    .lj-logo-img { max-width: 100%; }
+    .lj-slots-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      padding: 4px 6px 10px;
+    }
+  }
 `
 
 function getTimeLeft(endsAt) {
@@ -130,7 +120,8 @@ function Home() {
 
   useEffect(() => {
     if (searchCity.length >= 2) {
-      setFilteredCities(allCities.filter(c => c.nome.toLowerCase().includes(searchCity.toLowerCase())).slice(0, 50))
+      setFilteredCities(allCities.filter(c =>
+        c.nome.toLowerCase().includes(searchCity.toLowerCase())).slice(0, 50))
     } else {
       setFilteredCities([])
     }
@@ -236,9 +227,7 @@ function Home() {
   })
 
   if (!user) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>
-    )
+    return ( <div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div> )
   }
 
   const allSlots = ['L1', 'L2', 'L3', 'R1', 'R2', 'R3']
@@ -246,23 +235,13 @@ function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <style>{blinkStyle}</style>
-
       <div className="lj-placa">
         <div className="lj-logo-wrap" onClick={() => navigate('/home')}>
           <img src="/logo-conecty.png" alt="Conecty" className="lj-logo-img" />
         </div>
         <div className="lj-slots-grid">
           {allSlots.map(slot => (
-            <SponsorSlot
-              key={slot}
-              slot={slot}
-              city={userCity}
-              sponsorData={sponsors[slot] || null}
-              onRefresh={loadSponsors}
-              userId={user.id}
-              userLat={userLat}
-              userLng={userLng}
-            />
+            <SponsorSlot key={slot} slot={slot} city={userCity} sponsorData={sponsors[slot] || null} onRefresh={loadSponsors} userId={user.id} userLat={userLat} userLng={userLng} />
           ))}
         </div>
         {!userLat && (
@@ -271,7 +250,6 @@ function Home() {
           </div>
         )}
       </div>
-
       <div style={{ padding: '20px 20px 10px', textAlign: 'center' }}>
         <h3 style={{ color: 'white', fontSize: 'clamp(32px, 7vw, 60px)', fontWeight: 'bold', margin: '0 0 4px 0' }}>
           {userCity} - {userState}
@@ -323,7 +301,6 @@ function Home() {
           </div>
         )}
       </div>
-
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px 40px' }}>
         <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={() => navigate('/anuncio')} style={{ width: '100%', padding: 'clamp(16px, 3vw, 25px)', background: '#f97316', color: 'white', border: 'none', borderRadius: '15px', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 'bold', cursor: 'pointer' }}>CRIAR SEU ANUNCIO</button>
@@ -347,8 +324,7 @@ function Home() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {activeSponsorAds.map(sp => (
-              <div key={'sp-' + sp.id} onClick={() => sp.url ? window.open(sp.url, '_blank') : null}
-                style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}>
+              <div key={'sp-' + sp.id} onClick={() => sp.url ? window.open(sp.url, '_blank') : null} style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#f97316', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>PATROCINADOR</div>
                 {sp.logo_url && (
                   <div style={{ height: '140px', overflow: 'hidden', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -359,9 +335,7 @@ function Home() {
                   <h3 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#92400e', fontWeight: 'bold' }}>{sp.name || 'Patrocinador'}</h3>
                   {sp.offers && sp.offers.length > 0 && (
                     <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px', color: '#78350f' }}>
-                      {sp.offers.slice(0, 5).map((o, i) => (
-                        <li key={i} style={{ fontSize: '13px', marginBottom: '2px' }}>{o}</li>
-                      ))}
+                      {sp.offers.slice(0, 5).map((o, i) => ( <li key={i} style={{ fontSize: '13px', marginBottom: '2px' }}>{o}</li> ))}
                     </ul>
                   )}
                   <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -373,11 +347,12 @@ function Home() {
             {displayedAuctions.map(auction => {
               const timeLeft = getTimeLeft(auction.ends_at)
               const isAnuncio = auction.tipo === 'anuncio' || !auction.ends_at
-              const isSameN = userNeighborhood && auction.neighborhood && auction.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
-              const bairroLabel = (auction.neighborhood && auction.neighborhood.trim() !== '') ? auction.neighborhood : auction.city
+              const isSameN = userNeighborhood && auction.neighborhood &&
+                auction.neighborhood.toLowerCase().trim() === userNeighborhood.toLowerCase().trim()
+              const bairroLabel = (auction.neighborhood && auction.neighborhood.trim() !== '')
+                ? auction.neighborhood : auction.city
               return (
-                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)}
-                  style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: isSameN ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)' : '0 4px 12px rgba(0,0,0,0.1)' }}
+                <div key={auction.id} onClick={() => navigate('/leilao/' + auction.id)} style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: isSameN ? '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)' : '0 4px 12px rgba(0,0,0,0.1)' }}
                   onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
                   onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}>
                   <div style={{ position: 'relative', height: '190px', overflow: 'hidden', backgroundColor: '#f1f5f9' }}>
