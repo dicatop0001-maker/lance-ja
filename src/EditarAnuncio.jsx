@@ -155,11 +155,16 @@ function EditarAnuncio() {
               <option value="eletronicos">Eletrônicos, Máquinas, Celulares</option>
               <option value="moveis">Móveis</option>
               <option value="imoveis">Imóveis</option>
-              <option value="servicos">Serviços</option>
+              <option value="servicos">Prestador de Serviços</option>
               <option value="objetos">Objetos</option>
               <option value="outros">Outros</option>
             </select>
           </div>
+          {category === 'servicos' && (
+            <div style={{ padding: '12px 16px', background: '#eff6ff', border: '2px solid #3b82f6', borderRadius: '12px', fontSize: '14px', color: '#1e40af' }}>
+              <strong>📞 Dica para Prestadores de Serviços:</strong> Inclua seu nome, telefone/WhatsApp e horário de atendimento na descrição para que os clientes possam entrar em contato facilmente!
+            </div>
+          )}
           <div><label style={lbl}>Preço de Venda (R$) *</label><input style={inp} type="number" min="1" step="0.01" value={price} onChange={e => setPrice(e.target.value)} required /></div>
           <div><label style={lbl}>Bairro</label><input style={inp} value={neighborhood} onChange={e => setNeighborhood(e.target.value)} placeholder="Ex: Centro" /></div>
           <div>
