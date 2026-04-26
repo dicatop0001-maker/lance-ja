@@ -221,7 +221,8 @@ function Home() {
   }
 
   const handleHorarioOnibus = () => {
-    window.open('https://conectapg.com/horarios/', '_blank');
+    const query = encodeURIComponent('horário de ônibus ' + userCity);
+    window.open('https://www.google.com/search?q=' + query, '_blank');
   }
 
   const bairrosDisponiveis = [...new Set(
