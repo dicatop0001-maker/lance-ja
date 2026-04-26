@@ -63,25 +63,20 @@ function NovoLeilao() {
     setUploading(true)
     setPhotoError(false)
     const uploaded = []
+    const BUCKET = 'auction-photos'
+    const SUPABASE_URL = 'https://pgipuwtgxksypyhdfuex.supabase.co'
     for (const file of files) {
       try {
-        const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + file.name.split('.').pop()
-        const base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => resolve(reader.result)
-          reader.onerror = reject
-          reader.readAsDataURL(file)
-        })
-        const res = await fetch('/api/upload-photo', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileName: fname, fileType: file.type, fileData: base64 })
-        })
-        const data = await res.json()
-        if (!res.ok || data.error) {
-          alert('Erro ao enviar foto: ' + (data.error || res.statusText))
+        const ext = file.name.split('.').pop()
+        const fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext
+        const { data, error } = await supabase.storage
+          .from(BUCKET)
+          .upload(fname, file, { contentType: file.type, upsert: true })
+        if (error) {
+          alert('Erro ao enviar foto: ' + error.message)
         } else {
-          uploaded.push(data.url)
+          const publicUrl = SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + fname
+          uploaded.push(publicUrl)
         }
       } catch (err) {
         alert('Erro ao enviar foto: ' + err.message)
