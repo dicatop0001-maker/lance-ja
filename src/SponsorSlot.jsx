@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient'
 const PIX_KEY = 'dicatop0001@gmail.com'
 const PIX_NAME = 'Conecty'
 const RAIO_KM = 2
-
+h
 function calcDistKm(lat1, lon1, lat2, lon2) {
   const R = 6371
   const dLat = (lat2 - lat1) * Math.PI / 180
@@ -145,7 +145,6 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
       link_url: form.link_url,
       offers: form.offers.filter(o => o.trim() !== ''),
       logo_url: form.logo_url,
-      address: form.address,
       lat,
       lng,
       paid_at: isOwner ? sponsorData.paid_at : now.toISOString(),
