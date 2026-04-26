@@ -103,7 +103,8 @@ function Notifications({ user, bottomBar }) {
       {showDropdown && (
         <div style={{
           position: 'absolute',
-          top: '60px',
+          bottom: bottomBar ? '70px' : 'auto',
+          top: bottomBar ? 'auto' : '60px',
           right: '0',
           background: 'white',
           borderRadius: '15px',
