@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
 import { useParams, useNavigate } from 'react-router-dom'
 import Chat from './Chat'
-import PaymentModal from './PaymentModal'
 
 const detalhesStyle = `
   .detalhes-grid {
@@ -38,12 +37,9 @@ function DetalhesLeilao() {
   const [bidValue, setBidValue] = useState('')
   const [bidLoading, setBidLoading] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [canChat, setCanChat] = useState(false)
-  const [chatUnlockedForAll, setChatUnlockedForAll] = useState(false)
   const [allBidUsers, setAllBidUsers] = useState([])
   const [selectedChatUser, setSelectedChatUser] = useState(null)
   const [showChat, setShowChat] = useState(false)
-  const [showUnlockAllModal, setShowUnlockAllModal] = useState(false)
   const [showAnuncioChat, setShowAnuncioChat] = useState(false)
   const [anuncioOtherUser, setAnuncioOtherUser] = useState(null)
   const [toast, setToast] = useState(null)
@@ -80,12 +76,14 @@ function DetalhesLeilao() {
     bidsRef.current = bids
     const isAnuncio = auction && (auction.tipo === 'anuncio' || !auction.ends_at)
     const isEnded = auction && !isAnuncio && (auction.status === 'ended' || new Date(auction.ends_at) < new Date())
+
+    // Leilao encerrado: abre chat para todos automaticamente, sem cobranca
     if (isEnded && userRef.current) {
       setShowChat(true)
       buildAllBidUsers(bids)
-      checkChatAccess(userRef.current)
-      checkAllBiddersChatUnlock(auction)
     }
+
+    // Anuncio: abre chat para interessados automaticamente, sem cobranca
     if (isAnuncio && userRef.current && auction) {
       const isSeller = auction.seller_id === userRef.current.id
       if (!isSeller) {
@@ -99,7 +97,7 @@ function DetalhesLeilao() {
     if (!bidList || bidList.length === 0) return
     const seen = new Set()
     const users = []
-    bidList.forEach((b, i) => {
+    bidList.forEach((b) => {
       if (!seen.has(b.user_id)) {
         seen.add(b.user_id)
         users.push({
@@ -129,29 +127,6 @@ function DetalhesLeilao() {
     const profileMap = {}
     if (profiles) profiles.forEach(p => { profileMap[p.id] = p })
     setBids(data.map(bid => ({ ...bid, users: profileMap[bid.user_id] || null })))
-  }
-
-  const checkAllBiddersChatUnlock = async (currentAuction) => {
-    const auc = currentAuction || auctionRef.current
-    if (!auc) return
-    const { data } = await supabase.from('contact_unlocks').select('*').eq('auction_id', auc.id).eq('unlock_type', 'all_bidders').eq('payment_status', 'paid').maybeSingle()
-    if (data) setChatUnlockedForAll(true)
-  }
-
-  const handleUnlockAllSuccess = () => {
-    setChatUnlockedForAll(true)
-    setShowUnlockAllModal(false)
-    alert('Chat liberado para todos os participantes!')
-    window.location.reload()
-  }
-
-  const checkChatAccess = async (currentUser) => {
-    const u = currentUser || userRef.current
-    if (!u) return
-    const { data: subscription } = await supabase.from('subscriptions').select('*').eq('user_id', u.id).eq('status', 'active').gte('ends_at', new Date().toISOString()).maybeSingle()
-    if (subscription) { setCanChat(true); return }
-    const { data: unlock } = await supabase.from('contact_unlocks').select('*').eq('user_id', u.id).eq('auction_id', auctionId).eq('payment_status', 'paid').maybeSingle()
-    if (unlock) setCanChat(true)
   }
 
   const subscribeToNewBids = () => {
@@ -199,13 +174,13 @@ function DetalhesLeilao() {
   const isAnuncio = auction.tipo === 'anuncio' || !auction.ends_at
   const isServico = auction.category === 'servicos'
   const userBids = bids.filter(b => b.user_id === user?.id)
-  const isWinner = bids.length > 0 && bids[0].user_id === user?.id
   const otherUserForBidder = { id: auction.seller_id, email: 'Vendedor' }
-  const userPosition = allBidUsers.findIndex(b => b.id === user?.id)
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', overflowX: 'hidden' }}>
       <style>{detalhesStyle}</style>
+
+      {/* HEADER */}
       <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '16px 20px', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
         <button onClick={() => navigate('/home')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
           Voltar
@@ -222,6 +197,7 @@ function DetalhesLeilao() {
       </div>
 
       <div className="detalhes-grid">
+        {/* COLUNA ESQUERDA */}
         <div>
           {hasImages ? (
             <div>
@@ -245,6 +221,7 @@ function DetalhesLeilao() {
             </div>
           )}
 
+          {/* INFO DO ITEM */}
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginTop: '16px' }}>
             <h1 style={{ margin: '0 0 16px 0', fontSize: 'clamp(20px, 5vw, 32px)', wordBreak: 'break-word' }}>{auction.title}</h1>
             <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px', fontSize: 'clamp(14px, 3.5vw, 16px)', wordBreak: 'break-word' }}>{auction.description || 'Sem descricao'}</p>
@@ -255,7 +232,7 @@ function DetalhesLeilao() {
             </div>
           </div>
 
-          {/* CHAT ANUNCIO: Interessado fala com o dono */}
+          {/* CHAT ANUNCIO: Interessado -> Dono (gratuito) */}
           {isAnuncio && !isSeller && user && showAnuncioChat && anuncioOtherUser && (
             <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)', marginTop: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
@@ -266,13 +243,15 @@ function DetalhesLeilao() {
             </div>
           )}
 
-          {/* CHAT ANUNCIO: Dono ve todas as conversas */}
+          {/* CHAT ANUNCIO: Dono ve todas as conversas (gratuito) */}
           {isAnuncio && isSeller && user && (
             <AnuncioSellerChats auction={auction} user={user} />
           )}
         </div>
 
+        {/* COLUNA DIREITA */}
         <div>
+          {/* PRECO / LANCE */}
           <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
             {isServico && (
               <div style={{ marginBottom: '16px', padding: '12px 16px', background: '#eff6ff', border: '2px solid #1e3a8a', borderRadius: '12px', fontSize: 'clamp(13px, 3.5vw, 14px)', color: '#1e3a8a', fontWeight: '700' }}>
@@ -326,23 +305,9 @@ function DetalhesLeilao() {
                 Este leilao foi encerrado
               </div>
             )}
-
-            {!isAnuncio && isEnded && isSeller && bids.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                {chatUnlockedForAll ? (
-                  <div style={{ background: '#e8f5e9', padding: '16px', borderRadius: '12px', textAlign: 'center', color: '#2e7d32', fontWeight: 'bold', border: '2px solid #4CAF50' }}>
-                    Chat liberado para todos os participantes!
-                  </div>
-                ) : (
-                  <button onClick={() => setShowUnlockAllModal(true)}
-                    style={{ width: '100%', padding: 'clamp(14px, 4vw, 18px)', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: 'clamp(14px, 3.5vw, 16px)', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}>
-                    Liberar Chat para Todos - R$ 1,00 via PIX
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
+          {/* HISTORICO DE LANCES */}
           {!isAnuncio && (
             <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 30px)', marginBottom: '16px' }}>
               <h3 style={{ margin: '0 0 16px 0', fontSize: 'clamp(16px, 4vw, 20px)' }}>Historico de Lances ({bids.length})</h3>
@@ -371,18 +336,21 @@ function DetalhesLeilao() {
             </div>
           )}
 
-          {/* CHAT LEILAO ENCERRADO */}
+          {/* CHAT LEILAO ENCERRADO - GRATUITO PARA TODOS */}
           {!isAnuncio && isEnded && showChat && user && bids.length > 0 && (
             <div style={{ background: 'white', borderRadius: '16px', padding: 'clamp(16px, 4vw, 24px)', marginBottom: '16px' }}>
               <h3 style={{ margin: '0 0 14px 0', fontSize: 'clamp(15px,4vw,18px)', color: '#1a202c' }}>
                 💬 {isSeller ? 'Chat com os Participantes' : 'Chat com o Vendedor'}
               </h3>
 
+              {/* VENDEDOR: seleciona com qual participante conversar */}
               {isSeller && (
                 <div>
                   {allBidUsers.length > 1 && (
                     <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '13px', color: '#666', fontWeight: '600', marginBottom: '8px' }}>Selecione com quem conversar:</div>
+                      <div style={{ fontSize: '13px', color: '#666', fontWeight: '600', marginBottom: '8px' }}>
+                        Selecione com quem conversar:
+                      </div>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {allBidUsers.map((bu) => (
                           <button key={bu.id} onClick={() => setSelectedChatUser(bu)}
@@ -394,26 +362,17 @@ function DetalhesLeilao() {
                     </div>
                   )}
                   {selectedChatUser && (
-                    <Chat auction={auction} user={user} otherUser={selectedChatUser} canChat={canChat || chatUnlockedForAll} />
+                    <Chat auction={auction} user={user} otherUser={selectedChatUser} canChat={true} />
                   )}
                 </div>
               )}
 
+              {/* PARTICIPANTE (qualquer posicao): chat com vendedor, gratuito */}
               {!isSeller && userBids.length > 0 && (
-                <div>
-                  {(isWinner || chatUnlockedForAll) ? (
-                    <Chat auction={auction} user={user} otherUser={otherUserForBidder} canChat={canChat || chatUnlockedForAll} />
-                  ) : (
-                    <div style={{ background: '#fff3e0', padding: '16px', borderRadius: '12px', textAlign: 'center', border: '2px solid #fbbf24' }}>
-                      <div style={{ fontSize: '20px', marginBottom: '8px' }}>⏳</div>
-                      <p style={{ fontSize: '14px', color: '#92400e', margin: 0 }}>
-                        Voce ficou na {userPosition + 1}a posicao. O chat estara disponivel se o vendedor liberar para todos os participantes.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                <Chat auction={auction} user={user} otherUser={otherUserForBidder} canChat={true} />
               )}
 
+              {/* Usuario que nao deu lance */}
               {!isSeller && userBids.length === 0 && (
                 <div style={{ background: '#f1f5f9', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
                   <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Voce nao participou deste leilao.</p>
@@ -423,10 +382,6 @@ function DetalhesLeilao() {
           )}
         </div>
       </div>
-
-      {showUnlockAllModal && (
-        <PaymentModal user={user} auction={auction} amount={1.00} plan="all_bidders" onClose={() => setShowUnlockAllModal(false)} onSuccess={handleUnlockAllSuccess} />
-      )}
 
       {toast && (
         <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: toast.tipo === 'sucesso' ? '#22c55e' : '#ef4444', color: 'white', padding: '16px 28px', borderRadius: '14px', fontSize: 'clamp(15px,4vw,18px)', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 8px 30px rgba(0,0,0,0.3)', maxWidth: '90vw', textAlign: 'center' }}>
@@ -459,12 +414,7 @@ function AnuncioSellerChats({ auction, user }) {
     data.forEach(msg => {
       const otherId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id
       if (otherId && !senderMap[otherId]) {
-        senderMap[otherId] = {
-          id: otherId,
-          email: 'Interessado',
-          lastMsg: msg.message,
-          lastAt: msg.created_at
-        }
+        senderMap[otherId] = { id: otherId, email: 'Interessado', lastMsg: msg.message, lastAt: msg.created_at }
       }
     })
 
