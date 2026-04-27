@@ -186,10 +186,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 contact_email: form.email.trim(),
                 contact_phone: form.phone ? form.phone.trim() : '',
                 link_url: form.link_url ? form.link_url.trim() : '',
-                offers: form.offers.filter(o => o && o.trim() !== ''),
-                logo_url: form.logo_url || '',
-                lat: lat || null,
-                lng: lng || null,
+                offer_text: form.offers.filter(o => o && o.trim() !== '').join('\n'),
                 expires_at: expiresDate.toISOString()
         }
 
@@ -210,11 +207,10 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 // INSERT novo registro
           const insertPayload = {
                     ...payload,
-                    owner_user_id: userId,
-                    paid_at: now.toISOString()
+                            paid_at: now.toISOString()
           }
                 const result = await supabase
-                  .from('sponsors')
+                
                   .insert(insertPayload)
                 error = result.error
         }
