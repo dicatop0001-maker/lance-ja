@@ -481,7 +481,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                             <div style={{ marginBottom: '14px', textAlign: 'center' }}>
                                                                                               <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
                                                                                                                   Logo / Foto do estabelecimento
-                                                                                                </label>label>
+                                                                                                </label>
                                                                               {logoPreview && (
                                                                                   <img
                                                                                                           src={logoPreview}
@@ -521,7 +521,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                   <div key={f.key} style={{ marginBottom: '10px' }}>
                                                                                                                       <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '3px' }}>
                                                                                                                         {f.label}
-                                                                                                                        </label>label>
+                                                                                                                        </label>
                                                                                                                       <input
                                                                                                                                               value={form[f.key]}
                                                                                                                                               onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
@@ -535,7 +535,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                             <div style={{ marginBottom: '14px' }}>
                                                                                               <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#1e3a8a', marginBottom: '3px' }}>
                                                                                                                   Endereco do estabelecimento
-                                                                                                </label>label>
+                                                                                                </label>
                                                                                               <div style={{ display: 'flex', gap: '6px' }}>
                                                                                                                   <input
                                                                                                                                           value={form.address}
@@ -571,7 +571,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                             <div style={{ marginBottom: '14px' }}>
                                                                                               <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#dc2626', marginBottom: '6px' }}>
                                                                                                                   Ate 5 Super Ofertas
-                                                                                                </label>label>
+                                                                                                </label>
                                                                               {form.offers.map((offer, i) => (
                                                                                   <div key={i} style={{ marginBottom: '7px' }}>
                                                                                                         <input
