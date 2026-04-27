@@ -188,7 +188,6 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 link_url: form.link_url ? form.link_url.trim() : '',
                 offers: form.offers.filter(o => o && o.trim() !== ''),
                 logo_url: form.logo_url || '',
-                address: form.address ? form.address.trim() : '',
                 lat: lat || null,
                 lng: lng || null,
                 expires_at: expiresDate.toISOString()
