@@ -187,7 +187,11 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 contact_phone: form.phone ? form.phone.trim() : '',
                 link_url: form.link_url ? form.link_url.trim() : '',
                 offer_text: form.offers.filter(o => o && o.trim() !== '').join('\n'),
-                expires_at: expiresDate.toISOString()
+                expires_at: expiresDate.toISOString(),
+                            lat: lat || null,
+                            lng: lng || null,
+                            logo_url: form.logo_url || null,
+                            owner_user_id: userId || null
         }
 
         let error = null
@@ -210,7 +214,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                             paid_at: now.toISOString()
           }
                 const result = await supabase
-                
+                                        .from('sponsors')
                   .insert(insertPayload)
                 error = result.error
         }
