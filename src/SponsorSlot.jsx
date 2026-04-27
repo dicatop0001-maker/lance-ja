@@ -178,7 +178,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
 
         const payload = {
                 city,
-                slot,
+                slot: (['L1','L2','L3','R1','R2','R3'].indexOf(slot) + 1) || 1,
                 status: (isOwner && isActive) ? 'active' : 'pending',
                 plan_type: planType === 'monthly' ? 'monthly' : 'yearly',
                 plan_price: planPrice,
