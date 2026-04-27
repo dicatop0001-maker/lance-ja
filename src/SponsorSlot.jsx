@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 
 const PIX_KEY = 'dicatop0001@gmail.com'
 const PIX_NAME = 'Conecty'
-const RAIO_KM = 2
+const RAIO_KM = 2h
 
 function calcDistKm(lat1, lon1, lat2, lon2) {
     const R = 6371
@@ -138,7 +138,11 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
 
   const handleSubmit = async () => {
         setSubmitError('')
-
+        // Bloquear se slot ja esta ativo por outro patrocinador
+              if (sponsorData && sponsorData.id && isActive && !isOwner) {
+                              setSubmitError('Este slot ja esta ativo por outro patrocinador. Escolha outro slot disponivel.')
+                              return
+              }
         if (!form.name || !form.name.trim()) {
                 setSubmitError('Preencha o nome do negocio!')
                 return
@@ -211,7 +215,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
           }
                 const result = await supabase
                                         .from('sponsors')
-                  .insert(insertPayload)
+                  .upsert(insertPayload, { onConflict: 'city,slot' })
                 error = result.error
         }
 
