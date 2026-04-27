@@ -36,6 +36,10 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
     const [sponsorLat, setSponsorLat] = useState(null)
     const [sponsorLng, setSponsorLng] = useState(null)
     const [submitError, setSubmitError] = useState('')
+    const [ownerModal, setOwnerModal] = useState(false)
+    const [ownerEmailInput, setOwnerEmailInput] = useState('')
+    const [ownerVerified, setOwnerVerified] = useState(false)
+    const [ownerApproving, setOwnerApproving] = useState(false)
     const fileInputRef = useRef(null)
 
   const planPrice = planType === 'monthly' ? 50 : 400
@@ -45,6 +49,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
   const isOwner = sponsorData && sponsorData.owner_user_id === userId
     const isActive = sponsorData && sponsorData.status === 'active'
     const isPending = sponsorData && sponsorData.status === 'pending'
+    const isReserved = sponsorData && sponsorData.status === 'reserved'
 
   const dentroDoRaio = () => {
         if (!isActive) return false
@@ -54,7 +59,17 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
   }
 
   const handleSponsorClick = () => {
-        if (isActive && !isOwner && !dentroDoRaio()) {
+        if (isReserved) { setOwnerModal(true); return }
+        if (isReserved) {
+            return (
+              <div style={{ textAlign: 'center', padding: '4px' }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>🟡</div>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#92400e' }}>Reservado</div>
+                <div style={{ fontSize: '9px', color: '#b45309' }}>Aguard. aprovacao</div>
+              </div>
+            )
+        }
+                if (isActive && !isOwner && !dentroDoRaio()) {
                 setStep('plan'); setShowModal(true); return
         }
         if (isActive && !isOwner && sponsorData.link_url) {
@@ -138,9 +153,9 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
 
   const handleSubmit = async () => {
         setSubmitError('')
-        // Bloquear se slot ja esta ativo por outro patrocinador
-              if (sponsorData && sponsorData.id && isActive && !isOwner) {
-                              setSubmitError('Este slot ja esta ativo por outro patrocinador. Escolha outro slot disponivel.')
+        // Bloquear se slot ja esta ativo ou reservado
+              if (sponsorData && sponsorData.id && (isActive || isReserved) && !isOwner) {
+                              setSubmitError('Este slot ja esta reservado ou ativo. Escolha outro slot disponivel.')
                               return
               }
         if (!form.name || !form.name.trim()) {
@@ -183,7 +198,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
         const payload = {
                 city,
                 slot: (['L1','L2','L3','R1','R2','R3'].indexOf(slot) + 1) || 1,
-                status: (isOwner && isActive) ? 'active' : 'pending',
+                status: (isOwner && isActive) ? 'active' : 'reserved',
                 plan_type: planType === 'monthly' ? 'monthly' : 'yearly',
                 plan_price: planPrice,
                 sponsor_name: form.name.trim(),
@@ -198,7 +213,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
 
         if (sponsorData && sponsorData.id && (isOwner || isPending)) {
                 // UPDATE registro existente
-          const updatePayload = { ...payload }
+          const updatePayload = { status: 'active', ...payload }
                   if (!isOwner) {
                             updatePayload.paid_at = now.toISOString()
                   }
@@ -227,10 +242,42 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
         } else {
                 setStep('success')
                 if (onRefresh) onRefresh()
+                if (!isOwner) { try { await fetch('/api/notify-sponsor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sponsorName:form.name.trim(),sponsorEmail:form.email.trim(),city,slot:(['L1','L2','L3','R1','R2','R3'].indexOf(slot)+1)||1,planType,planPrice})}) } catch(e){} }
         }
   }
 
-  const renderSlotContent = () => {
+  const handleOwnerVerify = () => {
+    if (ownerEmailInput.trim().toLowerCase() === 'dicatop0001@gmail.com') {
+      setOwnerVerified(true)
+    } else {
+      alert('E-mail incorreto. Use o e-mail do administrador.')
+    }
+  }
+  const handleOwnerApprove = async () => {
+    setOwnerApproving(true)
+    const { error } = await supabase.from('sponsors').update({ status: 'active' }).eq('id', sponsorData.id)
+    setOwnerApproving(false)
+    if (error) { alert('Erro ao aprovar: ' + error.message) }
+    else { setOwnerModal(false); setOwnerVerified(false); setOwnerEmailInput(''); if (onRefresh) onRefresh() }
+  }
+  const handleOwnerReject = async () => {
+    if (!confirm('Tem certeza que deseja rejeitar e remover esta reserva?')) return
+    setOwnerApproving(true)
+    const { error } = await supabase.from('sponsors').delete().eq('id', sponsorData.id)
+    setOwnerApproving(false)
+    if (error) { alert('Erro ao rejeitar: ' + error.message) }
+    else { setOwnerModal(false); setOwnerVerified(false); setOwnerEmailInput(''); if (onRefresh) onRefresh() }
+  }
+    const renderSlotContent = () => {
+        if (isReserved) {
+            return (
+              <div style={{ textAlign: 'center', padding: '4px' }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>🟡</div>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#92400e' }}>Reservado</div>
+                <div style={{ fontSize: '9px', color: '#b45309' }}>Aguard. aprovacao</div>
+              </div>
+            )
+        }
         if (isActive && !isOwner && !dentroDoRaio()) {
                 return (
                           <div style={{ textAlign: 'center', padding: '4px' }}>
@@ -307,14 +354,16 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
     
       const successMsg = isOwner
             ? 'Seu espaco foi atualizado com sucesso!'
-            : 'Recebemos seus dados. Apos confirmarmos o pagamento, seu espaco sera ativado em ate 24h.'
+            : 'Cadastro recebido! Envie o comprovante via WhatsApp para confirmar sua reserva.'
         
           const slotBg = isActive
                 ? (isOwner || dentroDoRaio() ? '#fffbeb' : 'rgba(255,255,255,0.08)')
+                            : isReserved ? '#fef9c3'
                 : isPending ? '#fef3c7' : 'rgba(255,255,255,0.12)'
             
               const slotBorder = isActive
                     ? (isOwner || dentroDoRaio() ? '2px solid #fbbf24' : '2px dashed #94a3b8')
+                                        : isReserved ? '2px solid #f59e0b'
                     : isPending ? '2px dashed #d97706' : '2px dashed #94a3b8'
                 
                   return (
@@ -641,6 +690,13 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                             <p style={{ color: '#374151', fontSize: '13px', marginBottom: '20px', lineHeight: '1.6' }}>
                                                                               {successMsg}
                                                                             </p>
+                                                                            {!isOwner && (
+                                                                              <div style={{marginBottom:'12px'}}>
+                                                                                <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Zap%20Bairro%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{ display:'inline-block', padding:'12px 20px', background:'linear-gradient(135deg,#25D366,#128C7E)', color:'white', borderRadius:'12px', fontSize:'14px', fontWeight:'800', textDecoration:'none' }}>
+                                                                                  📱 Enviar Comprovante via WhatsApp
+                                                                                </a>
+                                                                              </div>
+                                                                            )}
                                                                             <button
                                                                                                 onClick={() => setShowModal(false)}
                                                                                                 style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}
@@ -652,6 +708,46 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                             </div>
                                   </div>
                               )}
+
+                        {ownerModal && (
+                          <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.7)',zIndex:3000,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+                            onClick={e => {if(e.target===e.currentTarget){setOwnerModal(false);setOwnerVerified(false);setOwnerEmailInput('')}}}>
+                            <div style={{background:'white',borderRadius:'16px',padding:'28px 24px',maxWidth:'420px',width:'100%',boxShadow:'0 20px 60px rgba(0,0,0,0.3)'}}>
+                              <h3 style={{margin:'0 0 8px',color:'#1e3a8a',fontSize:'18px'}}>🟡 Slot Reservado</h3>
+                              {!ownerVerified ? (
+                                <div>
+                                  <p style={{color:'#374151',fontSize:'14px',marginBottom:'16px'}}>Para ver os detalhes e aprovar/rejeitar, confirme seu e-mail de administrador.</p>
+                                  <input type="email" placeholder="E-mail do administrador" value={ownerEmailInput} onChange={e=>setOwnerEmailInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleOwnerVerify()} style={{width:'100%',padding:'10px 12px',borderRadius:'8px',border:'1.5px solid #d1d5db',fontSize:'14px',boxSizing:'border-box',marginBottom:'12px'}} />
+                                  <div style={{display:'flex',gap:'8px'}}>
+                                    <button onClick={handleOwnerVerify} style={{flex:1,padding:'10px',background:'#1e3a8a',color:'white',border:'none',borderRadius:'8px',fontWeight:'700',cursor:'pointer'}}>Verificar</button>
+                                    <button onClick={()=>{setOwnerModal(false);setOwnerEmailInput('')}} style={{padding:'10px 16px',background:'#f3f4f6',color:'#374151',border:'none',borderRadius:'8px',cursor:'pointer'}}>Cancelar</button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div>
+                                  <div style={{background:'#f8fafc',borderRadius:'10px',padding:'14px',marginBottom:'16px',fontSize:'13px',color:'#374151',lineHeight:'1.8'}}>
+                                    <div><strong>Negocio:</strong> {sponsorData && sponsorData.sponsor_name}</div>
+                                    <div><strong>E-mail:</strong> {sponsorData && sponsorData.contact_email}</div>
+                                    <div><strong>Telefone:</strong> {(sponsorData && sponsorData.contact_phone) || '—'}</div>
+                                    <div><strong>Cidade:</strong> {city}</div>
+                                    <div><strong>Slot:</strong> {slot}</div>
+                                    <div><strong>Plano:</strong> {sponsorData && sponsorData.plan_type === 'monthly' ? 'Mensal R$ 50' : 'Anual R$ 400'}</div>
+                                  </div>
+                                  <div style={{display:'flex',gap:'8px',flexDirection:'column'}}>
+                                    <button onClick={handleOwnerApprove} disabled={ownerApproving} style={{padding:'12px',background:'linear-gradient(135deg,#16a34a,#15803d)',color:'white',border:'none',borderRadius:'10px',fontWeight:'800',cursor:'pointer',fontSize:'14px'}}>
+                                      {ownerApproving ? 'Aprovando...' : '✅ Aprovar e Ativar Patrocinador'}
+                                    </button>
+                                    <button onClick={handleOwnerReject} disabled={ownerApproving} style={{padding:'12px',background:'linear-gradient(135deg,#dc2626,#b91c1c)',color:'white',border:'none',borderRadius:'10px',fontWeight:'800',cursor:'pointer',fontSize:'14px'}}>
+                                      ❌ Rejeitar e Remover Reserva
+                                    </button>
+                                    <button onClick={()=>{setOwnerModal(false);setOwnerVerified(false);setOwnerEmailInput('')}} style={{padding:'10px',background:'#f3f4f6',color:'#374151',border:'none',borderRadius:'8px',cursor:'pointer'}}>Fechar</button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         </div>
                       )
                     }
