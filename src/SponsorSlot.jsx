@@ -235,10 +235,10 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
         if (isActive && !isOwner && !dentroDoRaio()) {
                 return (
                           <div style={{ textAlign: 'center', padding: '4px' }}>
-                                      <div style={{ fontSize: '22px', marginBottom: '4px' }}>⭐</div>div>
-                                      <div style={{ fontSize: '11px', fontWeight: '800', color: '#1e3a8a', lineHeight: '1.4' }}>Patrocinador</div>div>
-                                      <div style={{ fontSize: '11px', fontWeight: '700', color: '#f97316' }}>Clique aqui!</div>div>
-                          </div>div>
+                                      <div style={{ fontSize: '22px', marginBottom: '4px' }}>⭐</div>
+                                      <div style={{ fontSize: '11px', fontWeight: '800', color: '#1e3a8a', lineHeight: '1.4' }}>Patrocinador</div>
+                                      <div style={{ fontSize: '11px', fontWeight: '700', color: '#f97316' }}>Clique aqui!</div>
+                          </div>
                         )
         }
 
@@ -257,30 +257,30 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                       )}
                                       <div style={{ fontWeight: '800', fontSize: '11px', color: '#1e3a8a', marginBottom: '2px', lineHeight: '1.2' }}>
                                         {sponsorData.sponsor_name}
-                                      </div>div>
+                                      </div>
                             {sponsorData.offers && sponsorData.offers.length > 0 && (
                                         <div>
                                           {sponsorData.offers.slice(0, 2).map((o, i) => (
                                                           <div key={i} style={{ fontSize: '10px', color: '#dc2626', fontWeight: '700', lineHeight: '1.3' }}>
                                                                             Oferta: {o}
-                                                          </div>div>
+                                                          </div>
                                                         ))}
-                                        </div>div>
+                                        </div>
                                     )}
                             {sponsorData.link_url && (
-                                        <div style={{ fontSize: '10px', color: '#667eea', marginTop: '2px' }}>Ver mais</div>div>
+                                        <div style={{ fontSize: '10px', color: '#667eea', marginTop: '2px' }}>Ver mais</div>
                                     )}
                             {dist !== null && (
                                         <div style={{ fontSize: '9px', color: '#16a34a', marginTop: '2px', fontWeight: '700' }}>
                                           {dist < 1 ? Math.round(dist * 1000) + 'm' : dist.toFixed(1) + 'km'}
-                                        </div>div>
+                                        </div>
                                     )}
                             {isOwner && (
                                         <div style={{ fontSize: '9px', background: '#fbbf24', color: '#92400e', borderRadius: '4px', padding: '2px 4px', marginTop: '3px', fontWeight: '700' }}>
                                                       Editar
-                                        </div>div>
+                                        </div>
                                     )}
-                          </div>div>
+                          </div>
                         )
                   }
                   
@@ -289,20 +289,20 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                         <div style={{ textAlign: 'center', padding: '4px' }}>
                                                   <div style={{ fontSize: '10px', fontWeight: '800', color: '#d97706', lineHeight: '1.3' }}>
                                                               Pague o plano para publicar...
-                                                  </div>div>
+                                                  </div>
                                           {isOwner && (
-                                                      <div style={{ fontSize: '9px', color: '#666', marginTop: '3px' }}>Em analise</div>div>
+                                                      <div style={{ fontSize: '9px', color: '#666', marginTop: '3px' }}>Em analise</div>
                                                   )}
-                                        </div>div>
+                                        </div>
                                       )
                       }
     
         return (
                 <div style={{ textAlign: 'center', padding: '4px' }}>
-                        <div style={{ fontSize: '22px', marginBottom: '4px' }}>⭐</div>div>
-                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#1e3a8a', lineHeight: '1.4' }}>Patrocinador</div>div>
-                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#f97316' }}>Clique aqui!</div>div>
-                </div>div>
+                        <div style={{ fontSize: '22px', marginBottom: '4px' }}>⭐</div>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#1e3a8a', lineHeight: '1.4' }}>Patrocinador</div>
+                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#f97316' }}>Clique aqui!</div>
+                </div>
               )
   }
     
@@ -348,7 +348,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                         }}
                                       >
                                 {renderSlotContent()}
-                              </div>div>
+                              </div>
                         
                           {showModal && (
                                   <div
@@ -371,15 +371,15 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                           position: 'absolute', top: '14px', right: '18px',
                                                                                           background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#888'
                                                                           }}
-                                                                      >✕</button>button>
+                                                                      >✕</button>
                                             
                                               {/* STEP: PLAN */}
                                               {step === 'plan' && (
                                                             <div>
-                                                                            <h2 style={{ margin: '0 0 4px', fontSize: '22px', color: '#1a202c' }}>Seja Patrocinador</h2>h2>
+                                                                            <h2 style={{ margin: '0 0 4px', fontSize: '22px', color: '#1a202c' }}>Seja Patrocinador</h2>
                                                                             <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
                                                                                               Escolha o plano ideal para o seu negocio e apareca para o publico da sua regiao!
-                                                                            </p>p>
+                                                                            </p>
                                                                             <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                                                                               {[
                                                               { type: 'monthly', label: 'Mensal', price: 'R$ 50,00', sub: 'por mes' },
@@ -395,23 +395,23 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                                                         background: planType === p.type ? '#eef2ff' : 'white'
                                                                                                                                 }}
                                                                                                                             >
-                                                                                                                            <div style={{ fontWeight: '800', fontSize: '15px', color: '#1e3a8a' }}>{p.label}</div>div>
-                                                                                                                            <div style={{ fontSize: '20px', fontWeight: '900', color: '#667eea', margin: '4px 0' }}>{p.price}</div>div>
-                                                                                                                            <div style={{ fontSize: '11px', color: '#666' }}>{p.sub}</div>div>
-                                                                                                        </div>div>
+                                                                                                                            <div style={{ fontWeight: '800', fontSize: '15px', color: '#1e3a8a' }}>{p.label}</div>
+                                                                                                                            <div style={{ fontSize: '20px', fontWeight: '900', color: '#667eea', margin: '4px 0' }}>{p.price}</div>
+                                                                                                                            <div style={{ fontSize: '11px', color: '#666' }}>{p.sub}</div>
+                                                                                                        </div>
                                                                                                     ))}
-                                                                            </div>div>
+                                                                            </div>
                                                                             <div style={{ background: '#fff7ed', border: '2px solid #f97316', borderRadius: '10px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#7c2d12' }}>
-                                                                                              <strong>Beneficios do patrocinador:</strong>strong> Um anuncio criado pelo patrocinador ficara sempre entre os 6 primeiros no feed. Cada patrocinador tem o direito de fazer um anuncio para ficar no topo.
-                                                                            </div>div>
+                                                                                              <strong>Beneficios do patrocinador:</strong> Um anuncio criado pelo patrocinador ficara sempre entre os 6 primeiros no feed. Cada patrocinador tem o direito de fazer um anuncio para ficar no topo.
+                                                                            </div>
                                                                             <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#374151' }}>
-                                                                                              <div style={{ fontWeight: '700', marginBottom: '5px' }}>O que voce recebe:</div>div>
-                                                                                              <div>✅ Logo/foto do estabelecimento no espaco</div>div>
-                                                                                              <div>✅ Ate 5 super ofertas exclusivas</div>div>
-                                                                                              <div>✅ Link clicavel para seu site ou rede social</div>div>
-                                                                                              <div>✅ Visibilidade exclusiva para clientes proximos</div>div>
-                                                                                              <div>✅ Edite seu espaco quando quiser</div>div>
-                                                                            </div>div>
+                                                                                              <div style={{ fontWeight: '700', marginBottom: '5px' }}>O que voce recebe:</div>
+                                                                                              <div>✅ Logo/foto do estabelecimento no espaco</div>
+                                                                                              <div>✅ Ate 5 super ofertas exclusivas</div>
+                                                                                              <div>✅ Link clicavel para seu site ou rede social</div>
+                                                                                              <div>✅ Visibilidade exclusiva para clientes proximos</div>
+                                                                                              <div>✅ Edite seu espaco quando quiser</div>
+                                                                            </div>
                                                                             <button
                                                                                                 onClick={() => setStep('pix')}
                                                                                                 style={{
@@ -422,49 +422,49 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                   }}
                                                                                               >
                                                                                               Contratar plano {planLabel} — R$ {planPrice},00
-                                                                            </button>button>
-                                                            </div>div>
+                                                                            </button>
+                                                            </div>
                                                         )}
                                             
                                               {/* STEP: PIX */}
                                               {step === 'pix' && (
                                                             <div>
-                                                                            <h2 style={{ margin: '0 0 6px', fontSize: '20px', color: '#1a202c' }}>Pagamento via Pix</h2>h2>
+                                                                            <h2 style={{ margin: '0 0 6px', fontSize: '20px', color: '#1a202c' }}>Pagamento via Pix</h2>
                                                                             <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
-                                                                                              Plano {planLabel} — <strong>R$ {planPrice},00</strong>strong>
-                                                                            </p>p>
+                                                                                              Plano {planLabel} — <strong>R$ {planPrice},00</strong>
+                                                                            </p>
                                                                             <div style={{ background: '#f0fdf4', border: '2px solid #16a34a', borderRadius: '14px', padding: '16px', marginBottom: '14px', textAlign: 'center' }}>
-                                                                                              <div style={{ fontSize: '12px', color: '#374151', marginBottom: '8px', fontWeight: '600' }}>Chave Pix:</div>div>
+                                                                                              <div style={{ fontSize: '12px', color: '#374151', marginBottom: '8px', fontWeight: '600' }}>Chave Pix:</div>
                                                                                               <div style={{ background: 'white', border: '1px solid #d1fae5', borderRadius: '8px', padding: '10px', fontFamily: 'monospace', fontSize: '14px', fontWeight: '700', color: '#15803d', wordBreak: 'break-all', marginBottom: '8px' }}>
                                                                                                 {PIX_KEY}
-                                                                                                </div>div>
-                                                                                              <div style={{ fontSize: '12px', color: '#666' }}>Beneficiario: <strong>{PIX_NAME}</strong>strong></div>div>
-                                                                                              <div style={{ fontSize: '24px', fontWeight: '900', color: '#15803d', margin: '8px 0 4px' }}>R$ {planPrice},00</div>div>
+                                                                                                </div>
+                                                                                              <div style={{ fontSize: '12px', color: '#666' }}>Beneficiario: <strong>{PIX_NAME}</strong></div>
+                                                                                              <div style={{ fontSize: '24px', fontWeight: '900', color: '#15803d', margin: '8px 0 4px' }}>R$ {planPrice},00</div>
                                                                                               <button
                                                                                                                     onClick={() => navigator.clipboard && navigator.clipboard.writeText(PIX_KEY)}
                                                                                                                     style={{ padding: '7px 16px', background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', marginTop: '4px' }}
                                                                                                                   >
                                                                                                                   Copiar chave Pix
-                                                                                                </button>button>
-                                                                            </div>div>
+                                                                                                </button>
+                                                                            </div>
                                                                             <div style={{ background: '#fffbeb', border: '1px solid #fbbf24', borderRadius: '10px', padding: '10px', fontSize: '12px', color: '#92400e', marginBottom: '14px' }}>
                                                                                               Apos o pagamento, clique em "Ja paguei" e preencha seus dados. Ativamos em ate 24h.
-                                                                            </div>div>
+                                                                            </div>
                                                                             <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
                                                                                               <button
                                                                                                                     onClick={() => setStep('plan')}
                                                                                                                     style={{ flex: 1, padding: '14px', background: 'white', color: '#374151', border: '2px solid #64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}
                                                                                                                   >
                                                                                                                   ← Voltar
-                                                                                                </button>button>
+                                                                                                </button>
                                                                                               <button
                                                                                                                     onClick={() => { setSubmitError(''); setStep('form') }}
                                                                                                                     style={{ flex: 2, padding: '14px', background: 'linear-gradient(135deg, #16a34a, #15803d)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '800', fontSize: '16px', boxShadow: '0 4px 14px rgba(22,163,74,0.35)' }}
                                                                                                                   >
                                                                                                                   ✅ Ja paguei
-                                                                                                </button>button>
-                                                                            </div>div>
-                                                            </div>div>
+                                                                                                </button>
+                                                                            </div>
+                                                            </div>
                                                         )}
                                             
                                               {/* STEP: FORM */}
@@ -472,10 +472,10 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                             <div>
                                                                             <h2 style={{ margin: '0 0 4px', fontSize: '20px', color: '#1a202c' }}>
                                                                               {isOwner ? 'Editar espaco' : 'Seus dados'}
-                                                                            </h2>h2>
+                                                                            </h2>
                                                                             <p style={{ color: '#666', fontSize: '12px', marginBottom: '14px' }}>
                                                                               {isOwner ? 'Atualize as informacoes do seu espaco.' : 'Preencha seus dados para ativarmos seu espaco.'}
-                                                                            </p>p>
+                                                                            </p>
                                                             
                                                               {/* Upload de logo */}
                                                                             <div style={{ marginBottom: '14px', textAlign: 'center' }}>
@@ -508,8 +508,8 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                       }}
                                                                                                                   >
                                                                                                 {uploadingLogo ? 'Enviando...' : logoPreview ? 'Trocar logo' : 'Enviar logo'}
-                                                                                                </button>button>
-                                                                            </div>div>
+                                                                                                </button>
+                                                                            </div>
                                                             
                                                               {/* Campos do formulario */}
                                                               {[
@@ -528,7 +528,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                                               placeholder={f.placeholder}
                                                                                                                                               style={{ width: '100%', padding: '9px 11px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box' }}
                                                                                                                                             />
-                                                                                                    </div>div>
+                                                                                                    </div>
                                                                                                 ))}
                                                             
                                                               {/* Endereco com geocodificacao */}
@@ -553,19 +553,19 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                                           style={{ padding: '9px 12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', whiteSpace: 'nowrap' }}
                                                                                                                                         >
                                                                                                                                         Localizar
-                                                                                                                    </button>button>
-                                                                                                </div>div>
+                                                                                                                    </button>
+                                                                                                </div>
                                                                               {geoStatus && (
                                                                                   <div style={{ fontSize: '11px', marginTop: '5px', color: sponsorLat ? '#15803d' : '#dc2626', fontWeight: '600' }}>
                                                                                     {geoStatus}
-                                                                                    </div>div>
+                                                                                    </div>
                                                                                               )}
                                                                               {sponsorLat && sponsorLng && (
                                                                                   <div style={{ fontSize: '11px', marginTop: '4px', color: '#15803d', background: '#f0fdf4', padding: '6px 10px', borderRadius: '6px' }}>
                                                                                                         Localizacao registrada com sucesso!
-                                                                                    </div>div>
+                                                                                    </div>
                                                                                               )}
-                                                                            </div>div>
+                                                                            </div>
                                                             
                                                               {/* Ofertas */}
                                                                             <div style={{ marginBottom: '14px' }}>
@@ -584,23 +584,23 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                                   placeholder={'Oferta ' + (i + 1) + ': Ex: 10% OFF na primeira compra!'}
                                                                                                                                   style={{ width: '100%', padding: '8px 11px', border: '2px solid #fca5a5', borderRadius: '8px', fontSize: '12px', boxSizing: 'border-box' }}
                                                                                                                                 />
-                                                                                    </div>div>
+                                                                                    </div>
                                                                                 ))}
-                                                                            </div>div>
+                                                                            </div>
                                                             
                                                               {/* Aviso pagamento pendente */}
                                                               {isPending && !isOwner && (
                                                                                 <div style={{ background: '#fef3c7', border: '2px solid #fbbf24', borderRadius: '10px', padding: '10px', marginBottom: '14px', textAlign: 'center' }}>
-                                                                                                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#d97706' }}>Pague o plano para publicar...</div>div>
-                                                                                                    <div style={{ fontSize: '11px', color: '#92400e', marginTop: '3px' }}>Apos confirmacao do pagamento seu espaco sera ativado.</div>div>
-                                                                                </div>div>
+                                                                                                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#d97706' }}>Pague o plano para publicar...</div>
+                                                                                                    <div style={{ fontSize: '11px', color: '#92400e', marginTop: '3px' }}>Apos confirmacao do pagamento seu espaco sera ativado.</div>
+                                                                                </div>
                                                                             )}
                                                             
                                                               {/* Mensagem de erro */}
                                                               {submitError && (
                                                                                 <div style={{ background: '#fee2e2', border: '2px solid #f87171', borderRadius: '10px', padding: '10px', marginBottom: '14px', fontSize: '13px', color: '#b91c1c', fontWeight: '600', textAlign: 'center' }}>
                                                                                                     ⚠️ {submitError}
-                                                                                </div>div>
+                                                                                </div>
                                                                             )}
                                                             
                                                               {/* Botoes de acao */}
@@ -611,7 +611,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                           style={{ flex: 1, padding: '14px', background: 'white', color: '#374151', border: '2px solid #64748b', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}
                                                                                                         >
                                                                                                         ← Voltar
-                                                                                    </button>button>
+                                                                                    </button>
                                                                                               )}
                                                                                               <button
                                                                                                                     onClick={handleSubmit}
@@ -627,33 +627,33 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                                                                       }}
                                                                                                                   >
                                                                                                 {saving ? '⏳ Salvando...' : isOwner ? '💾 Salvar alteracoes' : '📤 Enviar cadastro'}
-                                                                                                </button>button>
-                                                                            </div>div>
-                                                            </div>div>
+                                                                                                </button>
+                                                                            </div>
+                                                            </div>
                                                         )}
                                             
                                               {/* STEP: SUCCESS */}
                                               {step === 'success' && (
                                                             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                                                            <div style={{ fontSize: '56px', marginBottom: '14px' }}>🎉</div>div>
+                                                                            <div style={{ fontSize: '56px', marginBottom: '14px' }}>🎉</div>
                                                                             <h2 style={{ color: '#15803d', marginBottom: '8px' }}>
                                                                               {isOwner ? 'Alteracoes salvas!' : 'Cadastro enviado!'}
-                                                                            </h2>h2>
+                                                                            </h2>
                                                                             <p style={{ color: '#374151', fontSize: '13px', marginBottom: '20px', lineHeight: '1.6' }}>
                                                                               {successMsg}
-                                                                            </p>p>
+                                                                            </p>
                                                                             <button
                                                                                                 onClick={() => setShowModal(false)}
                                                                                                 style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}
                                                                                               >
                                                                                               Fechar
-                                                                            </button>button>
-                                                            </div>div>
+                                                                            </button>
+                                                            </div>
                                                         )}
-                                            </div>div>
-                                  </div>div>
+                                            </div>
+                                  </div>
                               )}
-                        </div>div>
+                        </div>
                       )
                     }
                     
