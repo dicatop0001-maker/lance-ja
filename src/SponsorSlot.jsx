@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 
 const PIX_KEY = 'dicatop0001@gmail.com'
 const PIX_NAME = 'Conecty'
-const RAIO_KM = 2h
+const RAIO_KM = 2
 
 function calcDistKm(lat1, lon1, lat2, lon2) {
     const R = 6371
