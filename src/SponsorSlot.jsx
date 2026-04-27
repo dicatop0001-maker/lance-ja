@@ -657,4 +657,4 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                       )
                     }
                     
-                    export default SponsorSlot</div>
+                    export default SponsorSlot
