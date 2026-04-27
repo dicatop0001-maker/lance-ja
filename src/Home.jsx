@@ -339,7 +339,7 @@ function Home() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {activeSponsorAds.map(sp => (
-              <div key={'sp-' + sp.id} onClick={() => sp.url ? window.open(sp.url, '_blank') : null} style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}>
+              <div key={'sp-' + sp.id} onClick={() => sp.link_url ? window.open(sp.link_url, '_blank') : null} style={{ background: 'linear-gradient(135deg, #fff7ed, #fef3c7)', borderRadius: '15px', overflow: 'hidden', cursor: sp.link_url ? 'pointer' : 'default', boxShadow: '0 0 0 3px #f97316, 0 8px 24px rgba(0,0,0,0.18)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#f97316', color: 'white', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>PATROCINADOR</div>
                 {sp.logo_url && (
                   <div style={{ height: '140px', overflow: 'hidden', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -347,7 +347,7 @@ function Home() {
                   </div>
                 )}
                 <div style={{ padding: '14px 16px' }}>
-                  <h3 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#92400e', fontWeight: 'bold' }}>{sp.name || 'Patrocinador'}</h3>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#92400e', fontWeight: 'bold' }}>{sp.sponsor_name || 'Patrocinador'}</h3>
                   {sp.offers && sp.offers.length > 0 && (
                     <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px', color: '#78350f' }}>
                       {sp.offers.slice(0, 5).map((o, i) => ( <li key={i} style={{ fontSize: '13px', marginBottom: '2px' }}>{o}</li> ))}
