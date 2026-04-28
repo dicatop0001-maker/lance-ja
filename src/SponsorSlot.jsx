@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { supabase } from './supabaseClient'
 
 const PIX_KEY = 'dicatop0001@gmail.com'
-const PIX_NAME = 'Conecty'
+const PIX_NAME = 'Lance Ja'
 const RAIO_KM = 2
 
 function calcDistKm(lat1, lon1, lat2, lon2) {
@@ -694,7 +694,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                                                                             </p>
                                                                             {!isOwner && (
                                                                               <div style={{marginBottom:'12px'}}>
-                                                                                <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Zap%20Bairro%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{ display:'inline-block', padding:'12px 20px', background:'linear-gradient(135deg,#25D366,#128C7E)', color:'white', borderRadius:'12px', fontSize:'14px', fontWeight:'800', textDecoration:'none' }}>
+                                                                                <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Lance%20Ja%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{ display:'inline-block', padding:'12px 20px', background:'linear-gradient(135deg,#25D366,#128C7E)', color:'white', borderRadius:'12px', fontSize:'14px', fontWeight:'800', textDecoration:'none' }}>
                                                                                   📱 Enviar Comprovante via WhatsApp
                                                                                 </a>
                                                                               </div>
@@ -756,7 +756,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
             <div style={{fontSize:'48px',marginBottom:'12px'}}>📱</div>
             <h3 style={{color:'#15803d',marginBottom:'8px',fontSize:'18px'}}>Cadastro Enviado!</h3>
             <p style={{color:'#374151',fontSize:'13px',lineHeight:'1.6',marginBottom:'16px'}}>{appNotification}</p>
-            <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Zap%20Bairro%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{display:'block',padding:'12px',background:'linear-gradient(135deg,#25D366,#128C7E)',color:'white',borderRadius:'10px',textDecoration:'none',fontWeight:'800',fontSize:'14px',marginBottom:'10px'}}>
+            <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Lance%20Ja%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{display:'block',padding:'12px',background:'linear-gradient(135deg,#25D366,#128C7E)',color:'white',borderRadius:'10px',textDecoration:'none',fontWeight:'800',fontSize:'14px',marginBottom:'10px'}}>
               📲 Enviar Comprovante via WhatsApp
             </a>
             <button onClick={()=>setAppNotification(null)} style={{padding:'10px 24px',background:'#667eea',color:'white',border:'none',borderRadius:'10px',cursor:'pointer',fontWeight:'700'}}>OK, Entendi!</button>
