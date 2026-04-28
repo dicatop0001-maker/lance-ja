@@ -101,7 +101,6 @@ function Home() {
   const navigate = useNavigate()
 
   useEffect(() => {
-      const [lightboxImg, setLightboxImg]
     checkUser()
     detectLocation()
     loadBrazilianCities()
