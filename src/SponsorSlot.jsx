@@ -37,6 +37,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
     const [sponsorLng, setSponsorLng] = useState(null)
     const [submitError, setSubmitError] = useState('')
     const [ownerModal, setOwnerModal] = useState(false)
+  const [appNotification, setAppNotification] = useState(null)
     const [ownerEmailInput, setOwnerEmailInput] = useState('')
     const [ownerVerified, setOwnerVerified] = useState(false)
     const [ownerApproving, setOwnerApproving] = useState(false)
@@ -241,6 +242,7 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                 setSubmitError('Erro ao salvar: ' + error.message)
         } else {
                 setStep('success')
+                if (!isOwner) { setAppNotification('Cadastro enviado! Envie o comprovante via WhatsApp: (42) 98888-0353. Seu espaco ficara RESERVADO ate confirmacao.') }
                 if (onRefresh) onRefresh()
                 if (!isOwner) { try { await fetch('/api/notify-sponsor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sponsorName:form.name.trim(),sponsorEmail:form.email.trim(),city,slot:(['L1','L2','L3','R1','R2','R3'].indexOf(slot)+1)||1,planType,planPrice})}) } catch(e){} }
         }
@@ -748,6 +750,19 @@ function SponsorSlot({ slot, city, sponsorData, onRefresh, userId, userLat, user
                           </div>
                         )}
 
+      {appNotification && (
+        <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.5)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}>
+          <div style={{background:'white',borderRadius:'16px',padding:'24px',maxWidth:'380px',width:'100%',boxShadow:'0 20px 60px rgba(0,0,0,0.4)',textAlign:'center'}}>
+            <div style={{fontSize:'48px',marginBottom:'12px'}}>📱</div>
+            <h3 style={{color:'#15803d',marginBottom:'8px',fontSize:'18px'}}>Cadastro Enviado!</h3>
+            <p style={{color:'#374151',fontSize:'13px',lineHeight:'1.6',marginBottom:'16px'}}>{appNotification}</p>
+            <a href="https://wa.me/5542988880353?text=Ola!%20Fiz%20o%20cadastro%20no%20Zap%20Bairro%20como%20patrocinador.%20Segue%20o%20comprovante." target="_blank" rel="noopener noreferrer" style={{display:'block',padding:'12px',background:'linear-gradient(135deg,#25D366,#128C7E)',color:'white',borderRadius:'10px',textDecoration:'none',fontWeight:'800',fontSize:'14px',marginBottom:'10px'}}>
+              📲 Enviar Comprovante via WhatsApp
+            </a>
+            <button onClick={()=>setAppNotification(null)} style={{padding:'10px 24px',background:'#667eea',color:'white',border:'none',borderRadius:'10px',cursor:'pointer',fontWeight:'700'}}>OK, Entendi!</button>
+          </div>
+        </div>
+      )}
                         </div>
                       )
                     }
